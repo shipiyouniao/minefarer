@@ -2,6 +2,20 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** zh interface messages. Keep keys aligned across locales. */
 export const zhMessages: MessageCatalog = {
+  'ferry.objective': '排清机关周围的雷，切换水闸并记录每处水位。',
+  'ferry.exit-ready': '水位已核对。接通出口水闸，再走到出口。',
+  'ferry.progress': '水位记录 {count} / {total}',
+  'ferry.receiver': '水位尺',
+  'ferry.junction': '水闸控制器',
+  'ferry.door': '通道水闸',
+  'ferry.recorded': '这里的水位已记下。',
+  'ferry.guide-intro': '沿分支接通水位尺，记录后再开出口水闸。',
+  'ferry.guide-switch-title': '切换水闸分支',
+  'ferry.guide-switch': '点击控制器切换 A / B。字母相同的水位尺和水闸会接通。',
+  'ferry.guide-record-title': '记下水位，再开出口',
+  'ferry.guide-record':
+    '走到接通的水位尺旁点击记录。所有水位记好后，切换分支打开出口；已记下的不会丢失。',
+
   'recollection.existing': '还有一段远征没结束。先继续或撤离，再开始新的回想。',
   'recollection.resume-expedition': '继续远征',
 
@@ -1616,4 +1630,33 @@ export const zhMessages: MessageCatalog = {
   'battle-lesson.attack':
     '现在可以攻击了。点亮起的攻击按钮，或直接点击相邻的敌人，消耗 2 点行动点数。打完还要留意退路和下一次攻击预告。',
   'battle-lesson.reopen': '在当前战场学习操作',
+  'dialogue.places': '采石场|旧渡口|渡口|望楼|芦滩水道|北路|装卸场',
+  'dialogue.items':
+    '行囊|信标|水位尺|水闸|供能器|升降台|轴芯|回想灯|矿车|锚点|分身|沙漏|蛛网|巢穴|晶体',
+  'dialogue.warnings': '不要踩|危险|别碰|涨潮|停止供电',
+  'rail.rumor-1': '刚才从采石场那边传来了敲击声。停一下，又是三声。',
+  'rail.rumor-2': '不像落石……有人在里面？',
+  'rail.rumor-3': '我也担心。装卸场东边有条旧矿道，有时间去看看吧。带上灯，别一个劲往深处走。',
+  'ferry.title': '芦滩水道',
+  'ferry.task': '渡口为何停航',
+  'ferry.detail':
+    '从芦湾营地栈桥尽头进入芦滩水道。疏通三段水路，核对水位尺，寻找旧渡口停航的原因。',
+  'ferry.lead-1': '你看，渡口的灯还亮着，却一条船也没有。',
+  'ferry.lead-2': '水在往回流。我们刚走过来的时候，明明不是这个方向。',
+  'ferry.lead-3': '栈桥尽头能下到芦滩水道。先看水位尺，弄清楚为什么停航，再去找船。',
+  'ferry.floor-1': '第一段 · 退水的浅滩',
+  'ferry.floor-2': '第二段 · 两岸的刻度',
+  'ferry.floor-3': '第三段 · 倒流的闸口',
+  'ferry.entry-1': '脚印到这里就断了。前面看着干，泥下面却还在冒水。',
+  'ferry.entry-2': '先把这边的水闸拨开，再去读水位尺。不要踩看不清的地方。',
+  'ferry.entry-3': '读完再换另一边，对吧？水位记下来，免得来回折腾。',
+  'ferry.banks-1': '这边的刻度低了一截，另一边反而高了。',
+  'ferry.banks-2': '不是整条河一起涨落。水被什么东西分开推着走。',
+  'ferry.banks-3': '那就把两边都查清。只看一根水位尺，会判断错。',
+  'ferry.gate-1': '听，闸后面又响了。和营地听到的水声一样。',
+  'ferry.gate-2': '先别开渡船的通路。还有一处水位没读到。',
+  'ferry.gate-3': '好。查完这几道闸，我们就知道船为什么不敢走了。',
+  'ferry.end-1': '闸门没有坏。看这些水痕，每一轮倒流都停在同一道刻度。',
+  'ferry.end-2': '有人在控制河水？不是暴雨，也不是上游堵了。',
+  'ferry.end-3': '渡船被拉到旧渡口的内湾了，缆绳还系着。通路已经露出来，下次可以从那里找船主。',
 }

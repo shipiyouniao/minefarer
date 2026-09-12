@@ -1,3 +1,4 @@
+import { ferryFloorName } from './ferry-copy.js'
 import { finaleFloorName } from './finale-copy.js'
 import { recollectionFloorCopy } from './recollection-copy.js'
 import { feedPowered, powerReadiness, powerObjectiveComplete } from '../game/floor-power.js'
@@ -36,9 +37,10 @@ export function powerObjective(language: Language, run: Expedition): string {
   if (run.power.purpose === 'restoration')
     return `<section class="signal-objective power-objective" aria-live="polite"><strong>${recollection?.name ?? finaleFloorName(language, run)}</strong><p>${powerObjectiveComplete(run.power) ? message(language, 'finale.exit-ready') : (recollection?.note ?? message(language, 'finale.objective'))}</p><span>${message(language, 'finale.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
 
+  const ferry = run.departure.campaign === 'reed-channels-v1'
   const drainage = run.power.purpose === 'drainage'
 
-  return `<section class="signal-objective power-objective" aria-live="polite"><strong>${drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor)}</strong><p>${powerObjectiveComplete(run.power) ? (drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
+  return `<section class="signal-objective power-objective" aria-live="polite"><strong>${run.departure.campaign === 'reed-channels-v1' ? ferryFloorName(language, run.floor) : drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor)}</strong><p>${powerObjectiveComplete(run.power) ? (ferry ? message(language, 'ferry.exit-ready') : drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : ferry ? message(language, 'ferry.objective') : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${ferry ? message(language, 'ferry.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
 }
 
 /** Identify a source and branch with text as well as color, including in accessible labels. */
@@ -49,6 +51,7 @@ function feedLabel(run: Expedition, input: PowerFeed): string {
 /** Draw only known mechanism positions; ordinary hidden numbers and flags remain untouched. */
 export function renderFloorPower(root: HTMLElement, run: Expedition, language: Language): void {
   const power = run.power
+  const ferry = run.departure.campaign === 'reed-channels-v1'
   if (!power) return
 
   const board = root.querySelector<HTMLElement>('[data-side="a"]')
@@ -73,20 +76,26 @@ export function renderFloorPower(root: HTMLElement, run: Expedition, language: L
     const live = !input || feedPowered(power, input)
     const revealed = run.game.cells[control.index]?.visibility === 'revealed'
     const name = junction
-      ? message(language, 'ridge.junction')
+      ? ferry
+        ? message(language, 'ferry.junction')
+        : message(language, 'ridge.junction')
       : receiver
-        ? power.purpose === 'restoration'
-          ? message(language, 'finale.receiver')
-          : power.purpose === 'drainage'
-            ? message(language, 'waterway.receiver')
-            : message(language, 'ridge.receiver')
-        : message(language, 'ridge.door')
+        ? ferry
+          ? message(language, 'ferry.receiver')
+          : power.purpose === 'restoration'
+            ? message(language, 'finale.receiver')
+            : power.purpose === 'drainage'
+              ? message(language, 'waterway.receiver')
+              : message(language, 'ridge.receiver')
+        : ferry
+          ? message(language, 'ferry.door')
+          : message(language, 'ridge.door')
     const id = junction
       ? `${power.junctions.indexOf(junction) + 1}${junction.selected === null ? '—' : junction.selected === 0 ? 'A' : 'B'}`
       : input
         ? feedLabel(run, input)
         : ''
-    const label = `${name} ${id} · ${door ? (live ? message(language, 'ridge.open') : message(language, 'ridge.closed')) : powerHint(language, powerReadiness(run, control.index), power.purpose)}`
+    const label = `${name} ${id} · ${door ? (live ? message(language, 'ridge.open') : message(language, 'ridge.closed')) : powerHint(language, powerReadiness(run, control.index), power.purpose, ferry)}`
 
     cell.classList.add('landmark-cell', 'power-cell', `power-${control.kind}`)
     cell.classList.toggle('power-live', live)

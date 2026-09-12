@@ -1,3 +1,4 @@
+import { isRegionalCamp } from '../game/regional-camps.js'
 import { recollectionDraw } from '../game/recollection.js'
 import { encounterTier } from '../game/encounter-tiers.js'
 import type { RecollectionSelection } from '../types/recollection.js'
@@ -249,10 +250,14 @@ export class ExpeditionSession {
         !this.save.story?.completed.includes(this.stage.entryTask) ||
         (this.stage.entrance.fact !== null &&
           !this.save.story.facts?.includes(this.stage.entrance.fact)) ||
-        this.save.story.world?.active !== this.stage.entrance.scene ||
-        (this.stage.entrance.index !== null &&
-          this.save.story.world?.scenes.find((scene) => scene.id === this.stage.entrance.scene)
-            ?.player !== this.stage.entrance.index))
+        (isRegionalCamp(this.stage.entrance.scene)
+          ? this.save.story.world?.active != null ||
+            (this.save.story.campId ?? 'camp') !== this.stage.entrance.scene ||
+            this.save.story.campPosition !== this.stage.entrance.index
+          : this.save.story.world?.active !== this.stage.entrance.scene ||
+            (this.stage.entrance.index !== null &&
+              this.save.story.world?.scenes.find((scene) => scene.id === this.stage.entrance.scene)
+                ?.player !== this.stage.entrance.index)))
     )
       return false
 

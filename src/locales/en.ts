@@ -2,6 +2,21 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'ferry.objective': 'Clear around the devices, switch the sluices and record every water gauge.',
+  'ferry.exit-ready': 'Gauges checked. Connect the exit sluice, then reach the exit.',
+  'ferry.progress': 'Gauges {count} / {total}',
+  'ferry.receiver': 'Water gauge',
+  'ferry.junction': 'Sluice selector',
+  'ferry.door': 'Passage sluice',
+  'ferry.recorded': 'This water level is recorded.',
+  'ferry.guide-intro': 'Connect each gauge along its branch, record it, then open the exit sluice.',
+  'ferry.guide-switch-title': 'Switch the sluice branch',
+  'ferry.guide-switch':
+    'Click the selector to switch A / B. Gauges and sluices with the same label connect.',
+  'ferry.guide-record-title': 'Record the gauges, then open the exit',
+  'ferry.guide-record':
+    'Stand beside a connected gauge and click it to record. After recording all gauges, switch the branch to open the exit. Recorded readings are retained.',
+
   'recollection.existing':
     'An expedition is still in progress. Continue or extract before starting a new recollection.',
   'recollection.resume-expedition': 'Resume expedition',
@@ -1792,4 +1807,39 @@ export const enMessages: MessageCatalog = {
   'battle-lesson.attack':
     'You can attack now. Press the highlighted button or click the adjacent enemy to spend 2 action points. Keep a retreat route and check the next warning.',
   'battle-lesson.reopen': 'Learn on this battlefield',
+  'dialogue.places': 'quarry|old ferry|ferry|watchtower|Reed channels|North Road|Quarry Yard',
+  'dialogue.items':
+    'satchel|beacon|water gauge|sluice|power relay|lift|spindle|recollection lantern|minecart|anchor|echo|hourglass|web|nest|crystal',
+  'dialogue.warnings': 'do not step|danger|do not touch|rising tide|cut the power',
+  'rail.rumor-1': 'I heard knocking from the quarry. A pause, then three knocks again.',
+  'rail.rumor-2': 'That does not sound like falling rock. Is someone inside?',
+  'rail.rumor-3':
+    'I am worried too. An old mine track runs east from Quarry Yard. Take a look when you can. Bring a lamp, and mind how far you go.',
+  'ferry.title': 'Reed Channels',
+  'ferry.task': 'Why the Ferry Stopped',
+  'ferry.detail':
+    'Enter Reed Channels at the end of Reedbank Camp’s pier. Clear three sections, compare the water gauges, and find out why the old ferry stopped.',
+  'ferry.lead-1': 'Look. The ferry light is on, but there is not a boat in sight.',
+  'ferry.lead-2': 'The water is flowing back. It was going the other way when we arrived.',
+  'ferry.lead-3':
+    'The end of this pier leads into Reed Channels. Let us check the water gauges before we look for a boat.',
+  'ferry.floor-1': 'Reach 1 · The Drained Bank',
+  'ferry.floor-2': 'Reach 2 · Marks on Both Banks',
+  'ferry.floor-3': 'Reach 3 · The Backflow Gate',
+  'ferry.entry-1':
+    'The footprints stop here. It looks dry ahead, but water is bubbling under the mud.',
+  'ferry.entry-2':
+    'Open this sluice first, then read the water gauge. Do not step where you cannot judge the ground.',
+  'ferry.entry-3':
+    'Then switch to the other bank? We should keep the reading so we do not have to start over.',
+  'ferry.banks-1': 'This gauge is lower. The other bank is higher.',
+  'ferry.banks-2': 'The river is not rising as one. Something is pushing its sections separately.',
+  'ferry.banks-3': 'Then we check both banks. One gauge could mislead us.',
+  'ferry.gate-1': 'Listen. Behind the gate again—the same rush we heard at camp.',
+  'ferry.gate-2': 'Leave the ferry passage closed for now. There is one gauge we have not read.',
+  'ferry.gate-3': 'Right. These gates should tell us why no one dares sail.',
+  'ferry.end-1': 'The gate is not broken. Every backflow has stopped at exactly the same mark.',
+  'ferry.end-2': 'Someone is controlling the river? It is not rain or a blockage upstream.',
+  'ferry.end-3':
+    'The ferry has been pulled into the old ferry’s inner cove, still tied to its mooring. The cleared passage will let us look for its keeper there.',
 }

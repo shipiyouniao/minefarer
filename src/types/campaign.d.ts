@@ -1,3 +1,4 @@
+import type { RegionalCampId } from './regional-camp.js'
 import type { EncounterKind } from './tactical.js'
 import type { RailSceneId } from './floor-rail.js'
 import type { ExpeditionJournal, VariantRecord } from './variants.js'
@@ -11,6 +12,7 @@ import type { JsonValue } from './json.js'
 
 /** Stable selection keys are separate from replay-sensitive content revisions. */
 export type CampaignStageId =
+  | 'reed-channels'
   | 'tower-galleries'
   | 'tower-relay'
   | 'ridge-observatory'
@@ -19,6 +21,7 @@ export type CampaignStageId =
   | 'quarry-rescue'
   | 'northwest-bastion'
 export type CampaignRevision =
+  | 'reed-channels-v1'
   | 'tower-road-v4'
   | 'tower-relay-v1'
   | 'ridge-observatory-v1'
@@ -27,7 +30,15 @@ export type CampaignRevision =
   | 'quarry-rescue-v1'
   | 'northwest-bastion-v1'
 export type CampaignSceneId =
-  RailSceneId | SignalSceneId | ObservatorySceneId | WaterwaySceneId | FinaleSceneId
+  | 'ferry-entry'
+  | 'ferry-banks'
+  | 'ferry-gate'
+  | 'ferry-end'
+  | RailSceneId
+  | SignalSceneId
+  | ObservatorySceneId
+  | WaterwaySceneId
+  | FinaleSceneId
 
 /** The stage decoder reuses validated expedition formats without circular module dependencies. */
 export interface CampaignDecoders {
@@ -57,7 +68,7 @@ export interface CampaignStage {
   readonly boss?: EncounterKind
   /** A stage belongs to a physical world location; null index shares the scene's existing entry flow. */
   readonly entrance: {
-    readonly scene: StorySceneId
+    readonly scene: StorySceneId | RegionalCampId
     readonly index: number | null
     readonly fact: StoryFact | null
   }

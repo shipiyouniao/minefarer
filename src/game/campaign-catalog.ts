@@ -8,6 +8,18 @@ import type {
 
 export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
   {
+    id: 'reed-channels',
+    entrance: { scene: 'reed-camp', index: 50, fact: 'ferry-lead' },
+    bounds: { width: 19, height: 19 },
+    revision: 'reed-channels-v1',
+    prerequisite: 'northwest-bastion',
+    floors: 3,
+    outcome: 'ferry-channel-cleared',
+    reward: 160,
+    entryTask: 'reach-tower',
+    lesson: false,
+  },
+  {
     id: 'tower-galleries',
     entrance: { scene: 'tower-landing', index: null, fact: null },
     bounds: { width: 9, height: 9 },
@@ -95,6 +107,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
 /** Reject arbitrary route keys before selecting a save slot. */
 export function parseCampaignStage(value: string | null): CampaignStageId | null {
   return value === 'quarry-rescue' ||
+    value === 'reed-channels' ||
     value === 'tower-galleries' ||
     value === 'tower-relay' ||
     value === 'ridge-observatory' ||

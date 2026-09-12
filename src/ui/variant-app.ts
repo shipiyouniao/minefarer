@@ -1,3 +1,5 @@
+import { pendingFerryScene } from '../game/ferry-story.js'
+import { ferryLines } from './ferry-copy.js'
 import { pendingSignalScene } from '../game/signal-story.js'
 import { SignalPerformance } from './signal-performance.js'
 import { signalCopy, signalLines } from './signal-copy.js'
@@ -184,6 +186,7 @@ export class VariantApp implements VariantInputActions {
             this.language,
             powerReadiness(run, index),
             run.power?.purpose,
+            run.departure.campaign === 'reed-channels-v1',
           )
 
         return
@@ -636,6 +639,7 @@ export class VariantApp implements VariantInputActions {
               this.session.run.departure.recollection
                 ? message(this.language, 'recollection.routing')
                 : undefined,
+              this.session.run.departure.campaign === 'reed-channels-v1',
             ),
           )
           return
@@ -963,7 +967,9 @@ export class VariantApp implements VariantInputActions {
     const waterwayScene = pendingWaterwayScene(session.run, session.stageProgress)
     const finaleScene = pendingFinaleScene(session.run, session.stageProgress)
     const railScene = pendingRailScene(session.run, session.stageProgress)
-    const scene = railScene ?? signalScene ?? ridgeScene ?? waterwayScene ?? finaleScene
+    const ferryScene = pendingFerryScene(session.run, session.stageProgress)
+    const scene =
+      ferryScene ?? railScene ?? signalScene ?? ridgeScene ?? waterwayScene ?? finaleScene
     if (!scene) return
 
     this.view.closeDialog()
@@ -971,23 +977,26 @@ export class VariantApp implements VariantInputActions {
       this.root,
       this.language,
       scene,
-      railScene
-        ? railLines(this.language, railScene)
-        : signalScene
-          ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
-          : ridgeScene
-            ? observatoryLines(this.language, ridgeScene)
-            : waterwayScene
-              ? waterwayLines(this.language, waterwayScene)
-              : finaleScene
-                ? finaleLines(this.language, finaleScene)
-                : [],
+      ferryScene
+        ? ferryLines(this.language, ferryScene)
+        : railScene
+          ? railLines(this.language, railScene)
+          : signalScene
+            ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
+            : ridgeScene
+              ? observatoryLines(this.language, ridgeScene)
+              : waterwayScene
+                ? waterwayLines(this.language, waterwayScene)
+                : finaleScene
+                  ? finaleLines(this.language, finaleScene)
+                  : [],
       session.run?.departure.profession ?? 'explorer',
       () => {
         session.completeCampaignScene(scene)
         this.render()
         if (
           session.run?.phase === 'won' &&
+          !pendingFerryScene(session.run, session.stageProgress) &&
           !pendingSignalScene(session.run, session.stageProgress) &&
           !pendingObservatoryScene(session.run, session.stageProgress) &&
           !pendingWaterwayScene(session.run, session.stageProgress) &&

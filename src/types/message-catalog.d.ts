@@ -1,5 +1,46 @@
 /** Complete shared catalog: every supported language implements every key. */
 export interface MessageCatalog {
+  readonly 'ferry.objective': string
+  readonly 'ferry.exit-ready': string
+  readonly 'ferry.progress': string
+  readonly 'ferry.receiver': string
+  readonly 'ferry.junction': string
+  readonly 'ferry.door': string
+  readonly 'ferry.recorded': string
+  readonly 'ferry.guide-intro': string
+  readonly 'ferry.guide-switch-title': string
+  readonly 'ferry.guide-switch': string
+  readonly 'ferry.guide-record-title': string
+  readonly 'ferry.guide-record': string
+
+  readonly 'dialogue.places': string
+  readonly 'dialogue.items': string
+  readonly 'dialogue.warnings': string
+  readonly 'rail.rumor-1': string
+  readonly 'rail.rumor-2': string
+  readonly 'rail.rumor-3': string
+  readonly 'ferry.title': string
+  readonly 'ferry.task': string
+  readonly 'ferry.detail': string
+  readonly 'ferry.lead-1': string
+  readonly 'ferry.lead-2': string
+  readonly 'ferry.lead-3': string
+  readonly 'ferry.floor-1': string
+  readonly 'ferry.floor-2': string
+  readonly 'ferry.floor-3': string
+  readonly 'ferry.entry-1': string
+  readonly 'ferry.entry-2': string
+  readonly 'ferry.entry-3': string
+  readonly 'ferry.banks-1': string
+  readonly 'ferry.banks-2': string
+  readonly 'ferry.banks-3': string
+  readonly 'ferry.gate-1': string
+  readonly 'ferry.gate-2': string
+  readonly 'ferry.gate-3': string
+  readonly 'ferry.end-1': string
+  readonly 'ferry.end-2': string
+  readonly 'ferry.end-3': string
+
   readonly 'story.main-title': string
   readonly 'story.side-title': string
   readonly 'recollection.back-settings': string

@@ -9,6 +9,7 @@ export function powerHint(
   language: Language,
   state: PowerReadiness,
   purpose: FloorPower['purpose'] = 'observation',
+  ferry = false,
 ): string {
   switch (state) {
     case 'covered':
@@ -18,11 +19,13 @@ export function powerHint(
     case 'unpowered':
       return message(language, 'ridge.unpowered')
     case 'recorded':
-      return purpose === 'restoration'
-        ? message(language, 'finale.recorded')
-        : purpose === 'drainage'
-          ? message(language, 'waterway.recorded')
-          : message(language, 'ridge.recorded')
+      return ferry
+        ? message(language, 'ferry.recorded')
+        : purpose === 'restoration'
+          ? message(language, 'finale.recorded')
+          : purpose === 'drainage'
+            ? message(language, 'waterway.recorded')
+            : message(language, 'ridge.recorded')
     case 'ready':
       return message(language, 'ridge.ready')
   }

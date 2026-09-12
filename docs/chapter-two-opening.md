@@ -1,6 +1,6 @@
 # Chapter Two opening: Reedbank Camp and Recollection
 
-This increment begins Chapter Two after the northwest guardian. It adds a regional camp and a playable Recollection facility. The chapter's exploration stages, side stages and final boss remain future content; the opening does not count as one of the planned five exploration stages.
+This increment begins Chapter Two after the northwest guardian. It adds a regional camp and a playable Recollection facility. [Reed Channels](chapter-two-reed-channels.md) now supplies the first exploration stage. The remaining four exploration stages, side story and final boss remain future content; the camp opening does not count as an exploration stage.
 
 ## Following the ferry lead
 
@@ -42,7 +42,7 @@ The lantern animates when starting a memory. The departure is saved before that 
 
 An already running expedition remains in its existing slot. The lantern offers to resume it and requires completing or extracting it before starting a configured Recollection. Campaign attempts stay independent. Recorded boss victories preserve veteran access to the existing roster.
 
-The temporary expedition link remains visible until the player activates the lantern. After activation the camp facility becomes the normal entrance. Existing direct expedition URLs continue to open the original playable session.
+The temporary expedition link and old preparation UI have been removed. The lantern is the camp entrance to Recollection. Existing direct expedition URLs continue to open the original playable session.
 
 ## Validation
 

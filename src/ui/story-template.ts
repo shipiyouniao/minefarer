@@ -51,6 +51,8 @@ function cellTemplate(state: StoryViewState, index: number): string {
   const portal = northwestPortals(board.scene.id, state.progress).find(
     (entry) => entry.index === index,
   )
+  const ferryGate =
+    board.scene.id === 'reed-camp' && index === 50 && state.progress.facts?.includes('ferry-lead')
   const bastionGate = board.scene.id === 'blockade-pass' && index === BASTION_GATE
   const control = run?.board.scene.mechanisms?.find((entry) => entry.index === index)
   if (board.walls.includes(index))
@@ -111,6 +113,9 @@ function cellTemplate(state: StoryViewState, index: number): string {
   ) {
     label = message(language, 'rail.title')
     content = cartImage()
+  } else if (ferryGate) {
+    label = campaignName(language, 'reed-channels')
+    content = drainageImage()
   } else if (site) {
     label = storySiteName(language, site)
     content = campSiteImage(site)
@@ -193,6 +198,7 @@ function cellTemplate(state: StoryViewState, index: number): string {
       ridgeGate ||
       waterwayGate ||
       portal ||
+      ferryGate ||
       bastionGate ||
       treasure ||
       control)
@@ -203,7 +209,7 @@ function cellTemplate(state: StoryViewState, index: number): string {
 
   const name = `${Math.floor(index / board.game.config.width) + 1}, ${(index % board.game.config.width) + 1}: ${label}`
 
-  return `<button class="story-cell ${board.scene.bridge?.includes(index) ? 'story-bridge-plank' : ''} ${covered ? 'is-covered' : 'is-open'} ${flagged ? 'is-flagged' : ''} ${triggered ? 'is-triggered' : ''} ${lit ? 'is-teaching' : ''} ${scoped ? 'is-scope' : ''} ${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || bastionGate ? 'is-site' : ''}" ${control ? `data-story-mechanism="${index}" data-operated="${!!run?.operated.includes(index)}"` : ''} data-number="${number}" data-cell="${index}" data-story-cell="${index}" ${site ? `data-story-facility="${site.destination}"` : ''} tabindex="${index === state.player ? 0 : -1}" aria-label="${escapeHtml(name)}" ${run?.phase === 'fallen' ? 'disabled' : ''}>${content}${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || bastionGate ? `<span class="story-site-label">${label}</span>` : ''}</button>`
+  return `<button class="story-cell ${board.scene.bridge?.includes(index) ? 'story-bridge-plank' : ''} ${covered ? 'is-covered' : 'is-open'} ${flagged ? 'is-flagged' : ''} ${triggered ? 'is-triggered' : ''} ${lit ? 'is-teaching' : ''} ${scoped ? 'is-scope' : ''} ${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || ferryGate || bastionGate ? 'is-site' : ''}" ${control ? `data-story-mechanism="${index}" data-operated="${!!run?.operated.includes(index)}"` : ''} data-number="${number}" data-cell="${index}" data-story-cell="${index}" ${site ? `data-story-facility="${site.destination}"` : ''} tabindex="${index === state.player ? 0 : -1}" aria-label="${escapeHtml(name)}" ${run?.phase === 'fallen' ? 'disabled' : ''}>${content}${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || ferryGate || bastionGate ? `<span class="story-site-label">${label}</span>` : ''}</button>`
 }
 
 /** A single movable overlay keeps the chibi traveler above cell edges and clues. */
@@ -221,7 +227,7 @@ function sceneDock(state: StoryViewState): string {
   const language = state.language
   const run = state.run
 
-  return `<footer class="story-dock"><div class="story-dock-inner">${run ? `<div class="story-modes" role="group" aria-label="${message(language, 'story.explore')}"><button data-story-action="explore" aria-pressed="${!state.flagMode}">${icon('pointer')}${message(language, 'story.explore')}</button><button data-story-action="flag" aria-pressed="${state.flagMode}">${icon('flag')}${message(language, 'story.flag')}</button></div>${campaignEntries(state)}${run.phase === 'fallen' ? `<button class="story-primary" data-story-action="retry">${message(language, 'story.retry')}</button>` : ''}` : ''}<button data-story-action="map" class="${state.progress.mapOwned ? '' : 'is-unavailable'}">${icon('globe')}${message(language, 'story.map')}${state.progress.mapOwned ? '' : ' · —'}</button><div class="story-resources"><span class="story-vitals"><span>${message(language, 'story.health')}</span><strong class="story-hearts" role="img" aria-label="${message(language, 'story.health')}: ${run?.health ?? 3} / 3">${'♥'.repeat(run?.health ?? 3)}${'♡'.repeat(3 - (run?.health ?? 3))}</strong></span><span class="story-wallet" aria-label="${variantCopy(language).supplies}">${spriteImage('treasure')}<span>${variantCopy(language).supplies}<strong>${new Intl.NumberFormat(language).format(state.camp.supplies)}</strong></span></span></div></div></footer>`
+  return `<footer class="story-dock"><div class="story-dock-inner">${run ? `<div class="story-modes" role="group" aria-label="${message(language, 'story.explore')}"><button data-story-action="explore" aria-pressed="${!state.flagMode}">${icon('pointer')}${message(language, 'story.explore')}</button><button data-story-action="flag" aria-pressed="${state.flagMode}">${icon('flag')}${message(language, 'story.flag')}</button></div>${run.phase === 'fallen' ? `<button class="story-primary" data-story-action="retry">${message(language, 'story.retry')}</button>` : ''}` : ''}${campaignEntries(state)}<button data-story-action="map" class="${state.progress.mapOwned ? '' : 'is-unavailable'}">${icon('globe')}${message(language, 'story.map')}${state.progress.mapOwned ? '' : ' · —'}</button><div class="story-resources"><span class="story-vitals"><span>${message(language, 'story.health')}</span><strong class="story-hearts" role="img" aria-label="${message(language, 'story.health')}: ${run?.health ?? 3} / 3">${'♥'.repeat(run?.health ?? 3)}${'♡'.repeat(3 - (run?.health ?? 3))}</strong></span><span class="story-wallet" aria-label="${variantCopy(language).supplies}">${spriteImage('treasure')}<span>${variantCopy(language).supplies}<strong>${new Intl.NumberFormat(language).format(state.camp.supplies)}</strong></span></span></div></div></footer>`
 }
 
 /** Camp services reuse the existing purchasing and loadout templates instead of duplicating them. */
@@ -251,17 +257,15 @@ export function storyTemplate(state: StoryViewState): string {
 
 /** Show authored stages at their physical doorway; completed stages retain their own history. */
 function campaignEntries(state: StoryViewState): string {
-  const { run, language } = state
-  if (!run) return ''
-
+  const { language } = state
   const available = CAMPAIGN_STAGES.filter((stage) => {
     const entrance = stage.entrance
     return (
       (stage.id !== 'tower-relay' ||
         campaignProgress(state.campaign, 'tower-galleries').scenes.includes('tower-response')) &&
       state.progress.completed.includes(stage.entryTask) &&
-      entrance.scene === run.board.scene.id &&
-      run.player === (entrance.index ?? run.board.exit) &&
+      entrance.scene === state.board.scene.id &&
+      state.player === (entrance.index ?? state.board.exit) &&
       (!entrance.fact || state.progress.facts?.includes(entrance.fact)) &&
       (entrance.index !== null || state.progress.dialogue?.completed.includes('tower-arrival')) &&
       !campaignProgress(state.campaign, stage.id).cleared &&

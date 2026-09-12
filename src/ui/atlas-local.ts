@@ -39,6 +39,8 @@ export function atlasLocal(state: StoryViewState, scene: number, current: number
         const site = isRegionalCamp(content.id)
           ? regionalCamp(content.id).sites.find((entry) => entry.index === index)
           : undefined
+        const ferry =
+          content.id === 'reed-camp' && index === 50 && state.progress.facts?.includes('ferry-lead')
         const ridge =
           content.id === 'north-road' &&
           index === OBSERVATORY_GATE &&
@@ -60,45 +62,49 @@ export function atlasLocal(state: StoryViewState, scene: number, current: number
         const exit = terrain === 'E'
         const destination = atlasDestination(content, index, state.progress)
         const hidden = scene === current && state.board.game.cells[index]?.visibility === 'hidden'
-        const name = rescue
-          ? message(lang, 'rail.title')
-          : toma
-            ? message(lang, 'rail.toma')
-            : portal
-              ? worldSceneName(lang, portal.destination)
+        const name = ferry
+          ? message(lang, 'ferry.title')
+          : rescue
+            ? message(lang, 'rail.title')
+            : toma
+              ? message(lang, 'rail.toma')
+              : portal
+                ? worldSceneName(lang, portal.destination)
+                : waterway
+                  ? message(lang, 'waterway.title')
+                  : ridge
+                    ? message(lang, 'ridge.title')
+                    : destination !== null
+                      ? names[destination]!
+                      : site
+                        ? storySiteName(lang, site)
+                        : traveler
+                          ? position
+                          : exit
+                            ? message(lang, 'story.road')
+                            : terrain === '#'
+                              ? message(lang, 'story.atlas-tree')
+                              : ''
+        const marker = ferry
+          ? drainageImage()
+          : rescue
+            ? cartImage()
+            : toma
+              ? tomaImage()
               : waterway
-                ? message(lang, 'waterway.title')
+                ? drainageImage()
                 : ridge
-                  ? message(lang, 'ridge.title')
-                  : destination !== null
-                    ? names[destination]!
-                    : site
-                      ? storySiteName(lang, site)
-                      : traveler
-                        ? position
-                        : exit
-                          ? message(lang, 'story.road')
-                          : terrain === '#'
-                            ? message(lang, 'story.atlas-tree')
-                            : ''
-        const marker = rescue
-          ? cartImage()
-          : toma
-            ? tomaImage()
-            : waterway
-              ? drainageImage()
-              : ridge
-                ? observatoryImage()
-                : site
-                  ? campSiteImage(site)
-                  : destination !== null
-                    ? icon('arrow')
-                    : entrance
-                      ? '<span class="atlas-entry">○</span>'
-                      : ''
+                  ? observatoryImage()
+                  : site
+                    ? campSiteImage(site)
+                    : destination !== null
+                      ? icon('arrow')
+                      : entrance
+                        ? '<span class="atlas-entry">○</span>'
+                        : ''
         const tag = destination !== null ? 'button' : 'div'
 
-        return `<${tag} class="atlas-tile ${destination !== null ? 'atlas-connection' : ''} ${terrain === '#' ? 'atlas-tree' : 'atlas-path'} ${hidden ? 'atlas-fog' : ''}" ${destination !== null ? `data-story-action="map-scene" data-scene="${destination}"` : ''} ${name ? `data-map-name="${escapeHtml(name)}"` : ''} ${site || destination !== null || traveler || ridge || waterway || rescue || toma ? `role="button" tabindex="0" aria-label="${escapeHtml(name)}"` : ''}>${content.water?.includes(index) ? '<span class="atlas-river-tile"></span>' : terrain === '#' ? `<img src="${import.meta.env.BASE_URL}assets/story/tree.png" alt="" draggable="false">` : marker}${traveler ? `<span class="atlas-position" aria-label="${position}"></span>` : ''}${destination !== null ? `<span class="atlas-destination">${name}</span>` : ''}</${tag}>`
+        return `<${tag} class="atlas-tile ${destination !== null ? 'atlas-connection' : ''} ${terrain === '#' ? 'atlas-tree' : 'atlas-path'} ${hidden ? 'atlas-fog' : ''}" ${destination !== null ? `data-story-action="map-scene" data-scene="${destination}"` : ''} ${name ? `data-map-name="${escapeHtml(name)}"` : ''} ${site || destination !== null || traveler || ferry || ridge || waterway || rescue || toma ? `role="button" tabindex="0" aria-label="${escapeHtml(name)}"` : ''}>${content.water?.includes(index) ? '<span class="atlas-river-tile"></span>' : terrain === '#' ? `<img src="${import.meta.env.BASE_URL}assets/story/tree.png" alt="" draggable="false">` : marker}${traveler ? `<span class="atlas-position" aria-label="${position}"></span>` : ''}${destination !== null ? `<span class="atlas-destination">${name}</span>` : ''}</${tag}>`
       })
       .join('')
 
