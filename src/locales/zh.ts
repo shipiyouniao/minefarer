@@ -1217,12 +1217,11 @@ export const zhMessages: MessageCatalog = {
   'variant-copy.2-shields-each-floor-1-shield-1': '2 护盾 · 每层：1 护盾 → 1 探针 + 1 扫描',
   'variant-copy.abyss': '深渊',
   'variant-copy.abyss-hourglass': '深渊沙漏',
-  'variant-copy.achievement-exclusive-clear-50-floors-and-claim':
-    '成就专属：通过 50 层后领取「裂隙先驱」。初始 2 探针。',
+  'variant-copy.achievement-exclusive-clear-50-floors-and-claim': '初始 2 探针。',
   'variant-copy.achievement-exclusive-confirm-5-unique-mines-in':
-    '成就专属。每层确认 5 颗不同的雷后，获得 1 探针和 1 扫描，每层一次，各上限 4。',
+    '每层确认 5 颗不同的雷后，获得 1 探针和 1 扫描，每层一次，各上限 4。',
   'variant-copy.achievement-exclusive-the-first-chest-collected-each':
-    '成就专属。每层首次拾取宝箱获得 1 层护盾，上限 2。',
+    '每层首次拾取宝箱获得 1 层护盾，上限 2。',
   'variant-copy.add-exit-compass-and-salvage-seal-to': '将出口罗盘与回收印记加入后续遗物池。',
   'variant-copy.advanced': '进阶',
   'variant-copy.aegis': '庇护',
@@ -1305,9 +1304,8 @@ export const zhMessages: MessageCatalog = {
   'variant-copy.matching-coordinate': '对应坐标',
   'variant-copy.mines-total': '地雷总数',
   'variant-copy.mission-exclusive-1-loadout-point-a-successful':
-    '任务专属 · 装备预算 1 点。成功使用职业技能后补充 1 探针，上限 4，每层一次。',
-  'variant-copy.mission-exclusive-clear-12-floors-and-claim':
-    '任务专属：通过 12 层后领取「归途有记」。初始 1 探针、1 扫描。',
+    '装备预算 1 点。成功使用职业技能后补充 1 探针，上限 4，每层一次。',
+  'variant-copy.mission-exclusive-clear-12-floors-and-claim': '初始 1 探针、1 扫描。',
   'variant-copy.moves': '操作数',
   'variant-copy.original-rules': '原版规则',
   'variant-copy.partner-cleared-flagged-mines-there-are-now':
@@ -1579,7 +1577,7 @@ export const zhMessages: MessageCatalog = {
   'rail.camp-3': '脚还得歇着。手又没坏。来，我教你打救援绳结，下回咱们可不能再困在底下。',
   'rail.reward': '120 物资 · 救援员已可在营地选择',
   'rescuer.name': '救援员',
-  'rescuer.note': '旧矿救援支线专属。携带 1 个探针，擅长沿安全通道快速换位。',
+  'rescuer.note': '携带 1 个探针，擅长沿安全通道快速换位。',
   'rescuer.skill': '绞索',
   'rescuer.skill-note':
     '选择同一直线上 2–4 格外的位置，沿途必须已揭开且没有障碍。移动到目标并获得 1 层护盾（最多 2 层）。每层一次，战斗中消耗 1 点行动点数。',

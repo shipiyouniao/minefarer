@@ -1,3 +1,4 @@
+import { dialogueBar } from './dialogue-bar.js'
 import { message } from '../i18n.js'
 import type { StoryDialogueBeat, StoryViewState } from '../types/story.js'
 import { storyDialogueEvent } from '../game/story-events.js'
@@ -7,7 +8,14 @@ import { professionSprite } from './profession-presentation.js'
 /** Finished narrative events have no residual panel on the board. */
 export function storyDialogueTemplate(state: StoryViewState): string {
   if (!storyDialogueEvent(state)) return ''
-  return `<dialog class="story-dialogue" aria-labelledby="story-speaker-name"><div class="story-speakers"><span data-story-speaker="player">${spriteImage(professionSprite(state.run ? 'explorer' : state.loadout.profession))}</span><span data-story-speaker="lumi"><img class="story-guide" src="${import.meta.env.BASE_URL}assets/story/guide.png" alt="" draggable="false"></span></div><div class="story-dialogue-copy"><strong id="story-speaker-name" data-story-speaker-name></strong><p role="status" data-story-dialogue-line></p><button class="story-dialogue-next" data-story-action="dialogue">${message(state.language, 'story.dialogue-next')} →</button></div></dialog>`
+  return dialogueBar(
+    state.language,
+    'story',
+    spriteImage(professionSprite(state.run ? 'explorer' : state.loadout.profession)),
+    '<img class="story-guide" src="' +
+      import.meta.env.BASE_URL +
+      'assets/story/guide.png" alt="" draggable="false">',
+  )
 }
 
 /** Brief exchanges respond to the scene while the current teaching objective stays beside them. */

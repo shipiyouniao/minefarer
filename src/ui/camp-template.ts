@@ -16,7 +16,7 @@ import { campLabel, campPageName, shopCategoryName } from './camp-copy.js'
 import { shopCategory, shopItems, shopSprite } from './camp-navigation.js'
 import { combatSprite } from './combat-build-copy.js'
 import { spriteImage } from './dungeon-sprites.js'
-import { milestonesTemplate } from './milestone-template.js'
+import { milestonesTemplate, milestoneReadyCount } from './milestone-template.js'
 import { escapeHtml } from './presentation.js'
 import { professionSprite } from './profession-presentation.js'
 import { professionPreviewTemplate } from './profession-skill-template.js'
@@ -46,13 +46,7 @@ function equipmentTemplate(
 }
 
 /** Show effects and purchase feedback together; inspecting a tile never spends supplies. */
-function shopDetail(
-  language: Language,
-  camp: Camp,
-  item: Upgrade,
-  index: number,
-  count: number,
-): string {
+function shopDetail(language: Language, camp: Camp, item: Upgrade, index: number): string {
   const t = variantCopy(language)
   const description = upgradeCopy(language, item)
   const owned = camp.upgrades.includes(item)
@@ -62,7 +56,7 @@ function shopDetail(
   const locked = equipmentPurchaseLocked(camp, item)
   const profession = PROFESSIONS.find((career) => career === item)
 
-  return `<aside class="shop-detail ${campStyles['shop-detail']}" id="shop-detail" aria-labelledby="shop-detail-title" style="--shop-rows:${Math.ceil(count / 6)};--compact-rows:${Math.ceil(count / 4)};--detail-row:${Math.floor(index / 3) + 2}">
+  return `<aside class="shop-detail ${campStyles['shop-detail']}" id="shop-detail" aria-labelledby="shop-detail-title" style="--detail-row:${Math.floor(index / 3) + 2}">
     <p class="eyebrow ${sharedStyles['eyebrow']}">${shopCategoryName(language, shopCategory(item))}</p>${spriteImage(shopSprite(item))}
     <h2 id="shop-detail-title">${description.name}</h2><p class="shop-effect ${campStyles['shop-effect']}">${description.note}</p>
     ${profession ? professionPreviewTemplate(language, profession) : ''}
@@ -83,7 +77,7 @@ function shopTemplate(language: Language, camp: Camp, screen: CampScreen): strin
 
   return `<p class="variant-intro ${sharedStyles['variant-intro']}">${campLabel(language, 'purchaseHelp')}</p>
     <div class="shop-filters ${campStyles['shop-filters']}" role="group" aria-label="${campPageName(language, 'shop')}">${CATEGORIES.map((category) => `<button data-control="shop-category:${category}" aria-pressed="${screen.category === category}">${shopCategoryName(language, category)}</button>`).join('')}</div>
-    <div class="shop-grid ${campStyles['shop-grid']}">${items
+    <div class="shop-grid ${campStyles['shop-grid']}"><div class="shop-products ${campStyles['shop-products']}">${items
       .map((item, index) => {
         const description = upgradeCopy(language, item)
         const owned = camp.upgrades.includes(item)
@@ -92,9 +86,9 @@ function shopTemplate(language: Language, camp: Camp, screen: CampScreen): strin
         const label = `${description.name}, ${price} ${t.supplies}${owned ? `, ${t.owned}` : ''}`
 
         return `<button class="shop-tile ${campStyles['shop-tile']}" data-control="shop-item:${item}" aria-pressed="${item === selected}" aria-controls="shop-detail" aria-label="${escapeHtml(label)}" style="--tile-column:${(index % 6) + 1};--tile-row:${Math.floor(index / 6) + 1};--compact-column:${(index % 4) + 1};--compact-row:${Math.floor(index / 4) + 1};--mobile-column:${(index % 3) + 1};--mobile-row:${row + 1 + Number(row > selectedRow)}">
-        ${owned ? `<span class="shop-owned ${campStyles['shop-owned']}" aria-hidden="true">✓</span>` : ''}${spriteImage(shopSprite(item))}<strong>${description.name}</strong><span class="shop-price ${campStyles['shop-price']}">${price}</span></button>${item === selected ? shopDetail(language, camp, item, index, items.length) : ''}`
+        ${owned ? `<span class="shop-owned ${campStyles['shop-owned']}" aria-hidden="true">✓</span>` : ''}${spriteImage(shopSprite(item))}<strong>${description.name}</strong><span class="shop-price ${campStyles['shop-price']}">${price}</span></button>`
       })
-      .join('')}</div>`
+      .join('')}</div>${shopDetail(language, camp, selected, selectedIndex)}</div>`
 }
 
 /** Render one camp screen while preserving the current profession, loadout and route. */
@@ -126,6 +120,7 @@ export function campTemplate(
 
   return `<section class="camp-panel ${sharedStyles['camp-panel']}" data-camp-page="${screen.page}">
     <header class="camp-header ${campStyles['camp-header']}"><div><h1 tabindex="-1">${campPageName(language, screen.page)}</h1></div><div class="camp-wallet ${campStyles['camp-wallet']}">${spriteImage('treasure')}<div><span>${t.supplies}</span><strong>${number.format(camp.supplies)}</strong></div></div></header>
-    ${content}
+    ${screen.page === 'missions' || screen.page === 'achievements' ? `<p class="milestone-summary" role="status">${message(language, 'milestone-template.ready-to-claim')} · ${milestoneReadyCount(camp, screen.page)}</p>` : ''}
+    <div class="camp-content">${content}</div>
   </section>`
 }

@@ -1,8 +1,10 @@
+import { sharedStyles } from './shared-styles.js'
+import { createDialogueBar } from './dialogue-bar.js'
 import type { RegionalPerformanceId } from '../types/recollection.js'
 import { recollectionLantern } from './recollection-copy.js'
 import { tomaImage } from './rail-view.js'
 import { bridgeReveal } from './chapter-performance.js'
-import { DialogueReveal } from './dialogue-reveal.js'
+import { DialogueReveal, updateDialogueNext } from './dialogue-reveal.js'
 import { signalCopy, signalLines } from './signal-copy.js'
 import { message } from '../i18n.js'
 import { spriteImage } from './dungeon-sprites.js'
@@ -58,27 +60,16 @@ export class SignalPerformance {
     this.dispose()
 
     const t = signalCopy(language)
-    const dialog = document.createElement('dialog')
+    const dialog = createDialogueBar(language, spriteImage(professionSprite(profession)))
 
-    dialog.className = 'signal-dialogue'
     dialog.dataset['signalScene'] = scene
-    dialog.setAttribute('aria-labelledby', 'signal-speaker')
-    dialog.innerHTML = `<div class="signal-cast"><span data-signal-listener>${spriteImage(professionSprite(profession))}</span><span data-signal-portrait></span></div><div class="signal-dialogue-copy"><strong id="signal-speaker"></strong><p data-signal-line></p><button class="story-dialogue-next" data-signal-next>${t.continue} →</button></div>`
     root.append(dialog)
     if (scene === 'control-restored')
-      dialog.querySelector('.signal-cast')!.insertAdjacentHTML('afterend', bridgeReveal(language))
-
-    if (scene === 'rail-home')
-      dialog
-        .querySelector('.signal-cast')!
-        .insertAdjacentHTML(
-          'afterend',
-          `<div class="rail-settlement"><span class="rail-reward-portrait">${spriteImage('rescuer')}</span><p>${message(language, 'rail.reward')}</p></div>`,
-        )
+      dialog.querySelector('.dialogue-cast')!.insertAdjacentHTML('afterend', bridgeReveal(language))
 
     if (scene === 'recollection-light') {
       dialog
-        .querySelector('.signal-cast')!
+        .querySelector('.dialogue-cast')!
         .insertAdjacentHTML(
           'afterend',
           `<div class="recollection-ignition">${recollectionLantern()}</div>`,
@@ -167,11 +158,14 @@ export class SignalPerformance {
                 ? 'dialogue-lumi'
                 : 'dialogue-nia'
 
+      const next = dialog.querySelector<HTMLElement>('[data-signal-next]')!
+      updateDialogueNext(next, language, true)
       this.reveal.start(
         dialog.querySelector<HTMLElement>('[data-signal-line]')!,
         line.text,
         cue,
         language,
+        () => updateDialogueNext(next, language, false),
       )
     }
 
@@ -184,7 +178,8 @@ export class SignalPerformance {
       if (++beat < lines.length) paint()
       else {
         this.dispose()
-        completed()
+        if (scene === 'rail-home') this.showRescueReward(root, language, completed)
+        else completed()
       }
     })
     dialog.showModal()
@@ -192,6 +187,27 @@ export class SignalPerformance {
       this.sounds.play('beacon-signal')
 
     paint()
+  }
+
+  /** Acknowledge the already-earned rescue reward after the final line, separately from dialogue. */
+  private showRescueReward(root: HTMLElement, language: Language, completed: () => void): void {
+    const dialog = document.createElement('dialog')
+    dialog.className = 'rescue-reward'
+    dialog.setAttribute('aria-labelledby', 'rescue-reward-title')
+    dialog.innerHTML = `<span class="rail-reward-portrait">${spriteImage('rescuer')}</span><h2 id="rescue-reward-title">${message(language, 'rescuer.name')}</h2><p>${message(language, 'rail.reward')}</p><button class="primary-button ${sharedStyles['primary-button']}" type="button" data-rescue-reward-close>${message(language, 'signal.continue')}</button>`
+    root.append(dialog)
+    this.dialog = dialog
+    /** Closing only acknowledges the presentation; the stage has already granted its rewards. */
+    const close = (): void => {
+      this.dispose()
+      completed()
+    }
+    dialog.querySelector('[data-rescue-reward-close]')!.addEventListener('click', close)
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault()
+      close()
+    })
+    dialog.showModal()
   }
 
   /** Closing the page cannot leave a detached dialog typing or retaining sound timers. */

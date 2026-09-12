@@ -26,9 +26,9 @@ export const campStyles = {
     'tw:[&>strong]:text-[#8b662e] tw:[&>strong]:[font:600_18px_var(--mono)]',
   ].join(' '),
   'camp-header': [
-    'tw:flex tw:items-center tw:justify-between tw:gap-5 tw:mb-7',
+    'tw:flex tw:items-center tw:justify-between tw:gap-5 tw:mb-7 tw:pr-12',
     'tw:[&_h1]:mb-0',
-    'tw:[@media(max-width:_620px)]:gap-3',
+    'tw:[@media(max-width:_620px)]:gap-3 tw:[@media(max-width:_620px)]:flex-wrap tw:[@media(max-width:_620px)]:[&>div]:min-w-0 tw:[@media(max-width:_620px)]:[&>div]:max-w-full tw:[@media(max-width:_620px)]:[&_h1]:[overflow-wrap:anywhere]',
     'tw:[@media(max-width:_620px)]:[&_h1]:text-[28px]',
     'tw:[@media(max-width:_620px)]:[&_.eyebrow]:text-[9px] tw:[@media(max-width:_620px)]:[&_.eyebrow]:[letter-spacing:1px]',
   ].join(' '),
@@ -61,11 +61,13 @@ export const campStyles = {
   ].join(' '),
   'camp-professions': ['tw:[&_.dungeon-sprite]:w-18 tw:[&_.dungeon-sprite]:h-18'].join(' '),
   'shop-grid': [
-    'tw:grid tw:[grid-template-columns:repeat(6,_minmax(0,_1fr))_minmax(280px,_2fr)] tw:gap-3 tw:[align-items:start]',
-    'tw:[@media(min-width:_901px)_and_(max-width:_1200px)]:[grid-template-columns:repeat(4,_minmax(0,_1fr))_minmax(280px,_2fr)]',
+    'tw:grid tw:[grid-template-columns:minmax(0,_6fr)_minmax(280px,_2fr)] tw:gap-3 tw:[align-items:start]',
+
     'tw:[@media(max-width:_900px)]:[grid-template-columns:repeat(3,_minmax(0,_1fr))]',
     'tw:[@media(max-width:_620px)]:gap-2',
   ].join(' '),
+  'shop-products':
+    'tw:grid tw:grid-cols-6 tw:gap-3 tw:content-start tw:items-start tw:[@media(min-width:_901px)_and_(max-width:_1200px)]:grid-cols-4 tw:[@media(max-width:_900px)]:contents',
   'shop-tile': [
     'tw:[grid-column:var(--tile-column)] tw:[grid-row:var(--tile-row)] tw:relative tw:[aspect-ratio:1] tw:min-w-0 tw:w-full tw:grid tw:[grid-template-rows:minmax(0,_1fr)_auto_auto] tw:justify-items-center tw:items-center tw:[gap:5px] tw:[padding:12px_8px] tw:border tw:border-solid tw:border-line tw:rounded-xl tw:bg-surface tw:text-center',
     'tw:[&:hover]:border-[var(--blue)]',
@@ -86,13 +88,13 @@ export const campStyles = {
     ' ',
   ),
   'shop-detail': [
-    'tw:[grid-column:7] tw:[grid-row:1_/_span_var(--shop-rows)] tw:sticky tw:top-5 tw:min-w-0 tw:[max-height:calc(100dvh_-_40px)] tw:overflow-y-auto tw:p-6 tw:ml-2 tw:border tw:border-solid tw:border-line tw:rounded-2xl tw:bg-surface tw:[scrollbar-width:thin]',
+    'tw:[grid-column:2] tw:[grid-row:1] tw:min-w-0 tw:p-6 tw:ml-2 tw:border tw:border-solid tw:border-line tw:rounded-2xl tw:bg-surface tw:[scrollbar-width:thin]',
     'tw:[&>.dungeon-sprite]:block tw:[&>.dungeon-sprite]:w-22 tw:[&>.dungeon-sprite]:h-22 tw:[&>.dungeon-sprite]:[margin:20px_0_16px]',
     'tw:[&_h2]:[margin:0_0_12px] tw:[&_h2]:text-[22px]',
     'tw:[&_.profession-preview]:[padding:14px_0] tw:[&_.profession-preview]:[border-top:1px_solid_var(--line)]',
     'tw:[&_.profession-preview>img]:w-10 tw:[&_.profession-preview>img]:h-10',
     'tw:[&_.profession-preview_small]:hidden',
-    'tw:[@media(min-width:_901px)_and_(max-width:_1200px)]:[grid-column:5] tw:[@media(min-width:_901px)_and_(max-width:_1200px)]:[grid-row:1_/_span_var(--compact-rows)]',
+
     'tw:[@media(max-width:_900px)]:[grid-column:1_/_-1] tw:[@media(max-width:_900px)]:[grid-row:var(--detail-row)] tw:[@media(max-width:_900px)]:static tw:[@media(max-width:_900px)]:m-0 tw:[@media(max-width:_900px)]:max-h-none tw:[@media(max-width:_900px)]:overflow-visible',
     'tw:[@media(max-width:_620px)]:p-5',
   ].join(' '),

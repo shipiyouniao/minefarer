@@ -1,53 +1,3 @@
-.story-dialogue-copy {
-  flex: 1;
-  min-width: 0;
-}
-.story-speakers {
-  position: relative;
-  width: 90px;
-  min-height: 90px;
-  flex: 0 0 90px;
-}
-.story-speakers > [data-story-speaker] {
-  position: absolute;
-  inset: 12px 0 0 32px;
-  width: 48px;
-  height: 56px;
-  opacity: 0.5;
-  transition: opacity 180ms;
-}
-.story-speakers > [data-story-speaker][data-active='true'] {
-  inset: 0 auto auto 0;
-  width: 68px;
-  height: 84px;
-  opacity: 1;
-  z-index: 1;
-}
-.story-speakers img,
-.story-speakers .story-guide,
-.story-speakers .dungeon-sprite {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.story-dialogue-next {
-  display: block;
-  padding: 5px 0;
-  margin-top: 5px;
-  min-height: 32px;
-  color: var(--accent);
-  font-size: 12px;
-  cursor: pointer;
-}
-.story-dialogue-next[hidden] {
-  display: block;
-  visibility: hidden;
-}
-.story-dialogue-next:focus-visible,
-.story-awakening button:focus-visible {
-  outline: 2px solid var(--blue);
-  outline-offset: 3px;
-}
 .story-gift {
   position: absolute;
   z-index: 8;
@@ -60,8 +10,8 @@
 .story-handover {
   position: absolute;
   z-index: 3;
-  top: 36px;
-  left: 6px;
+  top: calc(50% - 18px);
+  left: calc(50% - 18px);
   width: 36px;
   height: 36px;
   pointer-events: none;
@@ -100,25 +50,4 @@
   background: #21352cdd;
   font-size: 13px;
   cursor: pointer;
-}
-@media (max-width: 650px) {
-  .story-speakers {
-    flex-basis: 64px;
-    width: 64px;
-    min-height: 72px;
-  }
-  .story-speakers > [data-story-speaker] {
-    width: 36px;
-    height: 42px;
-    inset: 10px 0 0 26px;
-  }
-  .story-speakers > [data-story-speaker][data-active='true'] {
-    width: 52px;
-    height: 66px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .story-speakers > [data-story-speaker] {
-    transition: none;
-  }
 }

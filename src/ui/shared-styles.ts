@@ -151,6 +151,6 @@ export const sharedStyles = {
   'toast-progress':
     'tw:flex tw:items-center tw:gap-3 tw:mt-2.5 tw:[&_progress]:[flex:1] tw:[&_progress]:min-w-0 tw:[&_progress]:w-full tw:[&_progress]:[height:7px] tw:[&_progress]:[border:0] tw:[&_progress]:[border-radius:5px] tw:[&_progress]:overflow-hidden tw:[&_progress]:[accent-color:#b98b37] tw:[&_progress::-webkit-progress-bar]:bg-[#e9e4d8] tw:[&_progress::-webkit-progress-bar]:[border-radius:5px] tw:[&_progress::-webkit-progress-value]:bg-[#b98b37] tw:[&_progress::-webkit-progress-value]:[border-radius:5px] tw:[&_span]:whitespace-nowrap tw:[&_span]:text-[0.8rem] tw:[&_span]:[font-variant-numeric:tabular-nums]',
   'camp-panel':
-    'tw:[&_h1]:text-[clamp(28px,_5vw,_42px)] tw:[&_h1]:[margin:10px_0] tw:[&_h1]:[letter-spacing:-1.5px] tw:mt-7 tw:[&_:where(h2)]:[margin:32px_0_14px] tw:[&_:where(h2)]:text-[17px] tw:[&_:where(h2)]:font-semibold tw:[&_h2_small]:text-[12px] tw:[&_h2_small]:text-muted tw:[&_h2_small]:ml-3 tw:[&>.primary-button]:mt-6',
+    'tw:[&_h1]:text-[clamp(28px,_5vw,_42px)] tw:[&_h1]:[margin:10px_0] tw:[&_h1]:[letter-spacing:-1.5px] tw:[&_:where(h2)]:[margin:32px_0_14px] tw:[&_:where(h2)]:text-[17px] tw:[&_:where(h2)]:font-semibold tw:[&_h2_small]:text-[12px] tw:[&_h2_small]:text-muted tw:[&_h2_small]:ml-3 tw:[&>.primary-button]:mt-6',
   'skill-landings': 'tw:flex tw:flex-wrap tw:[gap:0.5rem]',
 }

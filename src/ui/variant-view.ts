@@ -152,7 +152,11 @@ export class VariantView {
     return (
       this.dialog.open ||
       this.expeditionDialog.open ||
-      Boolean(this.root.querySelector('dialog[data-prologue][open], dialog.signal-dialogue[open]'))
+      Boolean(
+        this.root.querySelector(
+          'dialog[data-prologue][open], dialog.signal-dialogue[open], dialog.rescue-reward[open]',
+        ),
+      )
     )
   }
 

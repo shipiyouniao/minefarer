@@ -20,6 +20,7 @@
 @import './tiles.css' layer(components);
 @import './story-performance.css' layer(components);
 @import './signal.css' layer(components);
+@import './dialogue-bar.css' layer(components);
 @import './power.css' layer(components);
 @import './rail.css' layer(components);
 @import './recollection.css' layer(components);
