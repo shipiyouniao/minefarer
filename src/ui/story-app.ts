@@ -1,3 +1,4 @@
+import { flyCampReward } from './camp-reward.js'
 import { RecollectionApp } from './recollection-app.js'
 import { RecollectionSession } from '../application/recollection-session.js'
 import { browserRuntime } from '../platform/browser.js'
@@ -417,6 +418,8 @@ export class StoryApp implements MountedGame {
     const command = parseVariantCommand(value)
     if (!command) return
 
+    const scrollTop = this.root.querySelector('.camp-content')?.scrollTop ?? 0
+    const source = this.root.querySelector(`[data-control="${value}"]`)?.getBoundingClientRect()
     const camp = this.session.camp
     const loadout = camp.loadout
     let changed = true
@@ -461,6 +464,10 @@ export class StoryApp implements MountedGame {
     this.sounds.play(changed ? 'confirm' : 'blocked')
     this.render()
 
+    const content = this.root.querySelector('.camp-content')
+    if (content) content.scrollTop = scrollTop
+    if (changed && command.type === 'claim-milestone' && source) flyCampReward(this.root, source)
+
     const focus = this.root.querySelector<HTMLElement>(`[data-control="${value}"]`)
     if (focus && !(focus instanceof HTMLButtonElement && focus.disabled))
       focus.focus({ preventScroll: true })
@@ -476,7 +483,9 @@ export class StoryApp implements MountedGame {
     if (
       this.service ||
       this.recollection ||
-      this.root.querySelector('dialog.story-dialogue[open], dialog.signal-dialogue[open]')
+      this.root.querySelector(
+        'dialog.story-dialogue[open], dialog.signal-dialogue[open], dialog.rescue-reward[open]',
+      )
     )
       return
 

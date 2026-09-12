@@ -193,16 +193,16 @@
   color: var(--ink);
   background: #f7faf4;
   box-shadow: 0 24px 90px #183a3438;
-  overflow: auto;
+  overflow: hidden;
 }
 .camp-facility::backdrop {
   background: #20372b55;
   backdrop-filter: blur(2px);
 }
 .facility-close {
-  position: sticky;
-  top: 0;
-  float: right;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   z-index: 3;
   width: 2.5rem;
   height: 2.5rem;
@@ -219,6 +219,7 @@
   width: 100%;
 }
 .camp-facility .camp-panel {
+  margin: 0;
   border: 0;
   padding: 0;
   background: transparent;
@@ -296,4 +297,59 @@
 }
 .recollection-facility .recollection-difficulty .difficulty-heading {
   display: none;
+}
+
+/* Rounded shells never scroll; only the inset content pane owns a scrollbar. */
+.camp-facility .camp-panel,
+.recollection-facility .recollection-main {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100svh - 7rem - 2px);
+  min-height: 0;
+  overflow: hidden;
+}
+.camp-facility .camp-header,
+.camp-facility .recollection-heading {
+  flex: none;
+  padding-right: 2.5rem;
+  margin-bottom: 1rem;
+}
+.camp-facility .milestone-summary {
+  flex: none;
+  margin: 0 0 1rem;
+}
+.camp-facility .camp-content {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #98ad9e transparent;
+  padding: 2px 12px 2px 2px;
+}
+.camp-facility .shop-detail {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+.camp-reward-spark {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  color: #e8b953;
+  font-size: 20px;
+  text-shadow: 0 0 8px #ffdf81;
+  opacity: 0;
+}
+@media (max-width: 620px) {
+  .camp-facility {
+    padding: 1rem;
+  }
+  .camp-facility .camp-panel,
+  .recollection-facility .recollection-main {
+    max-height: calc(100svh - 5rem - 2px);
+  }
+  .camp-facility .camp-header {
+    padding-right: 2rem;
+  }
 }

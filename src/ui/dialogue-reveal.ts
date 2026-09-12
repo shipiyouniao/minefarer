@@ -1,9 +1,12 @@
+import { message } from '../i18n.js'
+import type { Language } from '../types/localization.js'
 import type { SoundCue, SoundEffects } from '../types/audio.js'
 
 /** Reveal graphemes without moving the paragraph or repeatedly announcing partial words. */
 export class DialogueReveal {
   private timer: ReturnType<typeof setTimeout> | null = null
   private output: HTMLElement | null = null
+  private paragraph: HTMLElement | null = null
   private text = ''
   private completed: (() => void) | null = null
   private readonly sounds: SoundEffects
@@ -31,6 +34,9 @@ export class DialogueReveal {
       return
     }
 
+    this.paragraph = paragraph
+    paragraph.dataset['dialogueTyping'] = 'true'
+    paragraph.addEventListener('click', this.finishLine)
     this.text = text
     this.completed = completed ?? null
 
@@ -85,6 +91,12 @@ export class DialogueReveal {
     this.timer = setTimeout(tick, 28)
   }
 
+  /** A pointer tap reveals only this line; advancing the story remains an explicit button action. */
+  private readonly finishLine = (): void => {
+    this.sounds.unlock()
+    this.finish()
+  }
+
   /** First advance completes the current line silently; the next advance changes beats. */
   finish(): boolean {
     if (!this.output) return false
@@ -103,8 +115,18 @@ export class DialogueReveal {
   cancel(): void {
     if (this.timer !== null) clearTimeout(this.timer)
 
+    if (this.paragraph) {
+      this.paragraph.removeEventListener('click', this.finishLine)
+      delete this.paragraph.dataset['dialogueTyping']
+    }
+    this.paragraph = null
     this.timer = null
     this.output = null
     this.completed = null
   }
+}
+
+/** Both story presenters expose the same distinction between finishing text and advancing a beat. */
+export function updateDialogueNext(button: HTMLElement, language: Language, typing: boolean): void {
+  button.textContent = `${typing ? message(language, 'story.dialogue-read') : message(language, 'story.dialogue-next')} →`
 }

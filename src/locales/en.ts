@@ -1346,12 +1346,11 @@ export const enMessages: MessageCatalog = {
     '2 shields · each floor: 1 shield → 1 probe + 1 scan',
   'variant-copy.abyss': 'Abyss',
   'variant-copy.abyss-hourglass': 'Abyss hourglass',
-  'variant-copy.achievement-exclusive-clear-50-floors-and-claim':
-    'Achievement exclusive: clear 50 floors and claim Rift pioneer. Starts with 2 probes.',
+  'variant-copy.achievement-exclusive-clear-50-floors-and-claim': 'Starts with 2 probes.',
   'variant-copy.achievement-exclusive-confirm-5-unique-mines-in':
-    'Achievement exclusive. Confirm 5 unique mines in a floor to gain 1 probe and 1 scan, once per floor; each cap 4.',
+    'Confirm 5 unique mines in a floor to gain 1 probe and 1 scan, once per floor; each cap 4.',
   'variant-copy.achievement-exclusive-the-first-chest-collected-each':
-    'Achievement exclusive. The first chest collected each floor grants 1 shield, cap 2.',
+    'The first chest collected each floor grants 1 shield, cap 2.',
   'variant-copy.add-exit-compass-and-salvage-seal-to':
     'Add Exit compass and Salvage seal to future relic offers.',
   'variant-copy.advanced': 'Advanced',
@@ -1442,9 +1441,8 @@ export const enMessages: MessageCatalog = {
   'variant-copy.matching-coordinate': 'Matching coordinate',
   'variant-copy.mines-total': 'mines total',
   'variant-copy.mission-exclusive-1-loadout-point-a-successful':
-    'Mission exclusive · 1 loadout point. A successful profession skill restores 1 probe, cap 4; once per floor.',
-  'variant-copy.mission-exclusive-clear-12-floors-and-claim':
-    'Mission exclusive: clear 12 floors and claim Return route. Starts with 1 probe and 1 scan.',
+    '1 loadout point. A successful profession skill restores 1 probe, cap 4; once per floor.',
+  'variant-copy.mission-exclusive-clear-12-floors-and-claim': 'Starts with 1 probe and 1 scan.',
   'variant-copy.moves': 'Moves',
   'variant-copy.original-rules': 'Original rules',
   'variant-copy.partner-cleared-flagged-mines-there-are-now':
@@ -1755,8 +1753,7 @@ export const enMessages: MessageCatalog = {
     'My leg needs a rest. My hands work fine. Come here—I’ll teach you a rescue knot. Next time, neither of us gets stuck down there.',
   'rail.reward': '120 supplies · Rescuer available at camp',
   'rescuer.name': 'Rescuer',
-  'rescuer.note':
-    'Exclusive to the Old Mine rescue. Starts with 1 probe and moves quickly along cleared corridors.',
+  'rescuer.note': 'Starts with 1 probe and moves quickly along cleared corridors.',
   'rescuer.skill': 'Lifeline',
   'rescuer.skill-note':
     'Choose a square 2–4 cells away in a straight cardinal line. The entire route must be revealed and unobstructed. Move there and gain 1 shield, capped at 2. Once per floor; costs 1 action point in battle.',

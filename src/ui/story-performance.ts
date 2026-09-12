@@ -2,7 +2,7 @@ import { playerDialogueCue } from '../audio/dialogue-voices.js'
 import { message } from '../i18n.js'
 import type { SoundEffects } from '../types/audio.js'
 import type { StoryDialogueBeat, StoryReaction, StoryViewState } from '../types/story.js'
-import { DialogueReveal } from './dialogue-reveal.js'
+import { DialogueReveal, updateDialogueNext } from './dialogue-reveal.js'
 import { spriteImage } from './dungeon-sprites.js'
 import { professionCopy } from './variant-copy.js'
 import { storyDialogue } from './story-dialogue.js'
@@ -299,22 +299,32 @@ export class StoryPerformance {
 
   /** Pass the recovered bag between the two portraits when the arrival exchange acknowledges it. */
   private offerBag(): void {
-    const speakers = this.root.querySelector<HTMLElement>('.story-speakers')
-    if (!speakers) return
+    const player = this.root.querySelector<HTMLElement>('[data-story-speaker="player"]')
+    const partner = this.root.querySelector<HTMLElement>('[data-story-speaker="lumi"]')
+    if (!player || !partner) return
+
+    const origin = player.getBoundingClientRect()
+    const destination = partner.getBoundingClientRect()
+    const x = destination.x + destination.width / 2 - origin.x - origin.width / 2
+    const y = destination.y + destination.height / 2 - origin.y - origin.height / 2
 
     const bag = document.createElement('span')
 
     bag.className = 'story-handover'
     bag.setAttribute('aria-hidden', 'true')
     bag.innerHTML = spriteImage('treasure')
-    speakers.append(bag)
+    player.append(bag)
 
     const animation = this.animate(
       bag,
       [
-        { opacity: 0, transform: 'translate(0, 8px) scale(.7)' },
-        { opacity: 1, transform: 'translate(10px, -8px) scale(1)', offset: 0.4 },
-        { opacity: 0, transform: 'translate(38px, 8px) scale(.7)' },
+        { opacity: 0, transform: 'translate(0, 0) scale(.7)' },
+        {
+          opacity: 1,
+          transform: `translate(${x * 0.4}px, ${y * 0.4 - 24}px) scale(1)`,
+          offset: 0.4,
+        },
+        { opacity: 0, transform: `translate(${x}px, ${y}px) scale(.7)` },
       ],
       950,
     )
@@ -347,10 +357,8 @@ export class StoryPerformance {
     const button = this.root.querySelector<HTMLButtonElement>('[data-story-action="dialogue"]')
     if (!button || !this.state) return
 
-    const more = this.beat + 1 < this.beats.length
-
     button.hidden = false
-    button.textContent = `${this.typing && !more ? message(this.state.language, 'story.dialogue-read') : message(this.state.language, 'story.dialogue-next')} →`
+    updateDialogueNext(button, this.state.language, this.typing)
   }
 
   /** Eyelids briefly blink, widen, then bring the live scene into focus. */

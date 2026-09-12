@@ -1,0 +1,126 @@
+/* All story scripts share one edge-attached surface; the board remains visible behind it. */
+.dialogue-bar:not([open]) {
+  display: none;
+}
+dialog.dialogue-bar[open] {
+  position: fixed;
+  inset: auto 0 0;
+  display: grid;
+  grid-template-columns: minmax(64px, 116px) minmax(0, 680px) minmax(64px, 116px);
+  justify-content: center;
+  align-items: end;
+  gap: 12px 24px;
+  width: 100%;
+  max-width: none;
+  max-height: 70dvh;
+  overflow: auto;
+  margin: 0;
+  padding: 20px max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom));
+  border: 0;
+  border-top: 1px solid #a9bca3;
+  border-radius: 0;
+  background: #fffdf2;
+  color: #304738;
+  box-shadow: 0 -6px 24px #19362714;
+}
+.dialogue-bar::backdrop {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.dialogue-cast {
+  display: contents;
+}
+.dialogue-cast > span:not(.story-handover) {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  opacity: 0.45;
+  transition: opacity 180ms;
+}
+.dialogue-cast > span:nth-child(2) {
+  grid-column: 3;
+}
+.dialogue-cast > span[data-active='true'],
+.dialogue-cast > span.is-speaking {
+  opacity: 1;
+}
+.dialogue-cast img,
+.dialogue-cast .dungeon-sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.dialogue-cast .signal-radio {
+  filter: brightness(0.25);
+}
+.dialogue-copy {
+  grid-row: 1;
+  grid-column: 2;
+  min-width: 0;
+}
+.dialogue-copy strong {
+  color: #447961;
+  font-size: 15px;
+}
+.dialogue-copy p {
+  min-height: 3.6em;
+  margin: 8px 0 12px;
+  font-size: 17px;
+  line-height: 1.8;
+}
+.dialogue-next {
+  display: block;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #365947;
+  color: #fffbed;
+  cursor: pointer;
+}
+.dialogue-next:hover {
+  background: #264536;
+}
+.dialogue-next:focus-visible,
+.story-awakening button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+[data-dialogue-typing='true'] {
+  cursor: pointer;
+}
+/* One-off story performances use the same surface without displacing the speaking row. */
+.dialogue-bar > :not(.dialogue-cast, .dialogue-copy) {
+  grid-column: 1 / -1;
+  max-height: 20dvh;
+  overflow: auto;
+}
+@media (max-width: 600px) {
+  dialog.dialogue-bar[open] {
+    grid-template-columns: 64px minmax(0, 1fr) 64px;
+    gap: 4px 12px;
+    padding-top: 12px;
+  }
+  .dialogue-cast > span:not(.story-handover) {
+    width: 64px;
+    height: 64px;
+  }
+  .dialogue-copy {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .dialogue-copy p {
+    font-size: 15px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialogue-cast > span:not(.story-handover) {
+    transition: none;
+  }
+}

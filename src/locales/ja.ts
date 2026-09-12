@@ -1258,12 +1258,11 @@ export const jaMessages: MessageCatalog = {
   'variant-copy.2-shields-each-floor-1-shield-1': 'シールド2 · 各階：シールド1 → 探針1 + 走査1',
   'variant-copy.abyss': 'アビス',
   'variant-copy.abyss-hourglass': '深淵の砂時計',
-  'variant-copy.achievement-exclusive-clear-50-floors-and-claim':
-    '実績限定：50階突破し「裂け目の先駆者」を受領。初期探針2。',
+  'variant-copy.achievement-exclusive-clear-50-floors-and-claim': '初期探針2。',
   'variant-copy.achievement-exclusive-confirm-5-unique-mines-in':
-    '実績限定。各階で異なる地雷5個を確定すると探針と走査+1、各上限4、各階1回。',
+    '各階で異なる地雷5個を確定すると探針と走査+1、各上限4、各階1回。',
   'variant-copy.achievement-exclusive-the-first-chest-collected-each':
-    '実績限定。各階で最初の宝箱を拾うとシールド+1、上限2。',
+    '各階で最初の宝箱を拾うとシールド+1、上限2。',
   'variant-copy.add-exit-compass-and-salvage-seal-to': '出口の羅針盤と回収の印を遺物候補に追加。',
   'variant-copy.advanced': 'アドバンス',
   'variant-copy.aegis': '加護',
@@ -1348,9 +1347,8 @@ export const jaMessages: MessageCatalog = {
   'variant-copy.matching-coordinate': '対応する座標',
   'variant-copy.mines-total': '地雷合計',
   'variant-copy.mission-exclusive-1-loadout-point-a-successful':
-    'ミッション限定・装備1ポイント。職業スキル成功で探針+1、上限4、各階1回。',
-  'variant-copy.mission-exclusive-clear-12-floors-and-claim':
-    '任務限定：12階突破し「帰路の記録」を受領。初期探針1、走査1。',
+    '装備1ポイント。職業スキル成功で探針+1、上限4、各階1回。',
+  'variant-copy.mission-exclusive-clear-12-floors-and-claim': '初期探針1、走査1。',
   'variant-copy.moves': '手数',
   'variant-copy.original-rules': '旧ルール',
   'variant-copy.partner-cleared-flagged-mines-there-are-now':
@@ -1641,7 +1639,7 @@ export const jaMessages: MessageCatalog = {
     '足は休ませなきゃな。でも手は動く。こっちへ来い、救助用の結び方を教える。次は二人とも閉じ込められないようにな。',
   'rail.reward': '物資120 · 野営地で救助隊員を選択可能',
   'rescuer.name': '救助隊員',
-  'rescuer.note': '旧鉱山の救助依頼限定。探針1個を持ち、安全な通路を素早く移動する。',
+  'rescuer.note': '探針1個を持ち、安全な通路を素早く移動する。',
   'rescuer.skill': '救助ロープ',
   'rescuer.skill-note':
     '上下左右の直線上、2～4マス先を選ぶ。経路はすべて開いた安全なマスで、障害物がないこと。そこへ移動して盾を1枚得る（上限2枚）。各階1回、戦闘中は行動点数1を消費。',
