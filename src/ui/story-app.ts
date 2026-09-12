@@ -1,3 +1,5 @@
+import { pendingFerryScene } from '../game/ferry-story.js'
+import { ferryLines } from './ferry-copy.js'
 import { flyCampReward } from './camp-reward.js'
 import { RecollectionApp } from './recollection-app.js'
 import { RecollectionSession } from '../application/recollection-session.js'
@@ -278,6 +280,39 @@ export class StoryApp implements MountedGame {
       )
     }
 
+    if (
+      firstStage.cleared &&
+      !firstStage.scenes.includes('quarry-rumor') &&
+      !this.session.camp.stageProgress('quarry-rescue').cleared &&
+      ['tower-landing', 'camp', 'quarry-yard'].includes(state.board.scene.id) &&
+      !this.root.querySelector('dialog[open]')
+    ) {
+      this.signal.show(
+        this.root,
+        this.language,
+        'quarry-rumor',
+        false,
+        state.loadout.profession,
+        () => {
+          this.session.camp.completeStageScene('tower-galleries', 'quarry-rumor')
+          this.render()
+        },
+      )
+    }
+    const ferryScene = pendingFerryScene(null, this.session.camp.stageProgress('reed-channels'))
+    if (ferryScene && !this.root.querySelector('dialog[open]'))
+      this.signal.present(
+        this.root,
+        this.language,
+        ferryScene,
+        ferryLines(this.language, ferryScene),
+        state.loadout.profession,
+        () => {
+          this.session.camp.completeStageScene('reed-channels', ferryScene)
+          this.render()
+        },
+      )
+
     const railScene = pendingRailScene(null, this.session.camp.stageProgress('quarry-rescue'))
     if (railScene && !this.root.querySelector('dialog[open]'))
       this.signal.present(
@@ -365,6 +400,14 @@ export class StoryApp implements MountedGame {
       !this.root.querySelector('dialog[open]')
     )
       this.presentRegional('reed-arrival')
+
+    if (
+      state.board.scene.id === 'reed-camp' &&
+      state.progress.facts?.includes('reed-camp-settled') &&
+      !state.progress.facts?.includes('ferry-lead') &&
+      !this.root.querySelector('dialog[open]')
+    )
+      this.presentRegional('ferry-lead')
 
     this.disposeLesson = mountStoryLesson(this.root, state)
   }
@@ -498,7 +541,7 @@ export class StoryApp implements MountedGame {
     const cell = state.board.game.cells[index]
     if (!cell || state.board.walls.includes(index)) return
 
-    if (!flag && state.run && state.player === index) {
+    if (!flag && state.player === index) {
       const entry = this.root.querySelector<HTMLAnchorElement>('[data-story-campaign]')
       if (entry) {
         entry.click()

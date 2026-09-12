@@ -27,7 +27,7 @@ export interface RecollectionFloorCopy {
 }
 
 /** Reached world performances are separate from dungeon campaign completion scenes. */
-export type RegionalPerformanceId = 'reed-arrival' | 'recollection-light'
+export type RegionalPerformanceId = 'reed-arrival' | 'recollection-light' | 'ferry-lead'
 
 /** Planning uses node ordinals; placement later resolves them to physical board cells. */
 export interface RecollectionFeed {

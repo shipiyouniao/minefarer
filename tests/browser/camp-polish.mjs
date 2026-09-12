@@ -16,6 +16,7 @@ const camp = readyChapterTwo(repository),
   story = new StorySession(camp)
 assert.ok(story.travelNorthwest())
 assert.ok(story.completeRegionalScene('reed-arrival'))
+assert.ok(story.completeRegionalScene('ferry-lead'))
 assert.ok(story.moveCamp(49))
 assert.ok(story.completeRegionalScene('recollection-light'))
 const old = new ExpeditionSession(repository, new FakeRuntime())

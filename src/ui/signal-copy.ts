@@ -34,6 +34,12 @@ export function signalLines(
   recordSaved: boolean,
 ): readonly SignalLine[] {
   switch (scene) {
+    case 'quarry-rumor':
+      return [
+        { speaker: 'lumi', text: message(language, 'rail.rumor-1') },
+        { speaker: 'player', text: message(language, 'rail.rumor-2') },
+        { speaker: 'lumi', text: message(language, 'rail.rumor-3') },
+      ]
     case 'tower-response':
       return [
         { speaker: 'player', text: message(language, 'signal.tower-response-1') },

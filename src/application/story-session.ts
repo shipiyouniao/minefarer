@@ -104,13 +104,19 @@ export class StorySession {
       !progress.facts?.includes('chapter-one-cleared')
     )
       return false
+    if (scene === 'ferry-lead' && !progress.facts?.includes('reed-camp-settled')) return false
     if (scene === 'recollection-light' && progress.campPosition !== RECOLLECTION_LANTERN_CELL)
       return false
     this.camp.saveStory(
       recordStoryFacts(progress, [
-        scene === 'reed-arrival' ? 'reed-camp-settled' : 'recollection-awakened',
+        scene === 'reed-arrival'
+          ? 'reed-camp-settled'
+          : scene === 'ferry-lead'
+            ? 'ferry-lead'
+            : 'recollection-awakened',
       ]),
     )
+    this.camp.acceptDiscoveredRoutes()
     return true
   }
 

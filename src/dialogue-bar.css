@@ -124,3 +124,27 @@ dialog.dialogue-bar[open] {
     transition: none;
   }
 }
+
+/* Shape/decoration accompanies color, so semantic emphasis survives grayscale. */
+.dialogue-term-person,
+.dialogue-copy .dialogue-term-person {
+  color: #75458d;
+  font-weight: 700;
+}
+.dialogue-term-place {
+  color: #246b81;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.dialogue-term-item {
+  color: #886019;
+  font-weight: 650;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+.dialogue-term-warning {
+  color: #b13937;
+  font-weight: 800;
+  text-decoration: underline double;
+  text-underline-offset: 0.2em;
+}

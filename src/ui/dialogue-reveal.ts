@@ -1,3 +1,5 @@
+import { dialogueParts, dialogueTerms, paintDialogue } from './dialogue-terms.js'
+import type { DialoguePart } from '../types/dialogue-terms.js'
 import { message } from '../i18n.js'
 import type { Language } from '../types/localization.js'
 import type { SoundCue, SoundEffects } from '../types/audio.js'
@@ -7,7 +9,7 @@ export class DialogueReveal {
   private timer: ReturnType<typeof setTimeout> | null = null
   private output: HTMLElement | null = null
   private paragraph: HTMLElement | null = null
-  private text = ''
+  private parts: readonly DialoguePart[] = []
   private completed: (() => void) | null = null
   private readonly sounds: SoundEffects
 
@@ -25,10 +27,14 @@ export class DialogueReveal {
     completed?: () => void,
   ): void {
     this.cancel()
+    this.parts = dialogueParts(
+      text,
+      dialogueTerms(language === 'en' || language === 'ja' ? language : 'zh'),
+    )
     paragraph.setAttribute('aria-label', text)
     paragraph.setAttribute('aria-atomic', 'true')
     if (!text || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      paragraph.textContent = text
+      paintDialogue(paragraph, this.parts)
       completed?.()
 
       return
@@ -37,7 +43,6 @@ export class DialogueReveal {
     this.paragraph = paragraph
     paragraph.dataset['dialogueTyping'] = 'true'
     paragraph.addEventListener('click', this.finishLine)
-    this.text = text
     this.completed = completed ?? null
 
     const wrapper = document.createElement('span')
@@ -48,7 +53,7 @@ export class DialogueReveal {
     const reserve = document.createElement('span')
 
     reserve.className = 'tw:invisible'
-    reserve.textContent = text
+    paintDialogue(reserve, this.parts)
 
     const output = document.createElement('span')
 
@@ -62,6 +67,7 @@ export class DialogueReveal {
       ...new Intl.Segmenter(language, { granularity: 'grapheme' }).segment(text),
     ].map((part) => part.segment)
     let index = 0
+    let visibleLength = 0
     /** Reveal the next character and schedule its voice cue only while this paragraph is current. */
     const tick = (): void => {
       if (document.hidden) {
@@ -77,7 +83,8 @@ export class DialogueReveal {
         return
       }
 
-      output.textContent += letter
+      visibleLength += letter.length
+      paintDialogue(output, this.parts, visibleLength)
       if (/[\p{L}\p{N}]/u.test(letter)) this.sounds.play(cue)
 
       if (index === letters.length) {
@@ -101,7 +108,7 @@ export class DialogueReveal {
   finish(): boolean {
     if (!this.output) return false
 
-    this.output.textContent = this.text
+    paintDialogue(this.output, this.parts)
 
     const completed = this.completed
 

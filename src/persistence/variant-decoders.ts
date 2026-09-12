@@ -272,6 +272,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   const campaign = originalCampaign === 'tower-road-v3' ? 'tower-road-v4' : originalCampaign
   if (
     reader.value('campaign') !== undefined &&
+    campaign !== 'reed-channels-v1' &&
     campaign !== 'tower-road-v4' &&
     campaign !== 'tower-relay-v1' &&
     campaign !== 'ridge-observatory-v1' &&
@@ -358,7 +359,8 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   }
 
   return {
-    ...(campaign === 'tower-road-v4' ||
+    ...(campaign === 'reed-channels-v1' ||
+    campaign === 'tower-road-v4' ||
     campaign === 'tower-relay-v1' ||
     campaign === 'ridge-observatory-v1' ||
     campaign === 'old-waterway-v1' ||

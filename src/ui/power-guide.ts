@@ -7,31 +7,36 @@ import type { Language } from '../types/localization.js'
 import type { FloorPower } from '../types/floor-power.js'
 
 /** Explain device operation in the same illustrated modal used for boss encounters. */
-export function powerGuide(language: Language, power: FloorPower, heading?: string): string {
+export function powerGuide(
+  language: Language,
+  power: FloorPower,
+  heading?: string,
+  ferry = false,
+): string {
   const drainage = power.purpose === 'drainage'
   const restoration = power.purpose === 'restoration'
 
   return `<article class="battle-guide power-guide ${guidanceStyles['battle-guide']}">
-    <header class="battle-guide-hero ${guidanceStyles['battle-guide-hero']}">${restoration ? consoleImage() : drainage ? drainageImage() : observatoryImage()}<div><h3>${heading ?? (restoration ? message(language, 'finale.control-title') : drainage ? message(language, 'waterway.title') : message(language, 'ridge.title'))}</h3><p>${restoration ? message(language, 'finale.guide-intro') : drainage ? message(language, 'waterway.guide-intro') : message(language, 'ridge.guide-intro')}</p></div></header>
+    <header class="battle-guide-hero ${guidanceStyles['battle-guide-hero']}">${restoration ? consoleImage() : drainage ? drainageImage() : observatoryImage()}<div><h3>${heading ?? (ferry ? message(language, 'ferry.title') : restoration ? message(language, 'finale.control-title') : drainage ? message(language, 'waterway.title') : message(language, 'ridge.title'))}</h3><p>${ferry ? message(language, 'ferry.guide-intro') : restoration ? message(language, 'finale.guide-intro') : drainage ? message(language, 'waterway.guide-intro') : message(language, 'ridge.guide-intro')}</p></div></header>
     <ol class="boss-picture-steps ${guidanceStyles['boss-picture-steps']}">
       ${guideStep(1, message(language, 'ridge.guide-clear-title'), message(language, 'ridge.guide-clear'), cluePicture())}
-      ${guideStep(2, message(language, 'ridge.guide-switch-title'), message(language, 'ridge.guide-switch'), routePicture(false, power.purpose))}
-      ${guideStep(3, restoration ? message(language, 'finale.guide-title') : drainage ? message(language, 'waterway.guide-record-title') : message(language, 'ridge.guide-record-title'), restoration ? message(language, 'finale.guide-record') : drainage ? message(language, 'waterway.guide-record') : message(language, 'ridge.guide-record'), routePicture(true, power.purpose))}
+      ${guideStep(2, ferry ? message(language, 'ferry.guide-switch-title') : message(language, 'ridge.guide-switch-title'), ferry ? message(language, 'ferry.guide-switch') : message(language, 'ridge.guide-switch'), routePicture(false, power.purpose))}
+      ${guideStep(3, ferry ? message(language, 'ferry.guide-record-title') : restoration ? message(language, 'finale.guide-title') : drainage ? message(language, 'waterway.guide-record-title') : message(language, 'ridge.guide-record-title'), ferry ? message(language, 'ferry.guide-record') : restoration ? message(language, 'finale.guide-record') : drainage ? message(language, 'waterway.guide-record') : message(language, 'ridge.guide-record'), routePicture(true, power.purpose))}
     </ol>
-    ${wiringPicture(language, power)}
+    ${wiringPicture(language, power, ferry)}
     <p class="boss-cost-line ${guidanceStyles['boss-cost-line']}">${message(language, 'ridge.guide-upstream')}</p>
   </article>`
 }
 
 /** Preserve the floor's public upstream connections without exposing hidden board contents. */
-function wiringPicture(language: Language, power: FloorPower): string {
+function wiringPicture(language: Language, power: FloorPower, ferry: boolean): string {
   const connections = power.junctions.map((junction, ordinal) => {
     const source = junction.input
     const feed = source
       ? `${power.junctions.findIndex((entry) => entry.index === source.junction) + 1}${source.branch === 0 ? 'A' : 'B'}`
       : '⚡'
 
-    return `<li><b class="power-guide-feed">${feed}</b><span aria-hidden="true">→</span>${spriteImage('bastion-pylon')}<span>${message(language, 'ridge.junction')} ${ordinal + 1}</span></li>`
+    return `<li><b class="power-guide-feed">${feed}</b><span aria-hidden="true">→</span>${spriteImage('bastion-pylon')}<span>${ferry ? message(language, 'ferry.junction') : message(language, 'ridge.junction')} ${ordinal + 1}</span></li>`
   })
 
   return `<section class="power-guide-wiring"><h4>${message(language, 'ridge.guide-wiring')}</h4><ul>${connections.join('')}</ul></section>`

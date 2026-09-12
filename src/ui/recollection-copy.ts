@@ -60,6 +60,12 @@ export function regionalLines(
   language: Language,
   scene: RegionalPerformanceId,
 ): readonly SignalLine[] {
+  if (scene === 'ferry-lead')
+    return [
+      { speaker: 'nia', text: message(language, 'ferry.lead-1') },
+      { speaker: 'player', text: message(language, 'ferry.lead-2') },
+      { speaker: 'nia', text: message(language, 'ferry.lead-3') },
+    ]
   if (scene === 'reed-arrival')
     return [
       { speaker: 'player', text: message(language, 'recollection.arrival-1') },

@@ -76,9 +76,12 @@ try {
       await page.locator('[data-signal-next]').click()
       await page.waitForTimeout(50)
     }
+    await page.locator('[data-signal-scene="quarry-rumor"][open]').waitFor()
+    for (let beat = 0; beat < 3; beat++) await page.locator('[data-signal-next]').click()
     await page.locator('[data-story-campaign][href*="tower-relay"]').waitFor()
     await page.reload()
     assert.equal(await page.locator('[data-signal-scene="tower-response"][open]').count(), 0)
+    assert.equal(await page.locator('[data-signal-scene="quarry-rumor"][open]').count(), 0)
     for (const [value, visible] of [
       [locked, false],
       [unlocked, true],
@@ -93,6 +96,8 @@ try {
         await page.locator('[data-story-campaign][href*="quarry-rescue"]').count(),
         Number(visible),
       )
+      if (await page.locator('[data-signal-scene="quarry-rumor"][open]').count())
+        for (let beat = 0; beat < 3; beat++) await page.locator('[data-signal-next]').click()
       await page.locator('[data-story-action="map"]').click()
       assert.equal(await page.locator('.atlas-local-grid img.rail-cart').count(), Number(visible))
     }

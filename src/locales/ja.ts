@@ -2,6 +2,20 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** ja interface messages. Keep keys aligned across locales. */
 export const jaMessages: MessageCatalog = {
+  'ferry.objective': '装置周辺の地雷を確定し、水門を切り替えて各水位を記録する。',
+  'ferry.exit-ready': '水位の確認完了。出口の水門を接続して出口へ進む。',
+  'ferry.progress': '水位記録 {count} / {total}',
+  'ferry.receiver': '水位計',
+  'ferry.junction': '水門切替器',
+  'ferry.door': '通路の水門',
+  'ferry.recorded': 'この水位は記録済み。',
+  'ferry.guide-intro': '分岐で水位計を接続し、記録してから出口の水門を開く。',
+  'ferry.guide-switch-title': '水門の分岐を切り替える',
+  'ferry.guide-switch': '切替器を押して A / B を変更。同じ記号の水位計と水門が接続される。',
+  'ferry.guide-record-title': '水位を記録し、出口を開く',
+  'ferry.guide-record':
+    '接続した水位計の隣で押して記録する。全て記録したら分岐を切り替えて出口を開く。記録は消えない。',
+
   'recollection.existing':
     '遠征がまだ続いています。再開するか帰還してから、新しい追想を始めましょう。',
   'recollection.resume-expedition': '遠征を続ける',
@@ -1678,4 +1692,37 @@ export const jaMessages: MessageCatalog = {
   'battle-lesson.attack':
     '今なら攻撃できます。光るボタンか隣接する敵を押すと2点で攻撃します。退路と次の攻撃予告にも気を配りましょう。',
   'battle-lesson.reopen': 'この戦場で操作を学ぶ',
+  'dialogue.places': '採石場|古い渡し場|渡し場|見張り塔|葦の水路|北の道',
+  'dialogue.items':
+    '行嚢|標識灯|水位計|水門|給電器|昇降台|軸芯|追想灯|トロッコ|錨|分身|砂時計|クモの巣|巣穴|結晶',
+  'dialogue.warnings': '踏まない|危険|触れない|満ち潮|通電を止め',
+  'rail.rumor-1': '採石場の方から音がしたの。少し間を置いて、また三回。',
+  'rail.rumor-2': '落石の音じゃなさそうだ。誰かいるのかな？',
+  'rail.rumor-3':
+    '私も気になる。荷積み場の東に古い坑道があるから、時間があれば見てきて。灯りを忘れずに、奥へ進みすぎないでね。',
+  'ferry.title': '葦の水路',
+  'ferry.task': '渡し船が止まった理由',
+  'ferry.detail':
+    '葦湾の野営地の桟橋の先から水路へ。三つの区間を通り、水位計を調べて渡し船が止まった理由を探そう。',
+  'ferry.lead-1': '見て。渡し場の灯りはついているのに、船が一隻もない。',
+  'ferry.lead-2': '水が逆に流れてる。着いたときは反対向きだったのに。',
+  'ferry.lead-3':
+    '桟橋の先から葦の水路へ下りられる。まず水位計を見て、止まった理由を調べてから船を探そう。',
+  'ferry.floor-1': '一区間目 · 水の引いた岸',
+  'ferry.floor-2': '二区間目 · 両岸の目盛り',
+  'ferry.floor-3': '三区間目 · 逆流する水門',
+  'ferry.entry-1': '足跡はここまでだ。先は乾いて見えるけど、泥の下から水が湧いてる。',
+  'ferry.entry-2':
+    '先にこちらの水門を切り替えて、水位計を読もう。地面が分からない場所は踏まないで。',
+  'ferry.entry-3': '読んだら反対側に切り替えるんだね。数値は覚えておこう。何度も戻らなくて済む。',
+  'ferry.banks-1': 'こちらの目盛りは低いのに、向こう岸は高い。',
+  'ferry.banks-2': '川全体が同時に満ち引きしてるんじゃない。区間ごとに何かが水を押してる。',
+  'ferry.banks-3': '両岸を調べよう。水位計が一つだけだと、読み違える。',
+  'ferry.gate-1': '聞いて。また水門の向こうから。野営地で聞いた水音と同じだ。',
+  'ferry.gate-2': '渡し船の通路はまだ開けないで。読んでいない水位計がある。',
+  'ferry.gate-3': '分かった。この水門を調べれば、船を出せない理由が分かるはず。',
+  'ferry.end-1': '水門は壊れていない。逆流の跡が、毎回同じ目盛りで止まってる。',
+  'ferry.end-2': '誰かが川を動かしてる？ 雨でも、上流の詰まりでもなさそうだ。',
+  'ferry.end-3':
+    '渡し船は古い渡し場の入り江へ引き込まれてる。綱はまだつながっている。道が見えたから、次は船守を探せそうだ。',
 }
