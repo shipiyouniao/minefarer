@@ -236,3 +236,116 @@
   color: #22555e;
   background: #d7eff0;
 }
+
+.pressure-objective {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #bdd3cf;
+  border-radius: 1rem;
+  background: #f2f8f4;
+}
+.pressure-objective h3,
+.pressure-objective p {
+  margin: 0.3rem 0 0.6rem;
+}
+.pressure-instruments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.pressure-instruments button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #97b8b0;
+  border-radius: 0.7rem;
+  background: #fffdf1;
+  color: #355d56;
+  cursor: pointer;
+}
+.pressure-instruments button[aria-pressed='true'] {
+  background: #dcece4;
+  outline: 2px solid #5c9c88;
+}
+.pressure-instruments strong {
+  font-variant-numeric: tabular-nums;
+  padding: 0 0.5rem;
+}
+.pressure-rule {
+  color: #697d71;
+  font-size: 0.85rem;
+}
+.cell[data-pressure-area='a'] {
+  outline: 2px solid #7d63a2;
+  outline-offset: -3px;
+}
+.cell[data-pressure-area='b'] {
+  outline: 2px solid #be9750;
+  outline-offset: -3px;
+}
+.pressure-mooring {
+  position: absolute;
+  font-size: 0.65em;
+  pointer-events: none;
+  color: #416968;
+}
+.pressure-lesson-target {
+  position: relative;
+  z-index: 12;
+}
+.pressure-coach {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: min(290px, 65vw);
+  background: #fffdf1;
+  color: #365647;
+  padding: 1rem;
+  font: 400 14px/1.7 sans-serif;
+  border: 1px solid #aec8b2;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px #29493722;
+  pointer-events: none;
+  text-align: left;
+  z-index: 30;
+}
+.pressure-coach::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  background: #fffdf1;
+  transform: rotate(45deg);
+  border-left: 1px solid #aec8b2;
+  border-top: 1px solid #aec8b2;
+}
+
+.pressure-device-name {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  font-size: 0.3em;
+  background: #f8f0d2;
+  border-radius: 3px;
+  color: #806b38;
+  pointer-events: none;
+}
+.pressure-reading-changed {
+  display: inline-block;
+  animation: pressure-reading 0.35s ease-out;
+}
+@keyframes pressure-reading {
+  from {
+    transform: scale(1.25);
+    color: #aa742d;
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pressure-reading-changed {
+    animation: none;
+  }
+}

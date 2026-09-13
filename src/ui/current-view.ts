@@ -5,7 +5,7 @@ import type { Language } from '../types/localization.js'
 /** Keep the tide explanation beside its board with a collapsible touch-friendly guide. */
 export function currentObjective(language: Language, run: Expedition): string {
   if (!run.current) return ''
-  return `<details class="current-guide" ${run.current.cycle === 0 ? 'open' : ''}><summary>${message(language, 'current.title')} · ${run.current.cycle}</summary><p>${message(language, 'current.guide')}</p><p>${message(language, 'current.legend')}</p></details>`
+  return `<details class="current-guide" ${!run.pressure && run.current.cycle === 0 ? 'open' : ''}><summary>${message(language, 'current.title')} · ${run.current.cycle}</summary><p>${message(language, 'current.guide')}</p><p>${message(language, 'current.legend')}</p></details>`
 }
 /** Tint each bank and mark each lane once; flags and clue badges retain their own styling. */
 export function renderCurrent(root: HTMLElement, run: Expedition, language: Language): void {

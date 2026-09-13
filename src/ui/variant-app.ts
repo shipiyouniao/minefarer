@@ -1,3 +1,5 @@
+import { pendingPressureScene } from '../game/pressure-story.js'
+import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
 import { ferryLines } from './ferry-copy.js'
 import { pendingSignalScene } from '../game/signal-story.js'
@@ -967,9 +969,16 @@ export class VariantApp implements VariantInputActions {
     const waterwayScene = pendingWaterwayScene(session.run, session.stageProgress)
     const finaleScene = pendingFinaleScene(session.run, session.stageProgress)
     const railScene = pendingRailScene(session.run, session.stageProgress)
+    const pressureScene = pendingPressureScene(session.run, session.stageProgress)
     const ferryScene = pendingFerryScene(session.run, session.stageProgress)
     const scene =
-      ferryScene ?? railScene ?? signalScene ?? ridgeScene ?? waterwayScene ?? finaleScene
+      pressureScene ??
+      ferryScene ??
+      railScene ??
+      signalScene ??
+      ridgeScene ??
+      waterwayScene ??
+      finaleScene
     if (!scene) return
 
     this.view.closeDialog()
@@ -977,19 +986,21 @@ export class VariantApp implements VariantInputActions {
       this.root,
       this.language,
       scene,
-      ferryScene
-        ? ferryLines(this.language, ferryScene)
-        : railScene
-          ? railLines(this.language, railScene)
-          : signalScene
-            ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
-            : ridgeScene
-              ? observatoryLines(this.language, ridgeScene)
-              : waterwayScene
-                ? waterwayLines(this.language, waterwayScene)
-                : finaleScene
-                  ? finaleLines(this.language, finaleScene)
-                  : [],
+      pressureScene
+        ? pressureLines(this.language, pressureScene)
+        : ferryScene
+          ? ferryLines(this.language, ferryScene)
+          : railScene
+            ? railLines(this.language, railScene)
+            : signalScene
+              ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
+              : ridgeScene
+                ? observatoryLines(this.language, ridgeScene)
+                : waterwayScene
+                  ? waterwayLines(this.language, waterwayScene)
+                  : finaleScene
+                    ? finaleLines(this.language, finaleScene)
+                    : [],
       session.run?.departure.profession ?? 'explorer',
       () => {
         session.completeCampaignScene(scene)

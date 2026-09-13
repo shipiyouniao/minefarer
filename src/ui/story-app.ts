@@ -1,3 +1,5 @@
+import { pendingPressureScene } from '../game/pressure-story.js'
+import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
 import { ferryLines } from './ferry-copy.js'
 import { flyCampReward } from './camp-reward.js'
@@ -299,6 +301,22 @@ export class StoryApp implements MountedGame {
         },
       )
     }
+    const pressureScene = pendingPressureScene(
+      null,
+      this.session.camp.stageProgress('pressure-cove'),
+    )
+    if (pressureScene && !this.root.querySelector('dialog[open]'))
+      this.signal.present(
+        this.root,
+        this.language,
+        pressureScene,
+        pressureLines(this.language, pressureScene),
+        state.loadout.profession,
+        () => {
+          this.session.camp.completeStageScene('pressure-cove', pressureScene)
+          this.render()
+        },
+      )
     const ferryScene = pendingFerryScene(null, this.session.camp.stageProgress('reed-channels'))
     if (ferryScene && !this.root.querySelector('dialog[open]'))
       this.signal.present(

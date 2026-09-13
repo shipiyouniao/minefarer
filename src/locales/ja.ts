@@ -2,6 +2,30 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** ja interface messages. Keep keys aligned across locales. */
 export const jaMessages: MessageCatalog = {
+  'pressure.help': '計器の読み方',
+
+  'pressure.title': '反圧の入り江',
+  'pressure.task': 'メイン · 水底の反響',
+  'pressure.detail': '旧渡し場の比較計へ。二つの河床の地雷数を比べ、潮流を使って係留地へ進む。',
+  'pressure.floor-1': '第1層 · 校正の岸',
+  'pressure.floor-2': '第2層 · 分流の湾',
+  'pressure.floor-3': '第3層 · 船影の下',
+  'pressure.rule':
+    '左の文字の範囲の地雷数から、右の範囲の地雷数を引きます。0は同数という意味で、安全とは限りません。',
+  'pressure.hint': 'Aはすべて開いていて安全です。差が0ならBも安全。強調されたマスを開きましょう。',
+  'pressure.progress': '係留地 {count}/{total}',
+  'pressure.objective': '地雷数の比較と数字から推理し、各錨を訪れて出口へ。',
+  'pressure.tide': '水門を切り替えたら値を再確認。旗は推測なので表示値に影響しません。',
+  'pressure.entry-1': '二つの計器は地雷の数ではなく、河床どうしの差を示している。',
+  'pressure.entry-2': '片方が安全だと分かれば、もう片方も計算できるね。',
+  'pressure.basin-1':
+    '湾には逆向きの潮流がある。比較範囲が重なっているから手がかりをつなげられる。',
+  'pressure.basin-2': '役立つ岸を固定して、移動後の値を調べよう。',
+  'pressure.boat-1': '船はすぐそこ。でも両岸に返る流れは同時ではない。',
+  'pressure.boat-2': '二つの係留地を確認してから船影へ向かう。',
+  'pressure.end-1': '外岸が先に響き、その後で湾に圧力が返る。源はもっと上流だ。',
+  'pressure.end-2': 'この時間差を記録しよう。次の道を探す目印になる。',
+
   'atlas.travel': 'ファストトラベル',
   'atlas.camp-view': '拠点を見る',
 

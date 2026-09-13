@@ -3,6 +3,8 @@ import type { StoryProgress, StoryScene, StoryTask } from '../types/story.js'
 /** Task locations follow accepted world outcomes and remain independent of atlas display order. */
 export function storyTaskLocation(progress: StoryProgress, task: StoryTask): StoryScene['id'] {
   switch (task) {
+    case 'investigate-pressure':
+      return 'old-ferry'
     case 'investigate-ferry':
     case 'settle-reed-camp':
       return 'reed-camp'

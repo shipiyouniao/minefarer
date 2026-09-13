@@ -1,6 +1,6 @@
 # Chapter Two, stage two: Pressure Cove
 
-Status: implementation specification, not playable content. Follows the combined Reed Channels stage. Track delivery under R2-10.2-03 in #55; none of the later exploration-stage boxes can be completed by this document alone.
+Status: playable implementation, awaiting player acceptance and PR review. Follows the combined Reed Channels stage. Track delivery under R2-10.2-03 in #55; the remaining later exploration stages are not delivered by this change.
 
 ## Question and consequence
 
@@ -45,3 +45,12 @@ A mooring is a physical safe landing reached by movement after deduction. A mist
 ## Side-story boundary
 
 No side story is bundled into this stage specification. A later river-side story must introduce its own special gameplay, potentially a minigame; reskinning pressure comparisons does not qualify. It can span multiple stages and include a dedicated boss and a complete character outcome. Keep reward reveals inside the story's appropriate resolution rather than advertising exclusive rewards in the initial task.
+
+## Implemented build
+
+- Three authored 17×17, 19×17 and 19×19 reaches with about 18% mine density. The second entrance is reflected horizontally; the last reach reverses both axes. All current lanes, instrument footprints and landmarks follow the same transformation.
+- Fixed 2×2 comparisons progress from A–B to B–C and C–D. A known-safe reference bounds the first count. Each additional comparison is required by the public-information solver on its floor; neither ordinary clues alone nor the preceding floor's comparison set completes the intended route.
+- Public-information walkthroughs use tides, physically visit the moorings and finish without damage or consumable tools. Arbitrary mine truth and guessed flags are excluded from the deduction engine's evidence.
+- A board-anchored first-action coach disappears after opening the target tile and stays dismissed on reload. Detailed reading/tide explanations are collapsed by default. Comparison selection works with hover, focus and touch; values recompute after tides.
+- Old Ferry cell 85 is the physical entrance. Its marker disappears on completion; no fake road to an unimplemented upstream scene is drawn. The existing road back to Reedbank Camp remains accessible. The ending records the upstream timing clue and awards 180 first-clear supplies once.
+- The independent `pressure-cove-v1` journal shares equipment, skills and ordinary expedition progression. Replay of every action and once-only settlement are covered by regression tests. Further human playtesting determines clarity and pacing; no duration claim is implied.

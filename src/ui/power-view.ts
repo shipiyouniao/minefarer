@@ -1,3 +1,4 @@
+import { pressureObjective, renderPressure } from './pressure-view.js'
 import { currentObjective, renderCurrent, animateCurrent } from './current-view.js'
 import { ferryFloorName } from './ferry-copy.js'
 import { finaleFloorName } from './finale-copy.js'
@@ -32,6 +33,7 @@ export function consoleImage(): string {
 export function powerObjective(language: Language, run: Expedition): string {
   if (!run.power) return ''
   const current = currentObjective(language, run)
+  if (run.pressure) return current + pressureObjective(language, run)
   const recollection = run.departure.recollection
     ? recollectionFloorCopy(language, 'routing')
     : null
@@ -53,6 +55,7 @@ function feedLabel(run: Expedition, input: PowerFeed): string {
 /** Draw only known mechanism positions; ordinary hidden numbers and flags remain untouched. */
 export function renderFloorPower(root: HTMLElement, run: Expedition, language: Language): void {
   renderCurrent(root, run, language)
+  renderPressure(root, run, language)
   const power = run.power
   const ferry = run.departure.campaign === 'reed-channels-v3'
   if (!power) return
