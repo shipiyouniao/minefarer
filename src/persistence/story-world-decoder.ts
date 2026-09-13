@@ -41,9 +41,9 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
     return null
 
   const initial = { ...fresh, board: buildStoryBoard(fresh.board.scene, operated) }
-  const revealed = indices(reader.value('revealed'), size)
-  const flagged = indices(reader.value('flagged'), size)
-  const triggered = indices(reader.value('triggered'), size)
+  let revealed = indices(reader.value('revealed'), size)
+  let flagged = indices(reader.value('flagged'), size)
+  let triggered = indices(reader.value('triggered'), size)
   const player = reader.number('player') ?? -1
   const health = reader.number('health') ?? -1
   const phase = reader.string('phase')
@@ -73,7 +73,7 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
 
   if (reader.value('terrainRevision') !== undefined && reader.number('terrainRevision') === null)
     return null
-  const terrainRevision = reader.number('terrainRevision') ?? 0
+  let terrainRevision = reader.number('terrainRevision') ?? 0
   if (
     !Number.isInteger(terrainRevision) ||
     terrainRevision < 0 ||
@@ -95,7 +95,7 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
     const safe = initial.board.game.cells[player]!
     return {
       id,
-      terrainRevision: 1,
+      terrainRevision: 2,
       operated: [],
       player: !safe.mine && safe.visibility === 'revealed' ? player : initial.board.exit,
       health,
@@ -111,6 +111,12 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
     }
   }
 
+  if (id === 'old-ferry' && terrainRevision === 1) {
+    revealed = revealed.filter((i) => initial.board.game.cells[i]!.visibility !== 'revealed')
+    flagged = flagged.filter((i) => initial.board.game.cells[i]!.visibility !== 'revealed')
+    triggered = triggered.filter((i) => initial.board.game.cells[i]!.mine)
+    terrainRevision = 2
+  }
   const cells = initial.board.game.cells
   if (
     revealed.some(

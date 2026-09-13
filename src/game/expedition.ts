@@ -1,3 +1,4 @@
+import { waitForFerry } from './pressure.js'
 import { advanceCurrent } from './floor-tide.js'
 import { generateRecollectionFloor, recollectionFloorKind } from './recollection-layout.js'
 import { enterChapterGuardian } from './chapter-guardian.js'
@@ -169,7 +170,7 @@ function createFloor(departure: Departure, floor: number): Expedition {
     phase: 'exploring',
   }
 
-  return run.circuits || run.power || run.rail
+  return run.circuits || run.power || run.rail || run.pressure
     ? { ...run, game: revealDungeon(run, run.entrance) }
     : run
 }
@@ -392,6 +393,8 @@ function advanceFloor(run: Expedition, relic?: Relic): Expedition {
 /** Pure expedition transition, including explicit extraction and inter-floor reward selection. */
 function transitionExpedition(run: Expedition, action: ExpeditionAction): Expedition {
   if (run.phase === 'lost' || run.phase === 'won' || run.phase === 'retreated') return run
+
+  if (action.type === 'end-turn' && run.pressure) return waitForFerry(run)
 
   if (action.type === 'retreat') return { ...run, phase: 'retreated' }
 

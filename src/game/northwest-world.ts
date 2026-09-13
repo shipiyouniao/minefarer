@@ -55,10 +55,10 @@ export const NORTHWEST_SCENES: readonly StoryScene[] = [
       '#############',
       '#ooo*..#...*#',
       '#oES*..#*...#',
-      '#ooo....*.*.#',
-      '#.*....#....#',
-      '#......#....#',
-      '#...*.ooo..*#',
+      '#ooooooooooo#',
+      '#o*....#...o#',
+      '#o.....#...o#',
+      '#ooooooooooo#',
       '#..*...#.*..#',
       '#############',
     ],
@@ -156,3 +156,15 @@ export function northwestPortals(
     (portal) => portal.scene === scene && progress.facts?.includes(portal.requires),
   )
 }
+
+/** Both bridge approaches and eastward road pads remain permanently clear for future connections. */
+export const OLD_FERRY_MAIN_ROAD = [
+  28,
+  29,
+  ...Array.from({ length: 11 }, (_, i) => 40 + i),
+  53,
+  63,
+  66,
+  76,
+  ...Array.from({ length: 11 }, (_, i) => 79 + i),
+] as const

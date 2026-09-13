@@ -1,3 +1,4 @@
+import { pressureGuide, animatePressure } from './pressure-view.js'
 import { pendingPressureScene } from '../game/pressure-story.js'
 import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
@@ -619,6 +620,13 @@ export class VariantApp implements VariantInputActions {
         return
       case 'help': {
         const t = variantCopy(this.language)
+        if (this.session instanceof ExpeditionSession && this.session.run?.pressure) {
+          this.view.showInformation(
+            message(this.language, 'pressure.help'),
+            pressureGuide(this.language),
+          )
+          return
+        }
         if (this.session instanceof ExpeditionSession && this.session.run?.phase === 'boss') {
           this.view.showInformation(
             message(this.language, 'variant-app.battle-reference'),
@@ -740,6 +748,10 @@ export class VariantApp implements VariantInputActions {
         this.expedition({ type: command.type })
         break
       case 'end-turn':
+        if (this.session instanceof ExpeditionSession && this.session.run?.pressure) {
+          void this.performFerryTurn()
+          return
+        }
         if (
           this.session instanceof ExpeditionSession &&
           (this.session.run?.encounter?.kind === 'magnetic' ||
@@ -1154,6 +1166,29 @@ export class VariantApp implements VariantInputActions {
           ? 'win'
           : (cue ?? (action.type === 'anchor' ? 'tide-anchor' : 'confirm')),
     )
+  }
+
+  /** Commit one tide, then animate its raft and passenger under the same input lock. */
+  private async performFerryTurn(): Promise<void> {
+    if (!(this.session instanceof ExpeditionSession)) return
+    const before = this.session.run
+    if (!before?.pressure || !this.session.dispatch({ type: 'end-turn' })) return
+    const after = this.session.run
+    if (!after) return
+    const generation = ++this.walkGeneration
+    this.moving = true
+    this.turnPerformance = true
+    this.sounds.play('confirm')
+    this.render()
+    try {
+      await animatePressure(this.root, before, after)
+    } finally {
+      if (generation === this.walkGeneration) {
+        this.moving = false
+        this.turnPerformance = false
+        this.render()
+      }
+    }
   }
 
   /** Commit the turn before its interruptible performance so cancellation cannot duplicate actions. */

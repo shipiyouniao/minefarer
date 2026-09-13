@@ -1,5 +1,12 @@
 /** Complete shared catalog: every supported language implements every key. */
 export interface MessageCatalog {
+  readonly 'pressure.static': string
+  readonly 'pressure.land': string
+  readonly 'pressure.ride': string
+  readonly 'pressure.board': string
+  readonly 'pressure.water': string
+  readonly 'pressure.raft': string
+  readonly 'pressure.wait': string
   readonly 'pressure.help': string
 
   readonly 'pressure.title': string
@@ -8,11 +15,8 @@ export interface MessageCatalog {
   readonly 'pressure.floor-1': string
   readonly 'pressure.floor-2': string
   readonly 'pressure.floor-3': string
-  readonly 'pressure.rule': string
-  readonly 'pressure.hint': string
   readonly 'pressure.progress': string
   readonly 'pressure.objective': string
-  readonly 'pressure.tide': string
   readonly 'pressure.entry-1': string
   readonly 'pressure.entry-2': string
   readonly 'pressure.basin-1': string

@@ -239,113 +239,107 @@
 
 .pressure-objective {
   padding: 1rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid #bdd3cf;
+  border: 1px solid #b9d0c7;
   border-radius: 1rem;
-  background: #f2f8f4;
+  margin-bottom: 1rem;
+  background: #f3f8f1;
 }
-.pressure-objective h3,
-.pressure-objective p {
-  margin: 0.3rem 0 0.6rem;
-}
-.pressure-instruments {
+.pressure-actions {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
 }
-.pressure-instruments button {
-  padding: 0.5rem 0.9rem;
-  border: 1px solid #97b8b0;
-  border-radius: 0.7rem;
-  background: #fffdf1;
-  color: #355d56;
-  cursor: pointer;
+.pressure-actions > span {
+  margin-right: auto;
 }
-.pressure-instruments button[aria-pressed='true'] {
-  background: #dcece4;
-  outline: 2px solid #5c9c88;
+.pressure-water {
+  background: #bedadb !important;
+  border-color: #aac8c9 !important;
+  box-shadow: none !important;
+  position: relative;
 }
-.pressure-instruments strong {
-  font-variant-numeric: tabular-nums;
-  padding: 0 0.5rem;
+.pressure-raft {
+  position: absolute;
+  inset: 15% 4% 5%;
+  border: 2px solid #967342;
+  border-radius: 20%;
+  background: repeating-linear-gradient(0deg, #c2a476 0 20%, #987b52 21% 24%);
+  box-shadow: 0 3px 2px #6f9a9b;
+  pointer-events: none;
 }
-.pressure-rule {
-  color: #697d71;
-  font-size: 0.85rem;
-}
-.cell[data-pressure-area='a'] {
-  outline: 2px solid #7d63a2;
-  outline-offset: -3px;
-}
-.cell[data-pressure-area='b'] {
-  outline: 2px solid #be9750;
-  outline-offset: -3px;
+.pressure-next {
+  color: #527b7d;
+  font-size: 0.6em;
 }
 .pressure-mooring {
   position: absolute;
   font-size: 0.65em;
+  color: #406662;
   pointer-events: none;
-  color: #416968;
-}
-.pressure-lesson-target {
-  position: relative;
-  z-index: 12;
 }
 .pressure-coach {
   position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  width: min(290px, 65vw);
-  background: #fffdf1;
-  color: #365647;
-  padding: 1rem;
-  font: 400 14px/1.7 sans-serif;
-  border: 1px solid #aec8b2;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(230px, 65vw);
+  padding: 0.8rem;
+  background: #fffdf2;
+  border: 1px solid #abc2ad;
   border-radius: 1rem;
-  box-shadow: 0 8px 24px #29493722;
+  color: #345344;
+  font: 400 14px/1.7 sans-serif;
+  z-index: 35;
   pointer-events: none;
+  box-shadow: 0 5px 18px #29493722;
   text-align: left;
+}
+.pressure-water:has(.pressure-coach) {
   z-index: 30;
 }
-.pressure-coach::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 12px;
-  width: 10px;
-  height: 10px;
-  background: #fffdf1;
-  transform: rotate(45deg);
-  border-left: 1px solid #aec8b2;
-  border-top: 1px solid #aec8b2;
+.pressure-help {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.pressure-help section {
+  padding: 1rem;
+  border: 1px solid #c8d7c8;
+  border-radius: 1rem;
+  background: #f5f9f1;
+}
+.pressure-help-picture {
+  padding: 1.5rem 0.3rem;
+  background: #d6e8e4;
+  border-radius: 0.7rem;
+  color: #5d7e77;
+  font-size: 1.6rem;
+  text-align: center;
+}
+.pressure-help > p {
+  grid-column: 1/-1;
+}
+@media (max-width: 650px) {
+  .pressure-help {
+    grid-template-columns: 1fr;
+  }
 }
 
-.pressure-device-name {
-  position: absolute;
-  top: 1px;
+.pressure-occupied .pressure-mooring {
+  top: 2px;
   left: 2px;
   font-size: 0.3em;
-  background: #f8f0d2;
-  border-radius: 3px;
-  color: #806b38;
-  pointer-events: none;
 }
-.pressure-reading-changed {
-  display: inline-block;
-  animation: pressure-reading 0.35s ease-out;
+
+.pressure-help-picture svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
-@keyframes pressure-reading {
-  from {
-    transform: scale(1.25);
-    color: #aa742d;
-  }
-  to {
-    transform: scale(1);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pressure-reading-changed {
-    animation: none;
+
+@media (min-width: 1000px) {
+  .variant-board-panel .board.raft-board {
+    --cell-max: clamp(20px, calc((100svh - 560px) / var(--raft-rows) - var(--gap)), 88px);
   }
 }

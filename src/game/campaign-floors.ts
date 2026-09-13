@@ -12,7 +12,7 @@ import type { DungeonLayout } from '../types/dungeon-generation.js'
 /** Resolve authored providers before the shared expedition engine creates an attempt. */
 export function campaignFloor(revision: CampaignRevision, floor: number): DungeonLayout {
   switch (revision) {
-    case 'pressure-cove-v1':
+    case 'pressure-cove-v2':
       return pressureLayout(floor)
     case 'reed-channels-v3':
       return ferryLayout(floor)

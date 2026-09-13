@@ -2,36 +2,36 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
-  'pressure.help': 'Reading the instruments',
+  'pressure.help': 'How to cross',
+  'pressure.wait': 'Wait for tide',
+  'pressure.raft': 'Raft · step aboard',
+  'pressure.water': 'River · cross aboard the raft',
+  'pressure.board': 'Find a safe way to the bank, then click the raft to board.',
+  'pressure.ride': 'Once aboard, choose Wait for tide to ride to the next landing.',
+  'pressure.land':
+    'You have reached the bank. Click a revealed shore tile to get off, then find the anchor.',
+  'pressure.static':
+    'Mines and clues stay put. Waiting moves only the raft and never uncovers the banks.',
+  'pressure.objective': 'Ride to the other bank, find the anchors, then reach the exit.',
+  'pressure.detail':
+    'At Old Ferry, ride the raft across and reach the anchors to restore the crossing.',
+  'pressure.floor-1': 'Floor 1 · A ride across',
+  'pressure.floor-2': 'Floor 2 · Choose your landing',
+  'pressure.floor-3': 'Floor 3 · Around the broken bank',
+  'pressure.entry-1':
+    'The bridge is gone. That raft is still drifting between the banks—it should carry us.',
+  'pressure.entry-2': 'I will find a way to the bank first. Then we can board.',
+  'pressure.basin-1': 'There are four stops here. Watch where the raft goes before stepping off.',
+  'pressure.basin-2': 'The upper bank is blocked. I will stay aboard and go around.',
+  'pressure.boat-1':
+    'Both banks have collapsed sections. Find the anchors so we can use the remaining landings.',
+  'pressure.boat-2': 'All right. I know the order of the stops now.',
+  'pressure.end-1': 'The ropes are secured. People can cross between the banks again.',
+  'pressure.end-2': 'There is another broken bridge upstream. Let us take a look next.',
 
   'pressure.title': 'Pressure Cove',
-  'pressure.task': 'Main · Echoes under the water',
-  'pressure.detail':
-    'Visit the paired instruments at Old Ferry. Compare hazard counts and ride the current to the moorings.',
-  'pressure.floor-1': 'Floor 1 · Calibration Bank',
-  'pressure.floor-2': 'Floor 2 · Divided Basin',
-  'pressure.floor-3': 'Floor 3 · The Boat’s Shadow',
-  'pressure.rule':
-    'Subtract the right-hand area’s mine count from the left-hand area’s. Zero means equal counts, not zero mines.',
-  'pressure.hint':
-    'A is fully revealed and safe. When the difference is zero, B is also safe. Open the highlighted tile.',
+  'pressure.task': 'The broken crossing',
   'pressure.progress': 'Moorings {count}/{total}',
-  'pressure.objective':
-    'Compare counts and use the ordinary clues. Visit each anchor, then reach the exit.',
-  'pressure.tide':
-    'Read the instruments again after changing the sluice. Flags are guesses and do not alter readings.',
-  'pressure.entry-1':
-    'These instruments report the difference between two riverbeds, not either count alone.',
-  'pressure.entry-2': 'With one area known safe, I can work out the other.',
-  'pressure.basin-1':
-    'The basin has opposing currents. The comparisons share an area, so their clues connect.',
-  'pressure.basin-2': 'Hold the useful bank steady, then read what the moving water changed.',
-  'pressure.boat-1':
-    'The boat is ahead. Wait—the returning pulses reach the banks at different times.',
-  'pressure.boat-2': 'I will check both moorings before following the boat’s shadow.',
-  'pressure.end-1':
-    'Confirmed: the outer bank answers first, then pressure returns through the basin. The source is upstream.',
-  'pressure.end-2': 'I will record the delay. It gives us a direction for the next crossing.',
 
   'atlas.travel': 'Fast travel',
   'atlas.camp-view': 'View camp',
