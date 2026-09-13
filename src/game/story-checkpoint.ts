@@ -22,11 +22,19 @@ export const STORY_SCENE_IDS: readonly StorySceneId[] = [
   'old-ferry',
 ]
 
+/** Scene-local revisions let a changed shoreline migrate without retiring the world. */
+export function storySceneRevision(id: StorySceneId): number {
+  return id === 'old-ferry' ? 1 : 0
+}
+
 /** Encode one bounded scene delta rather than each step taken through that scene. */
 function sceneCheckpoint(run: StorySceneMemory): StorySceneCheckpoint {
   const initial = createStoryRun(run.floor)
   return {
     id: STORY_SCENE_IDS[run.floor]!,
+    ...(storySceneRevision(STORY_SCENE_IDS[run.floor]!)
+      ? { terrainRevision: storySceneRevision(STORY_SCENE_IDS[run.floor]!) }
+      : {}),
     operated: run.operated,
     player: run.player,
     health: run.health,

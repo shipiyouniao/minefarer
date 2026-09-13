@@ -1,4 +1,4 @@
-import type { AtlasRegion, AtlasRegionId } from '../types/atlas.js'
+import type { AtlasRegion, AtlasRegionId, AtlasRegionConnection } from '../types/atlas.js'
 import type { StoryScene } from '../types/story.js'
 
 /** Only authored regions are named; the remaining world is unsurveyed space, not fake content. */
@@ -11,3 +11,7 @@ export const ATLAS_REGIONS: readonly AtlasRegion[] = [
 export function atlasRegionForScene(scene: StoryScene['id']): AtlasRegionId {
   return scene === 'reed-camp' || scene === 'old-ferry' ? 'reedbank' : 'woodland'
 }
+
+export const ATLAS_REGION_CONNECTIONS: readonly AtlasRegionConnection[] = [
+  { from: 'woodland', to: 'reedbank', via: { x: 58, y: 61 } },
+]

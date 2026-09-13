@@ -13,6 +13,7 @@ const camp = readyChapterTwo(new VariantRepository(storage))
 const story = new StorySession(camp)
 assert.ok(story.travelNorthwest())
 assert.ok(story.completeRegionalScene('reed-arrival'))
+assert.ok(story.completeRegionalScene('ferry-lead'))
 const browser = await chromium.launch({ channel: 'msedge' })
 mkdirSync('.native/atlas-screenshots', { recursive: true })
 try {
@@ -42,6 +43,13 @@ try {
     const camera = await page.locator('.atlas-scene').getAttribute('style')
     await page.locator('[data-level="world"]').click()
     assert.equal(await page.locator('.atlas-region-node').count(), 2)
+    assert.equal(await page.locator('[data-world-geography="continuous"]').count(), 1)
+    const road = page.locator('[data-world-connection="woodland:reedbank"] .atlas-route-line')
+    assert.equal(
+      await road.getAttribute('d'),
+      await page.locator('[data-world-reveal="woodland:reedbank"]').getAttribute('d'),
+    )
+    assert.equal(await page.locator('.atlas-world-overview svg svg').count(), 0)
     await page
       .locator('.story-atlas')
       .screenshot({ path: `.native/atlas-screenshots/${width}-${lang}-chapter-two-world.png` })
