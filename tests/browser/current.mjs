@@ -27,7 +27,7 @@ for (const action of solveFerry().actions) {
 }
 for (const scene of ['ferry-entry', 'ferry-banks', 'ferry-gate', 'ferry-end'])
   camp.completeStageScene('reed-channels', scene)
-const cleared = storage.getItem(key).replaceAll('reed-channels-v2', 'reed-channels-v1')
+const cleared = storage.getItem(key).replaceAll('reed-channels-v3', 'reed-channels-v1')
 const browser = await chromium.launch({ channel: 'msedge' })
 try {
   for (const width of [390, 1440]) {
@@ -43,11 +43,11 @@ try {
       value: beforeSwitch,
     })
     await page.goto(`${base}?page=campaign&stage=reed-channels&lang=zh`)
-    assert.equal(await page.locator('[data-current-cell]').count(), 8)
+    assert.ok((await page.locator('[data-current-cell]').count()) > 180)
     await page.locator('[data-power-cell="174"]').click()
     await page.waitForTimeout(1200)
-    assert.equal(await page.locator('.current-held').count(), 4)
-    assert.equal(await page.locator('.current-moving').count(), 4)
+    assert.ok((await page.locator('.current-held').count()) > 80)
+    assert.ok((await page.locator('.current-moving').count()) > 80)
     assert.match(await page.locator('.current-guide summary').innerText(), /1$/)
     await page.screenshot({ path: `.native/current-${width}.png` })
     await page.reload()
@@ -74,6 +74,13 @@ try {
     await page.locator('[data-story-scene="reed-camp"]').waitFor()
     await page.reload()
     assert.equal(await page.locator('[data-story-campaign]').count(), 0)
+    await page.locator('[data-story-action="map"]').click()
+    await page.locator('.atlas-level').click()
+    const ferryRoad = page.locator('[data-atlas-route="reed-camp:old-ferry"]')
+    assert.equal(await ferryRoad.count(), 1)
+    assert.equal(await ferryRoad.getAttribute('data-one-way'), 'false')
+    assert.ok(await ferryRoad.locator('.atlas-route-line').isVisible())
+    assert.equal(await page.locator('[data-map-name="旧渡口"]').count(), 1)
     assert.deepEqual(errors, [])
     await page.close()
   }

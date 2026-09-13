@@ -63,10 +63,14 @@ export function atlasReedbank(state: StoryViewState): string {
     })
     .join('')
 
-  return `<div class="atlas-chart atlas-river-region">${riverTerrain()}<span class="atlas-unknown-label">${message(state.language, 'story.atlas-unsurveyed')}</span><div class="atlas-marker-layer">${markers}</div><span class="atlas-compass" aria-hidden="true">N<br>✧</span></div>`
+  return `<div class="atlas-chart atlas-river-region">${riverTerrain(!!state.progress.facts?.includes('ferry-channel-cleared'))}<span class="atlas-unknown-label">${message(state.language, 'story.atlas-unsurveyed')}</span><div class="atlas-marker-layer">${markers}</div><span class="atlas-compass" aria-hidden="true">N<br>✧</span></div>`
 }
 
 /** Reuse the same river geography in the world overview and its detailed regional chart. */
-function riverTerrain(): string {
-  return `<svg class="atlas-terrain" viewBox="0 0 800 460" preserveAspectRatio="none" aria-hidden="true"><rect width="800" height="460" fill="#dce1cd"/><path d="M0 10Q290 160 380 40T800 110V0H0Z" fill="#c7d3c4"/><path d="M130-30Q570 170 290 280T450 510" fill="none" stroke="#9bbdbd" stroke-width="90"/><path d="M130-30Q570 170 290 280T450 510" fill="none" stroke="#c5d9d5" stroke-width="45"/><path d="M448 244Q580 310 680 377" fill="none" stroke="#849875" stroke-width="3" stroke-dasharray="8 5"/><path d="m440 235-80 0m0-9v18" stroke="#9f8563" stroke-width="6"/></svg>`
+function riverTerrain(ferryOpen = false): string {
+  const ferryRoad = ferryOpen
+    ? '<g class="atlas-route is-open" data-atlas-route="reed-camp:old-ferry" data-route-state="open" data-one-way="false"><path class="atlas-route-bed" d="M448 243.8Q360 260 240 184"/><path class="atlas-route-line" d="M448 243.8Q360 260 240 184"/></g>'
+    : ''
+
+  return `<svg class="atlas-terrain" viewBox="0 0 800 460" preserveAspectRatio="none" aria-hidden="true"><rect width="800" height="460" fill="#dce1cd"/><path d="M0 10Q290 160 380 40T800 110V0H0Z" fill="#c7d3c4"/><path d="M130-30Q570 170 290 280T450 510" fill="none" stroke="#9bbdbd" stroke-width="90"/><path d="M130-30Q570 170 290 280T450 510" fill="none" stroke="#c5d9d5" stroke-width="45"/><path d="M448 244Q580 310 680 377" fill="none" stroke="#849875" stroke-width="3" stroke-dasharray="8 5"/>${ferryRoad}<path d="m440 235-80 0m0-9v18" stroke="#9f8563" stroke-width="6"/></svg>`
 }

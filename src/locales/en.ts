@@ -2,10 +2,46 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'atlas.travel': 'Fast travel',
+  'atlas.camp-view': 'View camp',
+
+  'loadout.equip': 'Equip',
+  'loadout.unequip': 'Unequip',
+  'loadout.cost': 'Cost {count}',
+  'loadout.blocked': 'Not unlocked, or this profession has reached its limit.',
+  'loadout.full': 'Not enough capacity. Unequip another item first.',
+  'loadout.lore.probe': 'A small kit of spare probes.',
+  'loadout.effects.probe': 'Starting probes +1',
+  'loadout.lore.scanner': 'A portable scanner for surveying the ground ahead.',
+  'loadout.effects.scanner': 'Starting scans +1',
+  'loadout.lore.guard': 'A shield held ready for an unexpected impact.',
+  'loadout.effects.guard': 'Starting shields +1',
+  'loadout.lore.medical-kit': 'Field medical supplies for a longer journey.',
+  'loadout.effects.medical-kit': 'Starting health +2|Maximum health +2',
+  'loadout.lore.steel-blade': 'A tempered blade made for close combat.',
+  'loadout.effects.steel-blade': 'Attack +2',
+  'loadout.lore.plated-vest': 'Overlapping plates soften incoming blows.',
+  'loadout.effects.plated-vest':
+    'Defense +1|Reduces damage from enemy attacks|Does not reduce mine damage',
+  'loadout.lore.focus-lens': 'Calibrated markings make precise work easier.',
+  'loadout.effects.focus-lens':
+    'Refunds 1 AP after the first control or seal closure, nest destruction, anchor calibration or crystal shield break each turn',
+  'loadout.lore.clearing-hook': 'A hooked blade clears tangled obstacles.',
+  'loadout.effects.clearing-hook':
+    'Refunds 1 AP after clearing the first web, egg or hatchling each turn',
+  'loadout.lore.field-boots': 'Sturdy boots keep your pace steady.',
+  'loadout.effects.field-boots': 'AP +1 on even turns|Total AP capped at 5',
+  'loadout.lore.field-radio': 'Relay your findings and receive timely supplies.',
+  'loadout.effects.field-radio':
+    'Gain 1 probe after successfully using a profession skill|Probe cap: 4|Triggers once per floor',
+  'loadout.lore.sonar': 'Listen beneath the ground to connect obscured clues.',
+  'loadout.effects.sonar':
+    'Start with 2 sonar charges|Recover 1 charge per 12 safe digs, capped at 3|Read the mine count in a 3×3 area|Numbers in the area stay clear|Only the center tile is opened',
+
   'ferry.destination': 'Old Ferry',
   'current.title': 'Tides and shelter',
   'current.guide':
-    'Switching a sluice sends one tide: the connected A / B lanes stay fixed; the other lanes cycle one tile along their arrows. Flags and revealed tiles travel together. Numbers update for their new neighbors.',
+    'Switching a sluice shifts an entire bank: the powered bank stays still while each row of the other bank cycles one tile along its arrow. You, mines and flags travel with the ground; numbers update. Walls, controls and entrances stay anchored. Plan which route the tide will connect.',
   'current.legend':
     'Blue: connected and sheltered. Gold: disconnected and drifting. Check the branch and arrows before switching.',
   'current.held': 'Sheltered lane: fixed while connected',

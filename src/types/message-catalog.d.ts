@@ -1,5 +1,36 @@
 /** Complete shared catalog: every supported language implements every key. */
 export interface MessageCatalog {
+  readonly 'atlas.travel': string
+  readonly 'atlas.camp-view': string
+
+  readonly 'loadout.equip': string
+  readonly 'loadout.unequip': string
+  readonly 'loadout.cost': string
+  readonly 'loadout.blocked': string
+  readonly 'loadout.full': string
+  readonly 'loadout.lore.probe': string
+  readonly 'loadout.effects.probe': string
+  readonly 'loadout.lore.scanner': string
+  readonly 'loadout.effects.scanner': string
+  readonly 'loadout.lore.guard': string
+  readonly 'loadout.effects.guard': string
+  readonly 'loadout.lore.medical-kit': string
+  readonly 'loadout.effects.medical-kit': string
+  readonly 'loadout.lore.steel-blade': string
+  readonly 'loadout.effects.steel-blade': string
+  readonly 'loadout.lore.plated-vest': string
+  readonly 'loadout.effects.plated-vest': string
+  readonly 'loadout.lore.focus-lens': string
+  readonly 'loadout.effects.focus-lens': string
+  readonly 'loadout.lore.clearing-hook': string
+  readonly 'loadout.effects.clearing-hook': string
+  readonly 'loadout.lore.field-boots': string
+  readonly 'loadout.effects.field-boots': string
+  readonly 'loadout.lore.field-radio': string
+  readonly 'loadout.effects.field-radio': string
+  readonly 'loadout.lore.sonar': string
+  readonly 'loadout.effects.sonar': string
+
   readonly 'ferry.destination': string
   readonly 'current.title': string
   readonly 'current.guide': string

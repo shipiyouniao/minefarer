@@ -20,8 +20,16 @@ Topology and device positions were authored first. Mine placements were selected
 
 The ending establishes that the intact gates stop at repeatable marks and locates the moored ferry in the inner cove. It awards 160 shared supplies once and records `ferry-channel-cleared`, completing the main task on site. After clearance, pier cell 50 becomes a doorway to the playable Old Ferry scene, with a matching return doorway. Both board and atlas show the destination instead of the retired stage marker. The next substantial stage is not implemented in this increment. The old mine remains independent of this task and chapter.
 
-`reed-channels-v2` owns a new campaign slot; previous chapter revisions and Recollection journals are untouched. Every accepted action can be replayed after reload. Interrupted endings are recovered after settlement without re-awarding currency. Existing equipment, skills and ordinary task/achievement counters apply. The stage combines reversible routing with deterministic tidal tile movement. Obsolete v1 attempts are retired instead of replayed under new rules; cleared history and rewards remain, and previously cleared players receive the onward road. Recollection eligibility for this combined mechanic remains later work.
+`reed-channels-v3` owns a new campaign slot; previous chapter revisions and Recollection journals are untouched. Every accepted action can be replayed after reload. Interrupted endings are recovered after settlement without re-awarding currency. Existing equipment, skills and ordinary task/achievement counters apply. The stage combines reversible routing with deterministic tidal tile movement. Obsolete v1 attempts are retired instead of replayed under new rules; cleared history and rewards remain, and previously cleared players receive the onward road. Recollection eligibility for this combined mechanic remains later work.
 
 ## Remaining chapter delivery
 
 The chapter outline above is an initial direction, not completion of all stage specifications. R2-10.2-01 still needs the later stages' full prerequisites, side-route outcome and boss resolution. R2-10.2-02 has the first playable stage in this increment; R2-10.2-03 through R2-10.2-07 remain incomplete. Track review and landing in issue #55.
+
+## Broad-bank tide revision
+
+Revision `reed-channels-v3` replaces the peripheral four-cell lanes with row currents covering over 85% of playable terrain on every floor. Physical walls, controls, receivers and entrances stay anchored. The two banks can be held independently; the second and third reaches use opposite currents. All three minefields were reauthored and validated with public-clue deductions, no tools and no damage.
+
+A separate terrain test grants perfect mine knowledge and opens every sluice without moving tiles: at least one required destination remains disconnected on every floor. A tide is therefore required to create a real safe route, rather than merely satisfy a switch counter. This does not forbid players from spending health or mobility resources to overcome hazards.
+
+Old incomplete v1/v2 journals retire instead of replaying against this changed board. Completed stages, rewards and the Old Ferry road remain valid. Human playtesting is still required before accepting pacing and clarity.

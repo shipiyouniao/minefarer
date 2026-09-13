@@ -184,6 +184,34 @@ export class StorySession {
     return true
   }
 
+  /** Return to an unlocked camp without losing explored scenes or replaying arrival dialogue. */
+  fastTravelCamp(destination: 'camp' | 'reed-camp'): boolean {
+    const progress = this.camp.story
+    if (
+      !progress.mapOwned ||
+      !progress.world ||
+      (this.current && this.current.phase !== 'exploring') ||
+      progress.dialogue?.active
+    )
+      return false
+    const unlocked =
+      destination === 'reed-camp'
+        ? progress.facts?.includes('chapter-one-cleared')
+        : progress.completed.includes('reach-camp') || progress.facts?.includes('camp-reached')
+    if (!unlocked) return false
+    const world = this.current ? checkpointStory(this.current) : progress.world
+    this.current = null
+    this.camp.saveStory({
+      ...progress,
+      arrived: true,
+      campId: destination,
+      campPosition: buildStoryBoard(regionalCamp(destination).scene).entrance,
+      journal: null,
+      world: { ...world, active: null },
+    })
+    return true
+  }
+
   /** Cross a named world doorway while retaining explored cells and independent campaign attempts. */
   travelNorthwest(): boolean {
     const progress = this.camp.story

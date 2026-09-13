@@ -2,10 +2,43 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** ja interface messages. Keep keys aligned across locales. */
 export const jaMessages: MessageCatalog = {
+  'atlas.travel': 'ファストトラベル',
+  'atlas.camp-view': '拠点を見る',
+
+  'loadout.equip': '装備する',
+  'loadout.unequip': '装備を外す',
+  'loadout.cost': 'コスト {count}',
+  'loadout.blocked': '未解放、または現在の職業では上限に達しています。',
+  'loadout.full': '容量不足です。他の装備を外してください。',
+  'loadout.lore.probe': '予備の探針を収めた道具袋。',
+  'loadout.effects.probe': '初期探針 +1',
+  'loadout.lore.scanner': '前方の地形を調べる携帯スキャナー。',
+  'loadout.effects.scanner': '初期スキャン +1',
+  'loadout.lore.guard': '不意の衝撃に備える盾。',
+  'loadout.effects.guard': '初期シールド +1',
+  'loadout.lore.medical-kit': '旅に余裕をもたらす救急用品。',
+  'loadout.effects.medical-kit': '初期HP +2|最大HP +2',
+  'loadout.lore.steel-blade': '接近戦に適した鋼の短剣。',
+  'loadout.effects.steel-blade': '攻撃 +2',
+  'loadout.lore.plated-vest': '重なった装甲で攻撃を受け止める防具。',
+  'loadout.effects.plated-vest': '防御 +1|敵の攻撃ダメージを軽減|地雷ダメージは軽減しない',
+  'loadout.lore.focus-lens': '細かな操作を助ける校正済みの目盛り。',
+  'loadout.effects.focus-lens':
+    '各ターン最初の装置・封印停止、巣の破壊、錨の校正、結晶による盾破壊でAPを1回復',
+  'loadout.lore.clearing-hook': '絡みついた障害を取り除く鉤刃。',
+  'loadout.effects.clearing-hook': '各ターン最初の蜘蛛の巣・卵・幼虫の除去でAPを1回復',
+  'loadout.lore.field-boots': '長旅の足取りを支える丈夫な靴。',
+  'loadout.effects.field-boots': '偶数ターンのAP +1|APの合計上限は5',
+  'loadout.lore.field-radio': '探索の発見を伝えて補給を受ける無線機。',
+  'loadout.effects.field-radio': '職業スキル成功後に探針を1補充|探針の上限は4|各階で1回発動',
+  'loadout.lore.sonar': '地中の反響から曖昧な手がかりをつなぐ。',
+  'loadout.effects.sonar':
+    '初期ソナー2回|安全な掘削12回で1回復、上限3回|3×3範囲の地雷数を確認|範囲内の数字が永続的に鮮明になる|開くのは中心マスのみ',
+
   'ferry.destination': '古い渡し場',
   'current.title': '潮流と安定域',
   'current.guide':
-    '水門を切り替えると潮が一度動く。接続した A / B の列は固定され、反対側は矢印に沿って一マス循環する。旗と開いたマスも移動し、数字は新しい隣接関係に変わる。',
+    '水門を切り替えると河床全体が動きます。通水中の岸は固定され、反対側の各行が矢印の向きに1マス循環します。人物・地雷・旗も移動し、数字は更新されます。壁・装置・出入口は固定です。つながる道を確かめてから切り替えましょう。',
   'current.legend':
     '青枠：接続して固定。金枠：切断されて移動。切り替える前に分岐と矢印を確認しよう。',
   'current.held': '安定域：接続中は固定',
