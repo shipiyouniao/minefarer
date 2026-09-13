@@ -2,6 +2,28 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** zh interface messages. Keep keys aligned across locales. */
 export const zhMessages: MessageCatalog = {
+  'pressure.help': '怎么读数',
+
+  'pressure.title': '回压湾',
+  'pressure.task': '主线 · 水下的回声',
+  'pressure.detail': '前往旧渡口的对照仪，比较两片河床的雷数，借潮流抵达系船处。',
+  'pressure.floor-1': '第一层 · 校准浅岸',
+  'pressure.floor-2': '第二层 · 分流内湾',
+  'pressure.floor-3': '第三层 · 船影之下',
+  'pressure.rule': '读数是左侧字母区域的雷数减去右侧区域的雷数。0 只表示一样多，不代表没有雷。',
+  'pressure.hint': 'A 区已经全部翻开且安全。读数为 0 时，B 区也全是安全格。点亮框中的格子试试。',
+  'pressure.progress': '系船处 {count}/{total}',
+  'pressure.objective': '比较雷数，结合数字推理。走到每个船锚处，再去出口。',
+  'pressure.tide': '切换水闸后，重新读取对照值。标记是猜测，不会改变读数。',
+  'pressure.entry-1': '这两只仪表不是在报雷数，它们报的是两片河床相差多少。',
+  'pressure.entry-2': '先找一块确定安全的地方，就能算出另一边了。',
+  'pressure.basin-1': '内湾分成了两股潮流。两个对照共用一片河床，可以把线索接起来。',
+  'pressure.basin-2': '先稳住有用的那岸，再看移动后的读数。',
+  'pressure.boat-1': '船就在前面。别急，两侧的回流并不是同时到的。',
+  'pressure.boat-2': '我去两处系船点确认，再沿船影过去。',
+  'pressure.end-1': '确认了：外岸先响，内湾随后才回压。源头在更上游。',
+  'pressure.end-2': '把这个时间差记下来。下一段路，就顺着它找。',
+
   'atlas.travel': '快速传送',
   'atlas.camp-view': '查看营地',
 

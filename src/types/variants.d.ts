@@ -1,3 +1,4 @@
+import type { PressureFloor } from './pressure.js'
 import type { RecollectionSelection } from './recollection.js'
 import type { FloorRail } from './floor-rail.js'
 import type { BattleLesson } from './battle-lesson.js'
@@ -97,6 +98,7 @@ export interface Departure {
 
 /** A complete floor state; reachability is derived from revealed safe cells. */
 export interface Expedition extends Vitality {
+  readonly pressure?: PressureFloor
   readonly current?: FloorTide
   readonly rail?: FloorRail
   readonly power?: FloorPower

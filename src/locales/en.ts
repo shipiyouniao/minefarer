@@ -2,6 +2,37 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'pressure.help': 'Reading the instruments',
+
+  'pressure.title': 'Pressure Cove',
+  'pressure.task': 'Main · Echoes under the water',
+  'pressure.detail':
+    'Visit the paired instruments at Old Ferry. Compare hazard counts and ride the current to the moorings.',
+  'pressure.floor-1': 'Floor 1 · Calibration Bank',
+  'pressure.floor-2': 'Floor 2 · Divided Basin',
+  'pressure.floor-3': 'Floor 3 · The Boat’s Shadow',
+  'pressure.rule':
+    'Subtract the right-hand area’s mine count from the left-hand area’s. Zero means equal counts, not zero mines.',
+  'pressure.hint':
+    'A is fully revealed and safe. When the difference is zero, B is also safe. Open the highlighted tile.',
+  'pressure.progress': 'Moorings {count}/{total}',
+  'pressure.objective':
+    'Compare counts and use the ordinary clues. Visit each anchor, then reach the exit.',
+  'pressure.tide':
+    'Read the instruments again after changing the sluice. Flags are guesses and do not alter readings.',
+  'pressure.entry-1':
+    'These instruments report the difference between two riverbeds, not either count alone.',
+  'pressure.entry-2': 'With one area known safe, I can work out the other.',
+  'pressure.basin-1':
+    'The basin has opposing currents. The comparisons share an area, so their clues connect.',
+  'pressure.basin-2': 'Hold the useful bank steady, then read what the moving water changed.',
+  'pressure.boat-1':
+    'The boat is ahead. Wait—the returning pulses reach the banks at different times.',
+  'pressure.boat-2': 'I will check both moorings before following the boat’s shadow.',
+  'pressure.end-1':
+    'Confirmed: the outer bank answers first, then pressure returns through the basin. The source is upstream.',
+  'pressure.end-2': 'I will record the delay. It gives us a direction for the next crossing.',
+
   'atlas.travel': 'Fast travel',
   'atlas.camp-view': 'View camp',
 

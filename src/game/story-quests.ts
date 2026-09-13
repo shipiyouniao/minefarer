@@ -36,6 +36,7 @@ export function recordStoryCampaign(
 
 export const STORY_FACTS: readonly StoryFact[] = [
   'ferry-lead',
+  'pressure-cove-cleared',
   'ferry-channel-cleared',
   'reed-camp-reached',
   'reed-camp-settled',
@@ -59,6 +60,14 @@ export const STORY_FACTS: readonly StoryFact[] = [
 ]
 
 export const STORY_TASKS: readonly StoryTaskDefinition[] = [
+  {
+    id: 'investigate-pressure',
+    category: 'main',
+    supplies: 0,
+    introducedBy: 'ferry-channel-cleared',
+    prerequisite: { kind: 'fact', id: 'ferry-channel-cleared' },
+    objective: { kind: 'fact', id: 'pressure-cove-cleared' },
+  },
   {
     id: 'investigate-ferry',
     category: 'main',

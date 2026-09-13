@@ -8,6 +8,18 @@ import type {
 
 export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
   {
+    id: 'pressure-cove',
+    entrance: { scene: 'old-ferry', index: 85, fact: 'ferry-channel-cleared' },
+    bounds: { width: 19, height: 19 },
+    revision: 'pressure-cove-v1',
+    prerequisite: 'reed-channels',
+    floors: 3,
+    outcome: 'pressure-cove-cleared',
+    reward: 180,
+    entryTask: 'reach-tower',
+    lesson: false,
+  },
+  {
     id: 'reed-channels',
     entrance: { scene: 'reed-camp', index: 50, fact: 'ferry-lead' },
     bounds: { width: 19, height: 19 },
@@ -107,6 +119,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
 /** Reject arbitrary route keys before selecting a save slot. */
 export function parseCampaignStage(value: string | null): CampaignStageId | null {
   return value === 'quarry-rescue' ||
+    value === 'pressure-cove' ||
     value === 'reed-channels' ||
     value === 'tower-galleries' ||
     value === 'tower-relay' ||
