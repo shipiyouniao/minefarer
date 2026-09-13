@@ -43,7 +43,7 @@ export const enMessages: MessageCatalog = {
   'current.guide':
     'Switching a sluice shifts an entire bank: the powered bank stays still while each row of the other bank cycles one tile along its arrow. You, mines and flags travel with the ground; numbers update. Walls, controls and entrances stay anchored. Plan which route the tide will connect.',
   'current.legend':
-    'Blue: connected and sheltered. Gold: disconnected and drifting. Check the branch and arrows before switching.',
+    'Teal: held bank. Sand: moving bank. Dark tiles are covered; pale tiles are revealed. Each lane starts with its bank and direction.',
   'current.held': 'Sheltered lane: fixed while connected',
   'current.moving': 'Current lane: cycles along the arrow if disconnected after switching',
 
