@@ -2,8 +2,12 @@ import { readFile, readdir, stat } from 'node:fs/promises'
 import { spawnSync } from 'node:child_process'
 import assert from 'node:assert/strict'
 
+const base = process.env.BUILD_BASE_PATH || '/minefarer/'
+assert.ok(base.startsWith('/') && base.endsWith('/'))
 const html = await readFile('dist/index.html', 'utf8')
-const assets = [...html.matchAll(/(?:src|href)="(\/minefarer\/[^"?#]+)"/g)].map((match) => match[1])
+const assets = [...html.matchAll(/(?:src|href)="([^"?#]+)"/g)]
+  .map((match) => match[1])
+  .filter((path) => path.startsWith(base))
 assert.ok(
   assets.some((path) => path.endsWith('.js')),
   'Missing JavaScript entry',
@@ -12,7 +16,7 @@ assert.ok(
   assets.some((path) => path.endsWith('.css')),
   'Missing stylesheet',
 )
-for (const asset of assets) await stat('dist/' + asset.replace('/minefarer/', ''))
+for (const asset of assets) await stat('dist/' + asset.slice(base.length))
 for (const file of [
   'dist/assets/quiet-board.png',
   'dist/favicon.svg',

@@ -3,19 +3,25 @@ import type { StorageLike } from '../types/storage.js'
 
 /** Defers localStorage access until an operation that Repository can safely catch. */
 export class BrowserStorage implements StorageLike {
+  private readonly prefix: string
+  /** Isolate preview saves without migrating or copying the stable account state. */
+  constructor(prefix = '') {
+    this.prefix = prefix
+  }
+
   /** Read a value; browsers may throw when storage is disabled. */
   getItem(key: string): string | null {
-    return localStorage.getItem(key)
+    return localStorage.getItem(this.prefix + key)
   }
 
   /** Write a value; quota failures propagate to the repository boundary. */
   setItem(key: string, value: string): void {
-    localStorage.setItem(key, value)
+    localStorage.setItem(this.prefix + key, value)
   }
 
   /** Remove one value without clearing unrelated application data. */
   removeItem(key: string): void {
-    localStorage.removeItem(key)
+    localStorage.removeItem(this.prefix + key)
   }
 }
 
