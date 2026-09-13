@@ -281,3 +281,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture and type convent
 ## License
 
 The project is licensed under the [MIT License](LICENSE). This covers the current project's code, documentation, and original artwork; third-party dependencies retain their own licenses and notices. The MIT license replaces the original edition's non-commercial usage notice for this version of the project.
+
+## Development releases
+
+Feature PRs target `develop`; milestone releases promote it to `main`. [Development preview](https://shipiyouniao.github.io/minefarer/dev/) has separate saves from the stable game. See [branch and deployment policy](docs/development-releases.md).

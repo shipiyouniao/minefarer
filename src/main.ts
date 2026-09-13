@@ -14,7 +14,9 @@ function bootstrap(): GameRouter {
     throw new Error('App root is missing')
   }
 
-  const storage = new BrowserStorage()
+  const storage = new BrowserStorage(
+    import.meta.env.BASE_URL.endsWith('/dev/') ? 'minefarer.dev:' : '',
+  )
   const repository = new Repository(storage)
 
   repository.migrateLegacy()

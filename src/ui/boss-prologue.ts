@@ -38,7 +38,7 @@ export class BossPrologue {
   ): void {
     if (!run?.encounter || run.phase !== 'boss' || this.dialog?.open || blocked) return
 
-    const key = `minesweeper.prologue:${run.departure.seed}:${run.floor}:${run.encounter.kind}`
+    const key = `${import.meta.env.BASE_URL.endsWith('/dev/') ? 'minefarer.dev:' : ''}minesweeper.prologue:${run.departure.seed}:${run.floor}:${run.encounter.kind}`
     let stored = false
     try {
       stored = sessionStorage.getItem(key) === 'seen'

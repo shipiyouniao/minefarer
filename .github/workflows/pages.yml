@@ -2,7 +2,7 @@ name: Check and deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
   workflow_dispatch:
 
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
   cancel-in-progress: false
 
 jobs:
@@ -26,14 +26,62 @@ jobs:
       - run: npm audit
       - run: npm run check
       - run: node scripts/verify-build.mjs
-      - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+
+      - name: Verify development asset paths
+        run: |
+          npx vite build --base=/minefarer/dev/
+          BUILD_BASE_PATH=/minefarer/dev/ node scripts/verify-build.mjs
+
+  package:
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
         with:
-          path: dist
+          ref: main
+          path: stable
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: development
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            stable/package-lock.json
+            development/package-lock.json
+      - name: Validate and build resolved stable revision
+        working-directory: stable
+        run: |
+          npm ci --no-audit
+          npm audit
+          npm run check
+          npm run test:legacy
+          node scripts/verify-build.mjs
+      - name: Validate and build resolved development revision
+        working-directory: development
+        run: |
+          npm ci --no-audit
+          npm audit
+          npm run check
+          npm run test:legacy
+          npx vite build --base=/minefarer/dev/
+          BUILD_BASE_PATH=/minefarer/dev/ node scripts/verify-build.mjs
+      - name: Assemble both sites
+        run: |
+          mkdir -p site/dev
+          cp -a stable/dist/. site/
+          cp -a development/dist/. site/dev/
+          test -f site/index.html
+          test -f site/dev/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: check
+    needs: package
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -43,6 +91,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/configure-pages@v5
-      - name: Deploy
+      - name: Deploy stable and development together
         id: deployment
         uses: actions/deploy-pages@v4
