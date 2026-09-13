@@ -18,6 +18,8 @@
 
 **Tactical encounters.** Eight existing boss families have distinct mechanics, artwork and attack feedback: Bastion Guardian, Brood Queen, [Mirror Twins](docs/mirror-twins.md), [Magnetic Knight](docs/magnetic-knight.md), [Clock Mage](docs/clock-mage.md), [Echo Warden](docs/echo-warden.md), [Matrix Overseer](docs/matrix-overseer.md) and [Tidekeeper](docs/tidekeeper.md). Campaign introduces encounters through story; Recollection keeps tactical instructions and forecasts without arrival dialogue. The new Lookout, Fleet and Islands families are planned, not implemented.
 
+Reed Channels combines sluice routing with forecast tidal tile movement. Clearing it replaces the camp-side stage entrance with a persistent, two-way road to Old Ferry.
+
 ## Camp and progression
 
 Walk to a facility to open its modal over the camp board. Close it to visit another facility. Titles, supplies and claim counts stay above an inset scrolling pane; claimable missions and achievements appear first, claiming preserves scroll position and rewards fly toward the wallet. Shop product tiles are grouped by category with a separate detail/purchase panel. Professions and equipment use the same shared camp progression in both activities.

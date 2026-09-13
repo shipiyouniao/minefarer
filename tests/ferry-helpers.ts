@@ -8,7 +8,7 @@ import { CURRENT_DEPARTURE } from './helpers.js'
 export const FERRY_DEPARTURE = {
   ...CURRENT_DEPARTURE,
   seed: 0,
-  campaign: 'reed-channels-v1' as const,
+  campaign: 'reed-channels-v2' as const,
 }
 
 /** This plan knows the public circuit labels, but uses only visible numbers to open or flag cells. */
@@ -62,6 +62,7 @@ export function solveFerry(): {
         type: run.game.cells[run.exit]?.visibility === 'revealed' ? 'move' : 'reveal',
         index: run.exit,
       }),
+      `Exit unreachable on floor ${run.floor}, player ${run.player}`,
     )
     assert.equal(run.health, run.maxHealth, 'No hidden-truth guesses, tools or damage needed')
     assert.equal(run.phase, run.floor === 3 ? 'won' : 'reward')

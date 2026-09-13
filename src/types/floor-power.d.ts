@@ -1,3 +1,4 @@
+import type { FloorTide } from './floor-tide.js'
 import type { DungeonLayout } from './dungeon-generation.js'
 /** A branch is identified by its physical junction, so components remain layout-independent. */
 export interface PowerFeed {
@@ -43,5 +44,6 @@ export type PowerReadiness = 'covered' | 'clue' | 'unpowered' | 'recorded' | 're
 
 /** A constructed power room supplies fixed game cells and its reversible network. */
 export interface PowerDungeonLayout extends DungeonLayout {
+  readonly current?: FloorTide
   readonly power: FloorPower
 }

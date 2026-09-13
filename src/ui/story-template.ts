@@ -1,3 +1,4 @@
+import { atlasDestination } from '../game/atlas-connections.js'
 import { regionalCamp, isRegionalCamp } from '../game/regional-camps.js'
 import { campSiteImage, storySiteName } from './story-assets.js'
 import { RESCUE_GATE, TOMA_CAMP_CELL } from '../game/rail-story.js'
@@ -52,7 +53,10 @@ function cellTemplate(state: StoryViewState, index: number): string {
     (entry) => entry.index === index,
   )
   const ferryGate =
-    board.scene.id === 'reed-camp' && index === 50 && state.progress.facts?.includes('ferry-lead')
+    board.scene.id === 'reed-camp' &&
+    index === 50 &&
+    state.progress.facts?.includes('ferry-lead') &&
+    !state.progress.facts?.includes('ferry-channel-cleared')
   const bastionGate = board.scene.id === 'blockade-pass' && index === BASTION_GATE
   const control = run?.board.scene.mechanisms?.find((entry) => entry.index === index)
   if (board.walls.includes(index))
@@ -74,7 +78,11 @@ function cellTemplate(state: StoryViewState, index: number): string {
   const waterwayGate =
     run?.floor === 3 && index === WATERWAY_GATE && state.progress.facts?.includes('ridge-surveyed')
   const exit = index === board.exit
-  const entrance = run && run.floor > 0 && index === board.entrance
+  const entrance =
+    run &&
+    run.floor > 0 &&
+    index === board.entrance &&
+    atlasDestination(board.scene, index, state.progress) !== null
   const destinations = [
     message(language, 'story.awakening'),
     message(language, 'story.trail'),

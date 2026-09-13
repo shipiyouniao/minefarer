@@ -287,6 +287,7 @@ export type StorySceneId =
   | 'tower-landing'
   | 'northwest-bridge'
   | 'blockade-pass'
+  | 'old-ferry'
 
 /** Only differences from authored terrain are stored; hazards and clue numbers are rebuilt. */
 export interface StorySceneCheckpoint {

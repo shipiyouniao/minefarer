@@ -186,7 +186,7 @@ export class VariantApp implements VariantInputActions {
             this.language,
             powerReadiness(run, index),
             run.power?.purpose,
-            run.departure.campaign === 'reed-channels-v1',
+            run.departure.campaign === 'reed-channels-v2',
           )
 
         return
@@ -639,7 +639,7 @@ export class VariantApp implements VariantInputActions {
               this.session.run.departure.recollection
                 ? message(this.language, 'recollection.routing')
                 : undefined,
-              this.session.run.departure.campaign === 'reed-channels-v1',
+              this.session.run.departure.campaign === 'reed-channels-v2',
             ),
           )
           return

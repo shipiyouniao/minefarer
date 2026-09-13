@@ -2,6 +2,7 @@ import type { AtlasPlace, AtlasRoute } from '../types/atlas.js'
 
 /** Geographic positions belong to content; presentation selects detail without changing discovery. */
 export const ATLAS_PLACES: readonly AtlasPlace[] = [
+  { scene: 'old-ferry', x: 5, y: 9, district: 'west', picture: 'lantern' },
   { scene: 'awakening', x: 14, y: 78, district: 'woodland', picture: 'tree' },
   { scene: 'trail', x: 32, y: 70, district: 'woodland', picture: 'treasure' },
   { scene: 'approach', x: 43, y: 49, district: 'woodland', picture: 'lantern' },
@@ -18,6 +19,7 @@ export const ATLAS_PLACES: readonly AtlasPlace[] = [
 
 /** The world chart follows real scene connections; bends keep shortcuts distinct from through roads. */
 export const ATLAS_ROUTES: readonly AtlasRoute[] = [
+  { from: 'reed-camp', to: 'old-ferry', via: [], access: 'northwest' },
   { from: 'blockade-pass', to: 'reed-camp', via: [{ x: 17, y: 12 }], access: 'northwest' },
   { from: 'awakening', to: 'trail', via: [{ x: 22, y: 79 }] },
   { from: 'trail', to: 'approach', via: [{ x: 39, y: 62 }] },

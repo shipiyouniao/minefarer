@@ -49,10 +49,44 @@ export const NORTHWEST_SCENES: readonly StoryScene[] = [
     teachingMine: null,
     teachingSafe: null,
   },
+  {
+    id: 'old-ferry',
+    rows: [
+      '#############',
+      '#oooooo#oooo#',
+      '#oESooo#oooo#',
+      '#ooooooooooo#',
+      '#oooooo#oooo#',
+      '#oooooo#oooo#',
+      '#ooooooooooo#',
+      '#oooooo#oooo#',
+      '#############',
+    ],
+    water: [20, 33, 59, 72, 98],
+    bridge: [46, 85],
+    clue: null,
+    safeClue: null,
+    teachingMine: null,
+    teachingSafe: null,
+  },
 ]
 
 /** The shortcut unlocks by crossing the bridge, never by clicking the atlas. */
 export const NORTHWEST_PORTALS: readonly WorldPortal[] = [
+  {
+    scene: 'reed-camp',
+    index: 50,
+    destination: 'old-ferry',
+    arrival: 28,
+    requires: 'ferry-channel-cleared',
+  },
+  {
+    scene: 'old-ferry',
+    index: 28,
+    destination: 'reed-camp',
+    arrival: 50,
+    requires: 'ferry-channel-cleared',
+  },
   {
     scene: 'blockade-pass',
     index: BASTION_GATE,
