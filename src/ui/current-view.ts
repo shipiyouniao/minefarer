@@ -7,7 +7,7 @@ export function currentObjective(language: Language, run: Expedition): string {
   if (!run.current) return ''
   return `<details class="current-guide" ${run.current.cycle === 0 ? 'open' : ''}><summary>${message(language, 'current.title')} · ${run.current.cycle}</summary><p>${message(language, 'current.guide')}</p><p>${message(language, 'current.legend')}</p></details>`
 }
-/** Overlay only outlines and arrows; hidden tiles and numeric corner badges keep their own layers. */
+/** Tint each bank and mark each lane once; flags and clue badges retain their own styling. */
 export function renderCurrent(root: HTMLElement, run: Expedition, language: Language): void {
   if (!run.current || !run.power) return
   for (const lane of run.current.lanes) {
@@ -17,11 +17,13 @@ export function renderCurrent(root: HTMLElement, run: Expedition, language: Lang
       if (!cell) continue
       cell.classList.add(held ? 'current-held' : 'current-moving')
       cell.dataset['currentCell'] = String(index)
-      const badge = document.createElement('span')
-      badge.className = 'current-arrow'
-      badge.textContent = `${lane.hold.branch === 0 ? 'A' : 'B'} ${held ? '⌁' : lane.direction === 1 ? '→' : '←'}`
-      badge.setAttribute('aria-hidden', 'true')
-      cell.append(badge)
+      if (index === lane.cells[0]) {
+        const badge = document.createElement('span')
+        badge.className = 'current-arrow'
+        badge.textContent = `${lane.hold.branch === 0 ? 'A' : 'B'} ${held ? '⌁' : lane.direction === 1 ? '→' : '←'}`
+        badge.setAttribute('aria-hidden', 'true')
+        cell.append(badge)
+      }
       const label = held ? message(language, 'current.held') : message(language, 'current.moving')
       cell.title = `${cell.title} ${label}`
       cell.setAttribute('aria-label', `${cell.getAttribute('aria-label')}, ${label}`)
@@ -43,13 +45,20 @@ export async function animateCurrent(
   )
     return
   const animations: Animation[] = []
+  // Capture the unanimated grid once: later reads must not measure already moving neighbors.
+  const positions = new Map(
+    [...root.querySelectorAll<HTMLElement>('[data-side="a"] [data-cell]')].map(
+      (cell) => [Number(cell.dataset['cell']), cell.getBoundingClientRect()] as const,
+    ),
+  )
   after.current.permutation.forEach((to, from) => {
     if (to === from) return
     const source = root.querySelector<HTMLElement>(`[data-side="a"] [data-cell="${from}"]`)
     const target = root.querySelector<HTMLElement>(`[data-side="a"] [data-cell="${to}"]`)
     if (!source || !target) return
-    const a = source.getBoundingClientRect(),
-      b = target.getBoundingClientRect()
+    const a = positions.get(from),
+      b = positions.get(to)
+    if (!a || !b) return
     animations.push(
       target.animate(
         [
