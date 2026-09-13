@@ -44,6 +44,9 @@ export function atlasWorld(state: StoryViewState): string {
 /** The new river region shows its real camp and return pass, leaving future chapter sites unnamed. */
 export function atlasReedbank(state: StoryViewState): string {
   const destinations = [
+    ...(state.progress.facts?.includes('ferry-channel-cleared')
+      ? [{ scene: 'old-ferry' as const, x: 30, y: 40 }]
+      : []),
     { scene: 'reed-camp' as const, x: 56, y: 53 },
     { scene: 'blockade-pass' as const, x: 85, y: 82 },
   ]
@@ -51,12 +54,12 @@ export function atlasReedbank(state: StoryViewState): string {
     .map((place) => {
       const index = storyAtlasIndex(place.scene)
       const name = escapeHtml(
-        place.scene === 'reed-camp'
+        place.scene !== 'blockade-pass'
           ? worldSceneName(state.language, place.scene)
           : atlasRegionName(state.language, 'woodland'),
       )
       const open = storyAtlasUnlocked(state.progress, state.run, index)
-      return `<button class="atlas-node" style="--x:${place.x}%;--y:${place.y}%" data-map-name="${name}" data-story-action="${place.scene === 'reed-camp' ? 'map-scene' : 'map-region'}" data-scene="${index}" ${open ? '' : 'disabled'}><img src="${import.meta.env.BASE_URL}assets/story/lantern.png" alt="" draggable="false"><strong>${name}</strong></button>`
+      return `<button class="atlas-node" style="--x:${place.x}%;--y:${place.y}%" data-map-name="${name}" data-story-action="${place.scene !== 'blockade-pass' ? 'map-scene' : 'map-region'}" data-scene="${index}" ${open ? '' : 'disabled'}><img src="${import.meta.env.BASE_URL}assets/story/lantern.png" alt="" draggable="false"><strong>${name}</strong></button>`
     })
     .join('')
 

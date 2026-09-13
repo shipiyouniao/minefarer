@@ -6,8 +6,9 @@ import type { StoryProgress, StoryRun, StoryScene } from '../types/story.js'
 export const STORY_ATLAS_SCENES: readonly StoryScene[] = [
   ...PROLOGUE_SCENES,
   CAMP_SCENE,
-  ...STORY_SCENES.slice(PROLOGUE_SCENES.length),
+  ...STORY_SCENES.slice(PROLOGUE_SCENES.length).filter((scene) => scene.id !== 'old-ferry'),
   REED_CAMP.scene,
+  STORY_SCENES.find((scene) => scene.id === 'old-ferry')!,
 ]
 
 /** Convert a named physical location to its atlas node without assuming campaign floor numbers. */
@@ -25,6 +26,8 @@ export function storyAtlasUnlocked(
 
   const scene = STORY_ATLAS_SCENES[index]
   if (!scene) return false
+
+  if (scene.id === 'old-ferry') return !!progress.facts?.includes('ferry-channel-cleared')
 
   if (scene.id === 'reed-camp') return !!progress.facts?.includes('chapter-one-cleared')
 

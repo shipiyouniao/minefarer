@@ -42,7 +42,13 @@ function decodeStage(
       journal || reader.value('journal') === null
         ? Math.max(0, Math.min(4, Math.trunc(reader.number('lesson') ?? 0)))
         : 0,
-    scenes: [...new Set(scenes)],
+    scenes:
+      id === 'reed-channels' &&
+      reader.value('journal') != null &&
+      !journal &&
+      reader.value('cleared') !== true
+        ? []
+        : [...new Set(scenes)],
     recordSaved: reader.value('recordSaved') === true,
   }
 }

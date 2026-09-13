@@ -1,3 +1,6 @@
+import { actExpedition, createExpedition } from '../src/game/expedition.js'
+import { FERRY_DEPARTURE } from './ferry-helpers.js'
+import { feedPowered } from '../src/game/floor-power.js'
 import { CampSession } from '../src/application/camp-session.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -44,6 +47,7 @@ test('ferry departure is physically gated, replays exactly and settles once besi
   assert.ok(camp.story.accepted?.includes('investigate-ferry'))
   assert.equal(new ExpeditionSession(stageRepo, new FakeRuntime()).start('explorer', []), false)
   assert.ok(story.moveCamp(50))
+  assert.equal(story.travelNorthwest(), false)
   const before = repo.expedition()!
   let stage = new ExpeditionSession(stageRepo, new FakeRuntime())
   assert.ok(stage.start('explorer', []))
@@ -84,6 +88,16 @@ test('ferry departure is physically gated, replays exactly and settles once besi
     false,
   )
   assert.equal(new VariantRepository(storage).expedition()!.camp.supplies, after.camp.supplies)
+  const road = new StorySession(freshCamp)
+  assert.ok(road.moveCamp(50))
+  assert.ok(road.travelNorthwest())
+  assert.equal(road.run?.board.scene.id, 'old-ferry')
+  const restored = new StorySession(new CampSession(new VariantRepository(storage)))
+  assert.equal(restored.run?.board.scene.id, 'old-ferry')
+  assert.ok(restored.travelNorthwest())
+  assert.equal(restored.run, null)
+  assert.equal(restored.camp.story.campPosition, 50)
+  assert.equal(new VariantRepository(storage).expedition()!.camp.supplies, after.camp.supplies)
 })
 
 test('dialogue vocabulary preserves exact text and separates names, places, objects and warnings', () => {
@@ -104,4 +118,67 @@ test('dialogue vocabulary preserves exact text and separates names, places, obje
       .join(''),
     '<script>Nia</script>',
   )
+})
+
+test('sluices hold connected lanes while tiles, flags and clues follow the other tide', () => {
+  let run = createExpedition(FERRY_DEPARTURE)
+  let tides = 0
+  for (const action of solveFerry().actions) {
+    const before = run
+    run = actExpedition(run, action)
+    if (before.floor !== run.floor || before.current?.cycle === run.current?.cycle) continue
+    tides++
+    assert.equal(action.type, 'interact')
+    assert.equal(new Set(run.current!.permutation).size, run.game.cells.length)
+    for (const lane of run.current!.lanes) {
+      const held = feedPowered(run.power!, lane.hold)
+      lane.cells.forEach((index, offset) => {
+        const to = held
+          ? index
+          : lane.cells[(offset + lane.direction + lane.cells.length) % lane.cells.length]!
+        assert.equal(run.current!.permutation[index], to)
+        assert.equal(run.game.cells[to]!.mine, before.game.cells[index]!.mine)
+        assert.equal(run.game.cells[to]!.visibility, before.game.cells[index]!.visibility)
+      })
+    }
+    for (const [index, cell] of run.game.cells.entries())
+      assert.equal(
+        cell.adjacent,
+        neighbors(run.game.config, index).filter((other) => run.game.cells[other]!.mine).length,
+      )
+    assert.equal(
+      run.game.cells.filter((cell) => cell.mine).length,
+      before.game.cells.filter((cell) => cell.mine).length,
+    )
+    assert.deepEqual(run.sonar.readings, [])
+  }
+  assert.ok(tides >= 8)
+})
+
+test('an unfinished pre-tide attempt retires without replaying it under new rules', () => {
+  const storage = new MemoryStorage(),
+    repo = new VariantRepository(storage)
+  const camp = readyChapterTwo(repo),
+    story = new StorySession(camp)
+  story.travelNorthwest()
+  story.completeRegionalScene('reed-arrival')
+  story.completeRegionalScene('ferry-lead')
+  story.moveCamp(50)
+  const stage = new ExpeditionSession(repo.forCampaign('reed-channels'), new FakeRuntime())
+  assert.ok(stage.start('explorer', []))
+  stage.completeCampaignScene('ferry-entry')
+  const key = 'minesweeper.variants.v1.expedition'
+  storage.setItem(key, storage.getItem(key)!.replaceAll('reed-channels-v2', 'reed-channels-v1'))
+  const restored = new CampSession(new VariantRepository(storage))
+  assert.equal(restored.stageProgress('reed-channels').journal, null)
+  assert.deepEqual(restored.stageProgress('reed-channels').scenes, [])
+  assert.equal(restored.stageProgress('reed-channels').cleared, false)
+  const wallet = restored.camp.supplies
+  assert.equal(new CampSession(new VariantRepository(storage)).camp.supplies, wallet)
+  const fresh = new ExpeditionSession(
+    new VariantRepository(storage).forCampaign('reed-channels'),
+    new FakeRuntime(),
+  )
+  assert.ok(fresh.start('explorer', []))
+  assert.equal(fresh.run?.current?.cycle, 0)
 })

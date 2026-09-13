@@ -1,5 +1,12 @@
 /** Complete shared catalog: every supported language implements every key. */
 export interface MessageCatalog {
+  readonly 'ferry.destination': string
+  readonly 'current.title': string
+  readonly 'current.guide': string
+  readonly 'current.legend': string
+  readonly 'current.held': string
+  readonly 'current.moving': string
+
   readonly 'ferry.objective': string
   readonly 'ferry.exit-ready': string
   readonly 'ferry.progress': string

@@ -2,6 +2,15 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'ferry.destination': 'Old Ferry',
+  'current.title': 'Tides and shelter',
+  'current.guide':
+    'Switching a sluice sends one tide: the connected A / B lanes stay fixed; the other lanes cycle one tile along their arrows. Flags and revealed tiles travel together. Numbers update for their new neighbors.',
+  'current.legend':
+    'Blue: connected and sheltered. Gold: disconnected and drifting. Check the branch and arrows before switching.',
+  'current.held': 'Sheltered lane: fixed while connected',
+  'current.moving': 'Current lane: cycles along the arrow if disconnected after switching',
+
   'ferry.objective': 'Clear around the devices, switch the sluices and record every water gauge.',
   'ferry.exit-ready': 'Gauges checked. Connect the exit sluice, then reach the exit.',
   'ferry.progress': 'Gauges {count} / {total}',
@@ -1827,19 +1836,21 @@ export const enMessages: MessageCatalog = {
   'ferry.floor-2': 'Reach 2 · Marks on Both Banks',
   'ferry.floor-3': 'Reach 3 · The Backflow Gate',
   'ferry.entry-1':
-    'The footprints stop here. It looks dry ahead, but water is bubbling under the mud.',
+    'Those stones were elsewhere a moment ago. Moving the sluice sends the other bank drifting.',
   'ferry.entry-2':
-    'Open this sluice first, then read the water gauge. Do not step where you cannot judge the ground.',
+    'Connecting this bank holds it still. I need to check the arrows before switching; the old numbers may change.',
   'ferry.entry-3':
-    'Then switch to the other bank? We should keep the reading so we do not have to start over.',
+    'Our flags travel with the stones. Record this water level, then try the other bank.',
   'ferry.banks-1': 'This gauge is lower. The other bank is higher.',
   'ferry.banks-2': 'The river is not rising as one. Something is pushing its sections separately.',
-  'ferry.banks-3': 'Then we check both banks. One gauge could mislead us.',
+  'ferry.banks-3':
+    'The drifting patches are wider here. Hold the bank you want to investigate before reading its gauge.',
   'ferry.gate-1': 'Listen. Behind the gate again—the same rush we heard at camp.',
-  'ferry.gate-2': 'Leave the ferry passage closed for now. There is one gauge we have not read.',
+  'ferry.gate-2':
+    'The banks drift in opposite directions. I need to follow the arrows, not copy the previous crossing.',
   'ferry.gate-3': 'Right. These gates should tell us why no one dares sail.',
   'ferry.end-1': 'The gate is not broken. Every backflow has stopped at exactly the same mark.',
   'ferry.end-2': 'Someone is controlling the river? It is not rain or a blockage upstream.',
   'ferry.end-3':
-    'The ferry has been pulled into the old ferry’s inner cove, still tied to its mooring. The cleared passage will let us look for its keeper there.',
+    'The old ferry is at the end of this path. The pier now gives us a direct route back; no need to cross the channels again.',
 }

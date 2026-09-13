@@ -87,7 +87,7 @@ test('regional detail changes independently of the world overview', () => {
 test('every world location connects through a real doorway and the haul track stays one-way', () => {
   const repaired: StoryProgress = {
     ...progress,
-    facts: ['west-line-restored', 'west-shortcut', 'chapter-one-cleared'],
+    facts: ['west-line-restored', 'west-shortcut', 'chapter-one-cleared', 'ferry-channel-cleared'],
   }
   const reached = new Set(['awakening'])
   for (const route of ATLAS_ROUTES) {

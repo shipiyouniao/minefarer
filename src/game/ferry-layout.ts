@@ -248,9 +248,40 @@ export const FERRY_FLOORS: readonly AuthoredPowerFloor[] = [
     },
   },
 ]
+export const FERRY_CURRENT_ROWS: readonly (readonly number[])[] = [
+  [3, 11],
+  [1, 10],
+  [3, 13],
+]
 /** Reconstruct the selected reach under its own stable campaign revision. */
 export function ferryLayout(floor: number): PowerDungeonLayout {
   const content = FERRY_FLOORS[floor - 1]
   if (!content) throw new RangeError('Unknown ferry reach')
-  return authoredPowerLayout(content)
+  const layout = authoredPowerLayout(content)
+  const width = layout.game.config.width
+  const root = content.power.junctions[0]!.index
+  // Two separated banks have opposite feeds. Static controls and doors never drift.
+  const rows = FERRY_CURRENT_ROWS[floor - 1]!
+  const excluded = new Set([
+    layout.entrance,
+    layout.exit,
+    ...layout.walls,
+    ...content.power.junctions.map((entry) => entry.index),
+    ...content.power.receivers.map((entry) => entry.index),
+    ...content.power.doors.map((entry) => entry.index),
+  ])
+  const lanes = rows.flatMap((baseRow, ordinal) =>
+    Array.from({ length: floor }, (_, band) => {
+      const row = baseRow + band
+      const cells = Array.from({ length: 4 }, (_, offset) => row * width + width - 6 + offset)
+      if (cells.some((index) => excluded.has(index)))
+        throw new Error('Current overlaps a fixed landmark')
+      return {
+        cells,
+        hold: { junction: root, branch: ordinal === 0 ? (0 as const) : (1 as const) },
+        direction: floor === 1 || ordinal === 0 ? (1 as const) : (-1 as const),
+      }
+    }),
+  )
+  return { ...layout, current: { lanes, cycle: 0, permutation: [] } }
 }

@@ -2,6 +2,14 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** zh interface messages. Keep keys aligned across locales. */
 export const zhMessages: MessageCatalog = {
+  'ferry.destination': '旧渡口',
+  'current.title': '潮汐与稳流',
+  'current.guide':
+    '切换水闸会掀起一轮潮汐：接通的 A / B 支流保持不动，另一侧沿箭头循环移动一格。旗标、已翻开的格子一起移动，数字按新邻居重新计算。',
+  'current.legend': '蓝框：接通后稳流。金框：断开后随潮移动。先看分支和箭头，再切换开关。',
+  'current.held': '稳流区 · 接通时不移动',
+  'current.moving': '潮移区 · 切换后若未接通，沿箭头循环移动',
+
   'ferry.objective': '排清机关周围的雷，切换水闸并记录每处水位。',
   'ferry.exit-ready': '水位已核对。接通出口水闸，再走到出口。',
   'ferry.progress': '水位记录 {count} / {total}',
@@ -1647,16 +1655,16 @@ export const zhMessages: MessageCatalog = {
   'ferry.floor-1': '第一段 · 退水的浅滩',
   'ferry.floor-2': '第二段 · 两岸的刻度',
   'ferry.floor-3': '第三段 · 倒流的闸口',
-  'ferry.entry-1': '脚印到这里就断了。前面看着干，泥下面却还在冒水。',
-  'ferry.entry-2': '先把这边的水闸拨开，再去读水位尺。不要踩看不清的地方。',
-  'ferry.entry-3': '读完再换另一边，对吧？水位记下来，免得来回折腾。',
+  'ferry.entry-1': '看那些石块，刚才还不在那个位置。水闸一动，另一边的地面就跟着漂。',
+  'ferry.entry-2': '接通这一边，就能让它稳住。我得先看清箭头，再动开关，不能照着刚才的数字走。',
+  'ferry.entry-3': '插过的旗会跟着石块走。先记下这边的水位，再换另一边试试。',
   'ferry.banks-1': '这边的刻度低了一截，另一边反而高了。',
   'ferry.banks-2': '不是整条河一起涨落。水被什么东西分开推着走。',
-  'ferry.banks-3': '那就把两边都查清。只看一根水位尺，会判断错。',
+  'ferry.banks-3': '漂动的地方变宽了。把准备调查的那边稳住，再读水位尺。',
   'ferry.gate-1': '听，闸后面又响了。和营地听到的水声一样。',
-  'ferry.gate-2': '先别开渡船的通路。还有一处水位没读到。',
+  'ferry.gate-2': '两边漂的方向相反。得看好箭头，不能把上一段的走法照搬过来。',
   'ferry.gate-3': '好。查完这几道闸，我们就知道船为什么不敢走了。',
   'ferry.end-1': '闸门没有坏。看这些水痕，每一轮倒流都停在同一道刻度。',
   'ferry.end-2': '有人在控制河水？不是暴雨，也不是上游堵了。',
-  'ferry.end-3': '渡船被拉到旧渡口的内湾了，缆绳还系着。通路已经露出来，下次可以从那里找船主。',
+  'ferry.end-3': '旧渡口就在这条路尽头。回去时从栈桥走就行，不用再绕进水道了。',
 }

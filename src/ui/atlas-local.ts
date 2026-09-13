@@ -40,7 +40,10 @@ export function atlasLocal(state: StoryViewState, scene: number, current: number
           ? regionalCamp(content.id).sites.find((entry) => entry.index === index)
           : undefined
         const ferry =
-          content.id === 'reed-camp' && index === 50 && state.progress.facts?.includes('ferry-lead')
+          content.id === 'reed-camp' &&
+          index === 50 &&
+          state.progress.facts?.includes('ferry-lead') &&
+          !state.progress.facts?.includes('ferry-channel-cleared')
         const ridge =
           content.id === 'north-road' &&
           index === OBSERVATORY_GATE &&
@@ -58,9 +61,9 @@ export function atlasLocal(state: StoryViewState, scene: number, current: number
           index === TOMA_CAMP_CELL &&
           state.progress.facts?.includes('toma-rescued')
         const traveler = scene === current && index === state.player
-        const entrance = terrain === 'S'
         const exit = terrain === 'E'
         const destination = atlasDestination(content, index, state.progress)
+        const entrance = terrain === 'S' && destination !== null
         const hidden = scene === current && state.board.game.cells[index]?.visibility === 'hidden'
         const name = ferry
           ? message(lang, 'ferry.title')

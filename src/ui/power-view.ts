@@ -1,3 +1,4 @@
+import { currentObjective, renderCurrent, animateCurrent } from './current-view.js'
 import { ferryFloorName } from './ferry-copy.js'
 import { finaleFloorName } from './finale-copy.js'
 import { recollectionFloorCopy } from './recollection-copy.js'
@@ -30,6 +31,7 @@ export function consoleImage(): string {
 /** Keep one current instruction and a compact reading counter above the shared board layout. */
 export function powerObjective(language: Language, run: Expedition): string {
   if (!run.power) return ''
+  const current = currentObjective(language, run)
   const recollection = run.departure.recollection
     ? recollectionFloorCopy(language, 'routing')
     : null
@@ -37,10 +39,10 @@ export function powerObjective(language: Language, run: Expedition): string {
   if (run.power.purpose === 'restoration')
     return `<section class="signal-objective power-objective" aria-live="polite"><strong>${recollection?.name ?? finaleFloorName(language, run)}</strong><p>${powerObjectiveComplete(run.power) ? message(language, 'finale.exit-ready') : (recollection?.note ?? message(language, 'finale.objective'))}</p><span>${message(language, 'finale.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
 
-  const ferry = run.departure.campaign === 'reed-channels-v1'
+  const ferry = run.departure.campaign === 'reed-channels-v2'
   const drainage = run.power.purpose === 'drainage'
 
-  return `<section class="signal-objective power-objective" aria-live="polite"><strong>${run.departure.campaign === 'reed-channels-v1' ? ferryFloorName(language, run.floor) : drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor)}</strong><p>${powerObjectiveComplete(run.power) ? (ferry ? message(language, 'ferry.exit-ready') : drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : ferry ? message(language, 'ferry.objective') : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${ferry ? message(language, 'ferry.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
+  return `${current}<section class="signal-objective power-objective" aria-live="polite"><strong>${run.departure.campaign === 'reed-channels-v2' ? ferryFloorName(language, run.floor) : drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor)}</strong><p>${powerObjectiveComplete(run.power) ? (ferry ? message(language, 'ferry.exit-ready') : drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : ferry ? message(language, 'ferry.objective') : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${ferry ? message(language, 'ferry.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
 }
 
 /** Identify a source and branch with text as well as color, including in accessible labels. */
@@ -50,8 +52,9 @@ function feedLabel(run: Expedition, input: PowerFeed): string {
 
 /** Draw only known mechanism positions; ordinary hidden numbers and flags remain untouched. */
 export function renderFloorPower(root: HTMLElement, run: Expedition, language: Language): void {
+  renderCurrent(root, run, language)
   const power = run.power
-  const ferry = run.departure.campaign === 'reed-channels-v1'
+  const ferry = run.departure.campaign === 'reed-channels-v2'
   if (!power) return
 
   const board = root.querySelector<HTMLElement>('[data-side="a"]')
@@ -143,6 +146,8 @@ export async function animatePowerChange(
     matchMedia('(prefers-reduced-motion: reduce)').matches
   )
     return
+
+  await animateCurrent(root, before, after)
 
   const changed = after.power.junctions.filter(
     (entry) =>

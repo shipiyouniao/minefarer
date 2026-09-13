@@ -1,3 +1,4 @@
+import { advanceCurrent } from './floor-tide.js'
 import { generateRecollectionFloor, recollectionFloorKind } from './recollection-layout.js'
 import { enterChapterGuardian } from './chapter-guardian.js'
 import { campaignFloor } from './campaign-floors.js'
@@ -487,6 +488,8 @@ function applyExpedition(
       next = rechargeExpeditionSonar(run, next, action)
     next = finishAtExit(next)
   }
+
+  next = advanceCurrent(run, next)
 
   // Combat completion is the only way to collect the guarded floor's ordinary exit reward.
 
