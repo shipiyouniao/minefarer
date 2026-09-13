@@ -1,3 +1,4 @@
+import { storyEnvelopeStatus } from '../src/persistence/story-encoder.js'
 import { actExpedition, createExpedition } from '../src/game/expedition.js'
 import { FERRY_DEPARTURE } from './ferry-helpers.js'
 import { feedPowered } from '../src/game/floor-power.js'
@@ -155,30 +156,134 @@ test('sluices hold connected lanes while tiles, flags and clues follow the other
   assert.ok(tides >= 8)
 })
 
-test('an unfinished pre-tide attempt retires without replaying it under new rules', () => {
+for (const legacy of ['reed-channels-v1', 'reed-channels-v2'])
+  test(`${legacy} retires and subsequent stage and world writes survive reload`, () => {
+    const storage = new MemoryStorage(),
+      repo = new VariantRepository(storage)
+    const camp = readyChapterTwo(repo),
+      story = new StorySession(camp)
+    story.travelNorthwest()
+    story.completeRegionalScene('reed-arrival')
+    story.completeRegionalScene('ferry-lead')
+    story.moveCamp(50)
+    const stage = new ExpeditionSession(repo.forCampaign('reed-channels'), new FakeRuntime())
+    assert.ok(stage.start('explorer', []))
+    stage.completeCampaignScene('ferry-entry')
+    const key = 'minesweeper.variants.v1.expedition'
+    storage.setItem(key, storage.getItem(key)!.replaceAll('reed-channels-v3', legacy))
+    const restored = new CampSession(new VariantRepository(storage))
+    assert.equal(restored.stageProgress('reed-channels').journal, null)
+    assert.deepEqual(restored.stageProgress('reed-channels').scenes, [])
+    assert.equal(restored.stageProgress('reed-channels').cleared, false)
+    const wallet = restored.camp.supplies
+    assert.equal(new CampSession(new VariantRepository(storage)).camp.supplies, wallet)
+    const fresh = new ExpeditionSession(
+      new VariantRepository(storage).forCampaign('reed-channels'),
+      new FakeRuntime(),
+    )
+    assert.ok(fresh.start('explorer', []))
+    assert.equal(fresh.run?.current?.cycle, 0)
+    fresh.completeCampaignScene('ferry-entry')
+    assert.ok(fresh.dispatch(solveFerry().actions[0]!))
+    const reloaded = new ExpeditionSession(
+      new VariantRepository(storage).forCampaign('reed-channels'),
+      new FakeRuntime(),
+    )
+    assert.deepEqual(reloaded.run, fresh.run)
+    assert.ok(reloaded.stageProgress.scenes.includes('ferry-entry'))
+    const world = new CampSession(new VariantRepository(storage))
+    world.saveStory({ ...world.story, mapOwned: false })
+    assert.equal(new CampSession(new VariantRepository(storage)).story.mapOwned, false)
+    assert.equal(storyEnvelopeStatus(storage.getItem(key)), 'supported')
+    assert.equal(
+      storyEnvelopeStatus(
+        storage.getItem(key)!.replaceAll('reed-channels-v3', 'reed-channels-v99'),
+      ),
+      'unsupported',
+    )
+  })
+
+test('each reach moves most terrain and needs a tide to connect a required destination', () => {
+  for (let floor = 1; floor <= 3; floor++) {
+    const room = ferryLayout(floor)
+    const doors = new Set(room.power.doors.map((entry) => entry.index))
+    const fixedWalls = new Set(room.walls.filter((index) => !doors.has(index)))
+    const moving = new Set(room.current!.lanes.flatMap((lane) => lane.cells))
+    if (floor === 3) {
+      assert.ok(
+        moving.has(142) && moving.has(332),
+        'the third reach center strip belongs to the right bank',
+      )
+      for (const index of [142, 332])
+        assert.equal(room.current!.lanes.find((lane) => lane.cells.includes(index))!.hold.branch, 1)
+    }
+    const terrain = room.game.cells.length - room.walls.length
+    assert.ok(moving.size / terrain > 0.85, `floor ${floor}: broad tidal coverage`)
+    assert.equal(
+      moving.size,
+      room.current!.lanes.reduce((sum, lane) => sum + lane.cells.length, 0),
+    )
+    for (const index of [
+      room.entrance,
+      room.exit,
+      ...room.walls,
+      ...room.power.junctions.map((e) => e.index),
+      ...room.power.receivers.map((e) => e.index),
+    ])
+      assert.ok(!moving.has(index), 'physical anchors must remain fixed')
+    // Even granting perfect mine knowledge and opening every sluice cannot bypass the tide.
+    const seen = new Set([room.entrance]),
+      queue = [room.entrance]
+    for (const index of queue) {
+      const width = room.game.config.width
+      for (const other of [index - width, index + width, index - 1, index + 1]) {
+        if (
+          other < 0 ||
+          other >= room.game.cells.length ||
+          seen.has(other) ||
+          fixedWalls.has(other) ||
+          room.game.cells[other]!.mine
+        )
+          continue
+        if (
+          Math.abs((other % width) - (index % width)) +
+            Math.abs(Math.floor(other / width) - Math.floor(index / width)) !==
+          1
+        )
+          continue
+        seen.add(other)
+        queue.push(other)
+      }
+    }
+    assert.ok(
+      [room.exit, ...room.power.receivers.map((entry) => entry.index)].some(
+        (index) => !seen.has(index),
+      ),
+      `floor ${floor}: tide must open a real safe route`,
+    )
+  }
+})
+
+test('map travel preserves exploration and dialogue completion and rejects locked camps', () => {
   const storage = new MemoryStorage(),
     repo = new VariantRepository(storage)
   const camp = readyChapterTwo(repo),
     story = new StorySession(camp)
-  story.travelNorthwest()
-  story.completeRegionalScene('reed-arrival')
-  story.completeRegionalScene('ferry-lead')
-  story.moveCamp(50)
-  const stage = new ExpeditionSession(repo.forCampaign('reed-channels'), new FakeRuntime())
-  assert.ok(stage.start('explorer', []))
-  stage.completeCampaignScene('ferry-entry')
-  const key = 'minesweeper.variants.v1.expedition'
-  storage.setItem(key, storage.getItem(key)!.replaceAll('reed-channels-v2', 'reed-channels-v1'))
-  const restored = new CampSession(new VariantRepository(storage))
-  assert.equal(restored.stageProgress('reed-channels').journal, null)
-  assert.deepEqual(restored.stageProgress('reed-channels').scenes, [])
-  assert.equal(restored.stageProgress('reed-channels').cleared, false)
-  const wallet = restored.camp.supplies
-  assert.equal(new CampSession(new VariantRepository(storage)).camp.supplies, wallet)
-  const fresh = new ExpeditionSession(
-    new VariantRepository(storage).forCampaign('reed-channels'),
-    new FakeRuntime(),
-  )
-  assert.ok(fresh.start('explorer', []))
-  assert.equal(fresh.run?.current?.cycle, 0)
+  assert.ok(story.travelNorthwest())
+  assert.ok(story.completeRegionalScene('reed-arrival'))
+  assert.ok(story.completeRegionalScene('ferry-lead'))
+  const before = camp.story
+  assert.ok(story.fastTravelCamp('camp'))
+  assert.equal(camp.story.campId, 'camp')
+  assert.deepEqual(camp.story.dialogue, before.dialogue)
+  assert.deepEqual(camp.story.world?.scenes, before.world?.scenes)
+  assert.ok(story.fastTravelCamp('reed-camp'))
+  assert.equal(new CampSession(new VariantRepository(storage)).story.campId, 'reed-camp')
+  camp.saveStory({
+    ...camp.story,
+    facts: (camp.story.facts ?? []).filter((fact) => fact !== 'chapter-one-cleared'),
+  })
+  assert.equal(story.fastTravelCamp('reed-camp'), false)
+  camp.saveStory({ ...camp.story, mapOwned: false })
+  assert.equal(story.fastTravelCamp('camp'), false)
 })

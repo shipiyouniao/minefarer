@@ -58,6 +58,8 @@ export function shopSprite(item: Upgrade): DungeonSprite {
 /** Reconcile selection with each filter without purchasing or selecting a profession. */
 export function navigateCamp(screen: CampScreen, command: CampCommand): CampScreen {
   switch (command.type) {
+    case 'equipment-item':
+      return { ...screen, page: 'equipment', equipmentSelected: command.value }
     case 'shop-category': {
       const items = shopItems(command.value)
       return {

@@ -2,10 +2,43 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** zh interface messages. Keep keys aligned across locales. */
 export const zhMessages: MessageCatalog = {
+  'atlas.travel': '快速传送',
+  'atlas.camp-view': '查看营地',
+
+  'loadout.equip': '装备',
+  'loadout.unequip': '取消装备',
+  'loadout.cost': '开销 {count}',
+  'loadout.blocked': '尚未解锁，或当前职业已达此项上限。',
+  'loadout.full': '装备预算不足，请先取消其他装备。',
+  'loadout.lore.probe': '装着备用探针的小工具包。',
+  'loadout.effects.probe': '初始探针 +1',
+  'loadout.lore.scanner': '便携式扫描装置，用于确认前方地形。',
+  'loadout.effects.scanner': '初始扫描 +1',
+  'loadout.lore.guard': '在危险来临时替你承受一次冲击。',
+  'loadout.effects.guard': '初始护盾 +1',
+  'loadout.lore.medical-kit': '随身携带的急救用品，让旅途多一分余裕。',
+  'loadout.effects.medical-kit': '初始生命 +2|生命上限 +2',
+  'loadout.lore.steel-blade': '适合近身作战的精钢短刃。',
+  'loadout.effects.steel-blade': '攻击 +2',
+  'loadout.lore.plated-vest': '鳞片相扣的护衣，抵挡迎面而来的攻击。',
+  'loadout.effects.plated-vest': '防御 +1|减少敌方攻击伤害|不减免踩雷伤害',
+  'loadout.lore.focus-lens': '校准刻度，让精细操作更加利落。',
+  'loadout.effects.focus-lens':
+    '每回合首次关闭机关或封印、摧毁巢穴、校准锚点或用晶体破盾后，返还 1 点行动力',
+  'loadout.lore.clearing-hook': '钩刃便于挑开缠绕物，清出落脚的地方。',
+  'loadout.effects.clearing-hook': '每回合首次清除蛛网、虫卵或幼虫后，返还 1 点行动力',
+  'loadout.lore.field-boots': '结实的行军靴，让长途行动更省力。',
+  'loadout.effects.field-boots': '偶数回合行动力 +1|行动力总上限为 5',
+  'loadout.lore.field-radio': '把探索中的发现传回队伍，换来及时补给。',
+  'loadout.effects.field-radio': '成功使用职业技能后补充 1 个探针|探针上限为 4|每层触发一次',
+  'loadout.lore.sonar': '倾听地下的回声，把模糊的线索连起来。',
+  'loadout.effects.sonar':
+    '初始声呐 2 次|安全挖开 12 次恢复 1 次，上限 3 次|扫描 3×3 区域雷数|区域内数字永久清晰|仅翻开中心格',
+
   'ferry.destination': '旧渡口',
   'current.title': '潮汐与稳流',
   'current.guide':
-    '切换水闸会掀起一轮潮汐：接通的 A / B 支流保持不动，另一侧沿箭头循环移动一格。旗标、已翻开的格子一起移动，数字按新邻居重新计算。',
+    '切换水闸会移动整片河床：接通的一岸保持不动，另一岸各行沿箭头循环移动一格。人物、雷和旗标随地面移动，数字重新计算；墙、机关和出入口固定。先看哪条路会接通，再动水闸。',
   'current.legend': '蓝框：接通后稳流。金框：断开后随潮移动。先看分支和箭头，再切换开关。',
   'current.held': '稳流区 · 接通时不移动',
   'current.moving': '潮移区 · 切换后若未接通，沿箭头循环移动',

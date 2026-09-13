@@ -353,3 +353,217 @@
     padding-right: 2rem;
   }
 }
+
+.loadout-budget {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #ccdcd2;
+  border-radius: 1rem;
+  background: #edf4ee;
+  color: #294b42;
+}
+.loadout-budget strong {
+  margin-left: auto;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.loadout-budget small {
+  font-size: 1rem;
+  color: #718278;
+}
+.loadout-slots {
+  display: flex;
+  gap: 0.35rem;
+}
+.loadout-slots i {
+  width: 1.8rem;
+  height: 0.8rem;
+  border: 1px solid #9cae9e;
+  border-radius: 0.25rem;
+  background: #fff8;
+}
+.loadout-slots .filled {
+  background: #427f6c;
+  border-color: #427f6c;
+}
+.loadout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.loadout-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  align-content: start;
+}
+.loadout-tile {
+  position: relative;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 0.6rem 1rem;
+  border: 1px solid #d3dfd7;
+  border-radius: 1rem;
+  background: #f6faf7;
+  color: #36554b;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+.loadout-tile > img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+.loadout-tile:hover {
+  background: #eaf2eb;
+  border-color: #6b9681;
+  transform: translateY(-2px);
+}
+.loadout-tile[aria-pressed='true'] {
+  border-color: #476cba;
+  box-shadow: inset 0 0 0 1px #476cba;
+  background: #eff3fa;
+}
+.loadout-tile:focus-visible {
+  outline: 3px solid #668bc8;
+  outline-offset: 2px;
+}
+.loadout-cost {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  background: #e8eee4;
+  color: #516748;
+  border: 1px solid #c9d7bc;
+  border-radius: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.loadout-check {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.6rem;
+  color: #348063;
+  font-weight: 800;
+}
+.loadout-detail {
+  border: 1px solid #d3dfd7;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background: #f6faf7;
+  min-width: 0;
+}
+.loadout-detail > img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+.loadout-detail h2 {
+  margin: 0.8rem 0;
+}
+.loadout-detail > p {
+  color: #738278;
+  line-height: 1.65;
+}
+.loadout-detail ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0;
+}
+.loadout-detail li {
+  padding: 0.7rem 0 0.7rem 1.1rem;
+  border-top: 1px solid #dce6df;
+  line-height: 1.6;
+  position: relative;
+}
+.loadout-detail li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: #729575;
+  font-size: 0.65rem;
+  top: 1rem;
+}
+.loadout-detail > button {
+  width: 100%;
+}
+@media (max-width: 700px) {
+  .loadout-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .loadout-items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .loadout-tile {
+    min-height: 115px;
+    font-size: 0.85rem;
+  }
+  .loadout-budget {
+    gap: 0.5rem;
+    padding: 0.7rem;
+    font-size: 0.85rem;
+  }
+  .loadout-slots i {
+    width: 1rem;
+  }
+}
+
+.atlas-canvas {
+  position: relative;
+}
+.atlas-camp-card {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: calc(100% - 1.5rem);
+  padding: 0.65rem 0.85rem;
+  background: #fffdf0f5;
+  border: 2px solid #9b874c;
+  border-radius: 1rem;
+  box-shadow: 0 3px 14px #334b3430;
+  color: #344d3b;
+}
+.atlas-camp-card > span {
+  font-size: 1.8rem;
+  color: #947431;
+}
+.atlas-camp-card button {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #b8c9af;
+  border-radius: 0.6rem;
+  background: #e7efdf;
+  cursor: pointer;
+}
+.atlas-camp-card button:hover {
+  background: #d3e4c9;
+}
+.atlas-camp-card button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.atlas-region-gateway {
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 50%;
+  background: #f6f1d4;
+  padding: 0.2rem 0.8rem;
+}

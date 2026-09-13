@@ -33,15 +33,19 @@ function placeImage(place: AtlasPlace): string {
 /** Fine detail contains actionable locations, with locked names replaced at the data boundary. */
 function placeMarkers(state: StoryViewState): string {
   const current = state.board.scene.id
-  return ATLAS_PLACES.map((place) => {
-    const index = storyAtlasIndex(place.scene)
-    const open = storyAtlasUnlocked(state.progress, state.run, index)
-    const name = open
-      ? worldSceneName(state.language, place.scene)
-      : message(state.language, 'story.map-unvisited')
+  return ATLAS_PLACES.filter((place) => place.scene !== 'old-ferry')
+    .map((place) => {
+      const index = storyAtlasIndex(place.scene)
+      const open = storyAtlasUnlocked(state.progress, state.run, index)
+      const name = open
+        ? place.scene === 'reed-camp'
+          ? message(state.language, 'story.atlas-reedbank')
+          : worldSceneName(state.language, place.scene)
+        : message(state.language, 'story.map-unvisited')
 
-    return `<button class="atlas-node ${place.scene === current ? 'is-current' : ''}" data-map-name="${escapeHtml(name)}" style="--x:${place.x}%;--y:${place.y}%" data-story-action="${place.scene === 'reed-camp' ? 'map-region' : 'map-scene'}" data-scene="${index}" ${open ? '' : 'disabled'}>${placeImage(place)}<strong>${escapeHtml(name)}</strong>${place.scene === current ? `<span>${message(state.language, 'story.atlas-here')}</span>` : ''}</button>`
-  }).join('')
+      return `<button class="atlas-node ${place.scene === current ? 'is-current' : ''}" data-map-name="${escapeHtml(name)}" style="--x:${place.x}%;--y:${place.y}%" data-story-action="${place.scene === 'reed-camp' ? 'map-region' : 'map-scene'}" data-scene="${index}" ${open ? '' : 'disabled'}>${place.scene === 'reed-camp' ? '<span class="atlas-region-gateway" aria-hidden="true">↗</span>' : placeImage(place)}<strong>${escapeHtml(name)}</strong>${place.scene === current ? `<span>${message(state.language, 'story.atlas-here')}</span>` : ''}</button>`
+    })
+    .join('')
 }
 
 /** A district click zooms to its member locations; it never moves the player or opens a save. */
@@ -49,7 +53,10 @@ function districtMarkers(state: StoryViewState): string {
   const districts: readonly AtlasDistrict[] = ['woodland', 'camp', 'quarry', 'west']
   return districts
     .map((district) => {
-      const places = ATLAS_PLACES.filter((place) => place.district === district)
+      const places = ATLAS_PLACES.filter(
+        (place) =>
+          place.district === district && place.scene !== 'old-ferry' && place.scene !== 'reed-camp',
+      )
       const known = places.filter((place) =>
         storyAtlasUnlocked(state.progress, state.run, storyAtlasIndex(place.scene)),
       )

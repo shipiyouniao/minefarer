@@ -88,6 +88,7 @@ export function parseVariantCommand(value: string): VariantCommand | null {
       const parsed = parseProfession(id ?? null)
       return parsed ? { type, value: parsed } : null
     }
+    case 'equipment-item':
     case 'equipment': {
       const parsed = parseEquipment(id ?? null)
       return parsed ? { type, value: parsed } : null

@@ -1,4 +1,4 @@
-import type { Upgrade } from './variants.js'
+import type { Equipment, Upgrade } from './variants.js'
 
 /** Camp screens are transient presentation state, separate from expedition saves. */
 export type CampPage = 'professions' | 'equipment' | 'missions' | 'achievements' | 'shop'
@@ -14,10 +14,12 @@ export type CampLabel =
 export interface CampScreen {
   readonly page: CampPage
   readonly category: ShopCategory
+  readonly equipmentSelected?: Equipment
   readonly selected: Upgrade
 }
 
 /** Navigation never spends supplies or changes departure choices. */
 export type CampCommand =
+  | { readonly type: 'equipment-item'; readonly value: Equipment }
   | { readonly type: 'shop-category'; readonly value: ShopCategory }
   | { readonly type: 'shop-item'; readonly value: Upgrade }

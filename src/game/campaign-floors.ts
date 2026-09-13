@@ -11,7 +11,7 @@ import type { DungeonLayout } from '../types/dungeon-generation.js'
 /** Resolve authored providers before the shared expedition engine creates an attempt. */
 export function campaignFloor(revision: CampaignRevision, floor: number): DungeonLayout {
   switch (revision) {
-    case 'reed-channels-v2':
+    case 'reed-channels-v3':
       return ferryLayout(floor)
     case 'quarry-rescue-v1':
       return railLayout(floor)

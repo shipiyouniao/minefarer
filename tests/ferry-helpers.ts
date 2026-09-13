@@ -8,7 +8,7 @@ import { CURRENT_DEPARTURE } from './helpers.js'
 export const FERRY_DEPARTURE = {
   ...CURRENT_DEPARTURE,
   seed: 0,
-  campaign: 'reed-channels-v2' as const,
+  campaign: 'reed-channels-v3' as const,
 }
 
 /** This plan knows the public circuit labels, but uses only visible numbers to open or flag cells. */

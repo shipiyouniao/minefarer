@@ -467,6 +467,10 @@ export class StoryApp implements MountedGame {
     const loadout = camp.loadout
     let changed = true
     switch (command.type) {
+      case 'equipment-item':
+        if (this.service?.page !== 'equipment') return
+        this.service = navigateCamp(this.service, command)
+        break
       case 'shop-category':
       case 'shop-item':
         if (this.service?.page !== 'shop') return
@@ -493,6 +497,8 @@ export class StoryApp implements MountedGame {
           })
         break
       case 'equipment':
+        if (this.service?.page === 'equipment')
+          this.service = { ...this.service, equipmentSelected: command.value }
         changed = camp.selectLoadout({
           ...loadout,
           equipment: loadout.equipment.includes(command.value)
@@ -515,9 +521,9 @@ export class StoryApp implements MountedGame {
     if (focus && !(focus instanceof HTMLButtonElement && focus.disabled))
       focus.focus({ preventScroll: true })
 
-    if (command.type === 'shop-item')
+    if (command.type === 'shop-item' || command.type === 'equipment-item')
       this.root
-        .querySelector('.shop-detail')
+        .querySelector('.shop-detail, .loadout-detail')
         ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }
 
@@ -953,6 +959,16 @@ export class StoryApp implements MountedGame {
         if (level !== 'local' && level !== 'region' && level !== 'world') return
 
         this.mapLevel = level
+        break
+      }
+      case 'map-travel': {
+        const destination = button.dataset['camp']
+        if (destination !== 'camp' && destination !== 'reed-camp') return
+        if (!this.session.fastTravelCamp(destination)) return
+        this.inspected = null
+        this.flagMode = false
+        this.panel = null
+        this.sounds.play('confirm')
         break
       }
       case 'map-region': {

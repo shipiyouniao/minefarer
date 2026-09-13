@@ -53,5 +53,16 @@ export function storyMap(state: StoryViewState): string {
   const legend = `<div class="atlas-legend-control"><button class="atlas-legend-toggle" data-story-action="map-legend" aria-label="${legendLabel}" title="${legendLabel}" aria-expanded="${!!state.mapLegend}" aria-controls="story-map-legend">${icon('layers')}</button>${state.mapLegend ? `<div class="atlas-legend" id="story-map-legend"><span><i class="atlas-position"></i>${position}: ${worldSceneName(lang, STORY_ATLAS_SCENES[current]?.id ?? 'camp')}</span><span><i class="atlas-route-key"></i>${message(lang, 'story.atlas-route')}</span>${routeLegend}${map.landmarks ? `<ul class="atlas-landmarks">${map.landmarks}</ul>` : ''}</div>` : ''}</div>`
   const zoom = `<div class="atlas-zoom"><button data-map-zoom="out" aria-label="${message(lang, 'story.atlas-zoom-out')}">−</button><input type="range" min="${ATLAS_ZOOM.min * 100}" max="${ATLAS_ZOOM.max * 100}" step="${ATLAS_ZOOM.step * 100}" value="100" aria-label="${message(lang, 'story.atlas-zoom')}"><button data-map-zoom="in" aria-label="${message(lang, 'story.atlas-zoom-in')}">+</button><output class="atlas-zoom-value">100%</output><button data-map-zoom="reset">${message(lang, 'story.atlas-fit')}</button>${legend}</div>`
 
-  return `<div class="story-map" data-map-level="${level}" data-map-scene="${scene}" data-map-region="${region}"><div class="atlas-toolbar">${navigation}</div><div class="atlas-heading"><h3>${escapeHtml(title)}</h3></div><div class="atlas-canvas"><div class="atlas-viewport" tabindex="0" role="group" aria-label="${escapeHtml(title)}" data-enter-label="${message(lang, 'story.atlas-enter')}"><div class="atlas-scene">${map.drawing}</div></div></div>${zoom}</div>`
+  const camp = region === 'woodland' ? 'camp' : 'reed-camp'
+  const unlocked =
+    camp === 'reed-camp'
+      ? state.progress.facts?.includes('chapter-one-cleared')
+      : state.progress.completed.includes('reach-camp') ||
+        state.progress.facts?.includes('camp-reached')
+  const campCard =
+    level === 'region'
+      ? `<aside class="atlas-camp-card"><span aria-hidden="true">⌂</span><strong>${worldSceneName(lang, camp)}</strong><button data-story-action="map-scene" data-scene="${storyAtlasIndex(camp)}" ${unlocked ? '' : 'disabled'}>${message(lang, 'atlas.camp-view')}</button><button data-story-action="map-travel" data-camp="${camp}" ${unlocked ? '' : 'disabled'}>${unlocked ? message(lang, 'atlas.travel') : message(lang, 'story.map-unvisited')}</button></aside>`
+      : ''
+
+  return `<div class="story-map" data-map-level="${level}" data-map-scene="${scene}" data-map-region="${region}"><div class="atlas-toolbar">${navigation}</div><div class="atlas-heading"><h3>${escapeHtml(title)}</h3></div><div class="atlas-canvas">${campCard}<div class="atlas-viewport" tabindex="0" role="group" aria-label="${escapeHtml(title)}" data-enter-label="${message(lang, 'story.atlas-enter')}"><div class="atlas-scene">${map.drawing}</div></div></div>${zoom}</div>`
 }

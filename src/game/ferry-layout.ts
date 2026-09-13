@@ -5,21 +5,21 @@ export const FERRY_FLOORS: readonly AuthoredPowerFloor[] = [
   {
     rows: [
       '#################',
-      '#.....**#...*...#',
-      '#.E.*...#...**..#',
-      '#..****.#.......#',
-      '#....*..........#',
-      '#*......#..***..#',
-      '#.......#*......#',
-      '#......*#*.*.**.#',
-      '#*.....*#########',
-      '#...*..*#.....**#',
-      '#.......#.*...*.#',
-      '#.......#...*..*#',
-      '#.*........*..*.#',
-      '#.....*.#.......#',
-      '#*.S.**.#.....*.#',
-      '#.......#.....**#',
+      '#***..**#**.....#',
+      '#*E*..*.#.....*.#',
+      '#.*..*..#.*...*.#',
+      '#.............*.#',
+      '#......*#...*...#',
+      '#......*#.***.*.#',
+      '#*.*....#...*.*.#',
+      '#..*..*.#########',
+      '#...*...#*...*..#',
+      '#......*#.*.*...#',
+      '#......*#.......#',
+      '#..*..........*.#',
+      '#.......#.......#',
+      '#..S..*.#.......#',
+      '#......*#...*...#',
       '#################',
     ],
     power: {
@@ -70,21 +70,21 @@ export const FERRY_FLOORS: readonly AuthoredPowerFloor[] = [
   {
     rows: [
       '###################',
-      '#.......*#......**#',
-      '#..S..*.*#..*..*.*#',
-      '#.....**.#.......*#',
-      '#..****.......*...#',
-      '#......*.#..*...*.#',
-      '#...*.*..#..*..*..#',
-      '#..*.....##########',
-      '#.....*.*#........#',
-      '#*.......#........#',
-      '#........#...*.*..#',
-      '#.......*#...*...*#',
-      '#..*............*.#',
-      '#.**.....#....*...#',
-      '#*..*....#..**..E.#',
-      '#**.***..#.**..*..#',
+      '#......**#***.*...#',
+      '#*.S..**.#........#',
+      '#....**.*#*...***.#',
+      '#*............*.**#',
+      '#*.....*.#*......*#',
+      '#**....*.#........#',
+      '#.*......##########',
+      '#........#........#',
+      '#..*.....#.....***#',
+      '#........#*...*.**#',
+      '#........#......**#',
+      '#.*.*...*..*....*.#',
+      '#...*.*..#....*...#',
+      '#....*...#......E.#',
+      '#........#..**....#',
       '###################',
     ],
     power: {
@@ -151,23 +151,23 @@ export const FERRY_FLOORS: readonly AuthoredPowerFloor[] = [
   {
     rows: [
       '###################',
-      '#.......#**....*..#',
-      '#.E*...*#........*#',
-      '#...**..#.......**#',
-      '#....*.....*......#',
-      '#***....#...*.....#',
-      '#..*....#*...**...#',
-      '#....*..#.*.....*.#',
-      '#.......#......*..#',
-      '#..**...###########',
-      '#..*....#.*....**.#',
-      '#.**...*#*..*.....#',
-      '#....*..#.*..**...#',
-      '#.**....#...*.*..*#',
-      '#....*.....*......#',
+      '#.*.*...#*.*...*..#',
+      '#*E*.*..#....*..**#',
+      '#.*.***.#.....**.*#',
+      '#...........*.*...#',
+      '#*.*...*#.....*..*#',
+      '#.......#*....*...#',
+      '#.*...**#....*....#',
+      '#.*...*.#.........#',
+      '#.......###########',
+      '#*.....*#...**....#',
+      '#*......#..*.....*#',
+      '#.......#.......*.#',
+      '#...*.*.#*.*......#',
+      '#*..**....*....*..#',
       '#*......#........*#',
-      '#*.S....#.........#',
-      '#*...***#....*.*..#',
+      '#..S....#...**....#',
+      '#.......#.......*.#',
       '###################',
     ],
     power: {
@@ -248,40 +248,40 @@ export const FERRY_FLOORS: readonly AuthoredPowerFloor[] = [
     },
   },
 ]
-export const FERRY_CURRENT_ROWS: readonly (readonly number[])[] = [
-  [3, 11],
-  [1, 10],
-  [3, 13],
-]
-/** Reconstruct the selected reach under its own stable campaign revision. */
+/** Reconstruct broad tidal banks, leaving only walls and physical landmarks anchored. */
 export function ferryLayout(floor: number): PowerDungeonLayout {
   const content = FERRY_FLOORS[floor - 1]
   if (!content) throw new RangeError('Unknown ferry reach')
   const layout = authoredPowerLayout(content)
-  const width = layout.game.config.width
+  const { width, height } = layout.game.config
   const root = content.power.junctions[0]!.index
-  // Two separated banks have opposite feeds. Static controls and doors never drift.
-  const rows = FERRY_CURRENT_ROWS[floor - 1]!
+  const divider = floor === 3 ? 8 : Math.floor(width / 2)
   const excluded = new Set([
     layout.entrance,
     layout.exit,
     ...layout.walls,
     ...content.power.junctions.map((entry) => entry.index),
     ...content.power.receivers.map((entry) => entry.index),
-    ...content.power.doors.map((entry) => entry.index),
   ])
-  const lanes = rows.flatMap((baseRow, ordinal) =>
-    Array.from({ length: floor }, (_, band) => {
-      const row = baseRow + band
-      const cells = Array.from({ length: 4 }, (_, offset) => row * width + width - 6 + offset)
-      if (cells.some((index) => excluded.has(index)))
-        throw new Error('Current overlaps a fixed landmark')
-      return {
-        cells,
-        hold: { junction: root, branch: ordinal === 0 ? (0 as const) : (1 as const) },
-        direction: floor === 1 || ordinal === 0 ? (1 as const) : (-1 as const),
+  const lanes = []
+  for (let row = 1; row < height - 1; row++) {
+    for (let bank = 0; bank < 2; bank++) {
+      const left = bank === 0 ? 1 : divider + 1
+      const right = bank === 0 ? divider : width - 1
+      let cells: number[] = []
+      for (let column = left; column <= right; column++) {
+        const index = row * width + column
+        if (column === right || excluded.has(index)) {
+          if (cells.length > 1)
+            lanes.push({
+              cells,
+              hold: { junction: root, branch: bank === 0 ? (0 as const) : (1 as const) },
+              direction: floor === 1 || bank === 0 ? (1 as const) : (-1 as const),
+            })
+          cells = []
+        } else cells.push(index)
       }
-    }),
-  )
+    }
+  }
   return { ...layout, current: { lanes, cycle: 0, permutation: [] } }
 }

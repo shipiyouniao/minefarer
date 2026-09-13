@@ -11,7 +11,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
     id: 'reed-channels',
     entrance: { scene: 'reed-camp', index: 50, fact: 'ferry-lead' },
     bounds: { width: 19, height: 19 },
-    revision: 'reed-channels-v2',
+    revision: 'reed-channels-v3',
     prerequisite: 'northwest-bastion',
     floors: 3,
     outcome: 'ferry-channel-cleared',
