@@ -31,9 +31,9 @@ export function consoleImage(): string {
 
 /** Keep one current instruction and a compact reading counter above the shared board layout. */
 export function powerObjective(language: Language, run: Expedition): string {
+  if (run.pressure) return pressureObjective(language, run)
   if (!run.power) return ''
   const current = currentObjective(language, run)
-  if (run.pressure) return current + pressureObjective(language, run)
   const recollection = run.departure.recollection
     ? recollectionFloorCopy(language, 'routing')
     : null

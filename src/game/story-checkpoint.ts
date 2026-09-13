@@ -24,7 +24,7 @@ export const STORY_SCENE_IDS: readonly StorySceneId[] = [
 
 /** Scene-local revisions let a changed shoreline migrate without retiring the world. */
 export function storySceneRevision(id: StorySceneId): number {
-  return id === 'old-ferry' ? 1 : 0
+  return id === 'old-ferry' ? 2 : 0
 }
 
 /** Encode one bounded scene delta rather than each step taken through that scene. */

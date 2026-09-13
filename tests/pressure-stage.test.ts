@@ -1,10 +1,10 @@
+import { walkingPath } from '../src/game/dungeon-path.js'
+import { storyEnvelopeStatus } from '../src/persistence/story-encoder.js'
 import { exploreOldFerry } from './old-ferry-helpers.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { solvePressureFloor, PRESSURE_DEPARTURE } from './pressure-helpers.js'
 import { createExpedition, actExpedition } from '../src/game/expedition.js'
-import { pressureReadings } from '../src/game/pressure.js'
-import { deducePressure } from '../src/game/pressure-deduction.js'
 import { VariantRepository } from '../src/persistence/variant-repository.js'
 import { MemoryStorage, FakeRuntime } from './helpers.js'
 import { readyChapterTwo } from './recollection-helpers.js'
@@ -13,31 +13,20 @@ import { ExpeditionSession } from '../src/application/expedition-session.js'
 import { solveFerry } from './ferry-helpers.js'
 import { campaignProgress } from '../src/game/campaign-catalog.js'
 
-test('pressure reaches need relational clues and tides, not guesses, damage or paid tools', () => {
+test('all three crossings require boarding while shore deduction remains static', () => {
   let run = createExpedition(PRESSURE_DEPARTURE)
-  assert.equal(run.game.cells[run.pressure!.lessonTarget]!.visibility, 'hidden')
-  const firstReading = pressureReadings(run.game, run.pressure!.pairs)[0]!
-  assert.equal(firstReading.difference, 0)
-  assert.ok(
-    firstReading.a.every(
-      (i) => run.game.cells[i]!.visibility === 'revealed' && !run.game.cells[i]!.mine,
-    ),
-  )
   for (let floor = 1; floor <= 3; floor++) {
     const solved = solvePressureFloor(floor)
-    assert.ok(solved, `floor ${floor}`)
-    if (floor > 1)
-      assert.equal(solvePressureFloor(floor, floor - 1), null, 'each new comparison is necessary')
-    assert.equal(
-      solvePressureFloor(floor, false),
-      null,
-      'ordinary clues alone must not solve the route',
-    )
-    assert.ok(solved.actions.some((a) => a.type === 'interact'))
-    assert.ok(run.game.config.mines >= 40)
+    assert.ok(solved, `crossing ${floor}`)
+    assert.equal(solvePressureFloor(floor, false), null)
+    assert.ok(solved.actions.some((a) => a.type === 'end-turn'))
+    const mines = run.game.cells.map((c) => c.mine)
     for (const action of solved.actions) run = actExpedition(run, action)
+    assert.deepEqual(
+      run.game.cells.map((c) => c.mine),
+      mines,
+    )
     assert.equal(run.health, run.maxHealth)
-    assert.ok(run.pressure!.moorings.every((i) => run.travelled.includes(i)))
     assert.equal(run.phase, floor === 3 ? 'won' : 'reward')
     if (run.phase === 'reward')
       run = actExpedition(run, {
@@ -47,19 +36,46 @@ test('pressure reaches need relational clues and tides, not guesses, damage or p
   }
 })
 
-test('pressure deductions never inspect covered mine truth or accept guessed flags', () => {
-  const run = createExpedition(PRESSURE_DEPARTURE)
-  const readings = pressureReadings(run.game, run.pressure!.pairs)
-  const expected = deducePressure(run.game, run.walls, readings)
-  const changed = {
-    ...run.game,
-    cells: run.game.cells.map((c) =>
-      c.visibility === 'revealed'
-        ? c
-        : { ...c, mine: !c.mine, adjacent: 8, visibility: 'flagged' as const },
-    ),
+test('repeated waiting cannot reveal shore clues, visit anchors or finish a crossing', () => {
+  let run = createExpedition(PRESSURE_DEPARTURE)
+  const shore = run.game.cells.flatMap((c, i) =>
+    run.pressure!.water.includes(i) ? [] : [{ index: i, cell: c }],
+  )
+  const originalBoard = run.game
+  const original = run.player
+  for (let n = 0; n < 200; n++) run = actExpedition(run, { type: 'end-turn' })
+  assert.equal(run.player, original)
+  assert.equal(run.game, originalBoard)
+  assert.equal(run.phase, 'exploring')
+  assert.ok(run.pressure!.moorings.every((i) => !run.travelled.includes(i)))
+  for (const { index, cell } of shore) assert.deepEqual(run.game.cells[index], cell)
+  for (let step = 0; step < run.pressure!.stops.length; step++) {
+    const visible = {
+      ...run,
+      game: {
+        ...run.game,
+        cells: run.game.cells.map((c) => ({ ...c, visibility: 'revealed' as const })),
+      },
+    }
+    for (const goal of run.pressure!.moorings)
+      assert.equal(
+        walkingPath(visible, goal),
+        null,
+        'even complete shore knowledge cannot replace the crossing',
+      )
+    run = actExpedition(run, { type: 'end-turn' })
   }
-  assert.deepEqual(deducePressure(changed, run.walls, readings), expected)
+  let aboard = createExpedition(PRESSURE_DEPARTURE)
+  for (const action of solvePressureFloor(1)!.actions) {
+    if (action.type === 'end-turn') break
+    aboard = actExpedition(aboard, action)
+  }
+  assert.equal(aboard.player, aboard.pressure!.stops[aboard.pressure!.position])
+  const known = aboard.game
+  for (let n = 0; n < 200; n++) aboard = actExpedition(aboard, { type: 'end-turn' })
+  assert.equal(aboard.game, known)
+  assert.equal(aboard.phase, 'exploring')
+  assert.ok(aboard.pressure!.moorings.every((i) => !aboard.travelled.includes(i)))
 })
 
 test('Pressure Cove has a physical gate, replays every action and rewards completion only once', () => {
@@ -92,6 +108,33 @@ test('Pressure Cove has a physical gate, replays every action and rewards comple
   let stage = new ExpeditionSession(slot, new FakeRuntime())
   assert.ok(stage.start('explorer', []))
   stage.completeCampaignScene('pressure-entry')
+  const oldStorage = new MemoryStorage()
+  oldStorage.setItem(
+    'minesweeper.variants.v1.expedition',
+    storage
+      .getItem('minesweeper.variants.v1.expedition')!
+      .replaceAll('pressure-cove-v2', 'pressure-cove-v1'),
+  )
+  assert.equal(
+    storyEnvelopeStatus(oldStorage.getItem('minesweeper.variants.v1.expedition')),
+    'supported',
+  )
+  const retired = new ExpeditionSession(
+    new VariantRepository(oldStorage).forCampaign('pressure-cove'),
+    new FakeRuntime(),
+  )
+  assert.equal(retired.run, null)
+  assert.ok(retired.start('explorer', []))
+  retired.completeCampaignScene('pressure-entry')
+  assert.ok(retired.dispatch({ type: 'end-turn' }))
+  assert.equal(
+    new ExpeditionSession(
+      new VariantRepository(oldStorage).forCampaign('pressure-cove'),
+      new FakeRuntime(),
+    ).run?.pressure?.waits,
+    1,
+  )
+
   const abandonedStorage = new MemoryStorage()
   abandonedStorage.setItem(
     'minesweeper.variants.v1.expedition',

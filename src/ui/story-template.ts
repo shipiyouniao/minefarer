@@ -1,3 +1,4 @@
+import { raftImage } from './pressure-view.js'
 import { atlasDestination } from '../game/atlas-connections.js'
 import { regionalCamp, isRegionalCamp } from '../game/regional-camps.js'
 import { campSiteImage, storySiteName } from './story-assets.js'
@@ -127,7 +128,7 @@ function cellTemplate(state: StoryViewState, index: number): string {
     content = cartImage()
   } else if (pressureGate) {
     label = campaignName(language, 'pressure-cove')
-    content = observatoryImage()
+    content = raftImage()
   } else if (ferryGate) {
     label = campaignName(language, 'reed-channels')
     content = drainageImage()

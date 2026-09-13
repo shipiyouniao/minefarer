@@ -35,6 +35,7 @@ export function storyEnvelopeStatus(text: string | null): 'supported' | 'unsuppo
       const revision = journal?.child('departure')?.string('campaign') ?? ''
       const knownRevision =
         revision === campaignStage(id).revision ||
+        (id === 'pressure-cove' && revision === 'pressure-cove-v1') ||
         (id === 'reed-channels' && ['reed-channels-v1', 'reed-channels-v2'].includes(revision)) ||
         (id === 'tower-galleries' &&
           ['tower-road-v1', 'tower-road-v2', 'tower-road-v3'].includes(revision))

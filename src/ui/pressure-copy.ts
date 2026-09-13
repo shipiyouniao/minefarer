@@ -2,7 +2,7 @@ import { message } from '../i18n.js'
 import type { Language } from '../types/localization.js'
 import type { CampaignSceneId } from '../types/campaign.js'
 import type { SignalLine } from '../types/signal-story.js'
-/** Each comparison reach has its own short geographical title. */
+/** Each ferry crossing has its own short geographical title. */
 export function pressureFloorName(language: Language, floor: number): string {
   return floor === 1
     ? message(language, 'pressure.floor-1')

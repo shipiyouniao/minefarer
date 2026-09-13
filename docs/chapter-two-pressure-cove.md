@@ -1,56 +1,31 @@
 # Chapter Two, stage two: Pressure Cove
 
-Status: playable implementation, awaiting player acceptance and PR review. Follows the combined Reed Channels stage. Track delivery under R2-10.2-03 in #55; the remaining later exploration stages are not delivered by this change.
+Status: the paired-reading prototype was rejected in playtesting. This revision replaces it with physical raft crossings and is awaiting fresh player acceptance. Earlier solver results did not prove that players needed the comparison mechanic.
 
-## Question and consequence
+## What the player does
 
-At Old Ferry the boat is still tied up, but its landing moves relative to the bank with each backflow. Nia wants to reach the boat without stranding the traveler on a drifting patch. The traveler notices paired instruments disagreeing in a repeatable way. Their investigation should establish that the pulse reaches the outer bank before the inner basin, giving a concrete upstream lead rather than another report at camp.
+The bridge is broken. A raft drifts between safe landings. Find a route through the shore's minefield, step aboard the raft, wait for the tide, and step off at the landing that leads to the next anchor. The world entry stays at Old Ferry; already earned supplies and completed quests are preserved.
 
-The physical entrance belongs to the far-bank landing of Old Ferry, not another camp facility. Clearing the stage secures the crossing and replaces that entrance with the next real scene connection when that destination is implemented. Do not draw a fake onward doorway to an unimplemented location. The return to Reedbank Camp stays available throughout.
+Mines and numbers stay fixed. Waiting moves only the raft and a passenger standing on it. It never reveals shore cells, rotates flags or supplies new information about land hazards. The former comparison instruments, readings, arithmetic help and deduction engine are removed.
 
-## New inference mechanic: paired pressure readings
+## Three crossings
 
-An authored pair compares two visible, non-overlapping footprints A and B. Its signed value is the true hazard count in A minus the true hazard count in B. The player sees the two outlined areas and the difference together: `A +2 B` means A contains two more hazards than B, not that A contains exactly two. Zero means equal counts, not safe ground. Chinese, English and Japanese explanations must distinguish these meanings.
+1. **A ride across:** one river and two stops teach boarding, riding and disembarking.
+2. **Choose your landing:** the far bank is split. Ride around its broken section to reach both anchors, then return to the exit.
+3. **Around the broken bank:** both banks have gaps. Use the four-stop circuit to visit the far-bank anchors and reach the exit on the opposite part of the home bank.
 
-This is a new relational clue family, not a renamed supply switch. It is implemented independently of the power network and can later be composed with other board mechanics.
+The departure corners and final destinations differ. The raft follows a visible fixed route; its next stop is marked. Existing profession tools and equipment remain available for shore exploration.
 
-- First-floor footprints are 2×2; later ones can be 3×3. Explicit coordinates and pair IDs belong to authored content.
-- Readings are public observations calculated from the actual board. Player flags remain hypotheses and never alter a reading.
-- Players cannot move the observation footprints or query arbitrary cell pairs; unlimited arbitrary queries could disclose the entire field by subtraction.
-- Ordinary visible clues and a known-safe calibration footprint establish the first absolute count. Later pairs form a small connected inference chain. Never require an unconstrained chain of differences with no known bound.
-- All footprints are outlined on hover/focus; touch toggles the overlay with one tap. Show a small signed badge and short explanation beside the selected instrument instead of opening a separate board or a page of equations.
-- Tide movement carries tile knowledge as in stage one. Fixed observation footprints stay in world coordinates, so readings recalculate after each tide. Animate changed readings and remove any obsolete report; do not silently keep old values.
+## Presentation
 
-## Three authored floors
+The camp-style help button opens the shared information dialog with three illustrated steps. Short dialogue explains the broken bridge and the immediate crossing. The first board attaches prompts to the raft, changing from boarding to riding and disembarking as the player acts. Raft and passenger animate together; reduced motion is supported.
 
-| Floor             | Inference purpose                                                                         | Tide interaction                                                         | Completion condition                                        |
-| ----------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| Calibration bank  | One safe footprint and one paired difference teach a bounded hazard count.                | A single forecast lane changes one footprint; compare before and after.  | Deduce and reach the marked safe landing.                   |
-| Divided basin     | Two comparisons share one footprint, so knowledge transfers between banks.                | Opposite tide directions change which clues are adjacent.                | Locate both safe mooring positions and secure the crossing. |
-| The boat's shadow | Combine a bounded comparison chain with ordinary numbers; no new rule on the last screen. | Hold one bank while moving the other, preserving useful reference clues. | Reach the boat and record the timing of the upstream pulse. |
+## Save compatibility and validation
 
-Target footprint: approximately 17×17, 19×17 and 19×19, with hazard density comparable to the established introductory expedition difficulty. These are authoring targets, not approved layouts. Author different topology from Reed Channels; do not copy its two-bank power graph. Keep any existing sluice at the minimum needed to choose a useful tide, rather than multiplying relay chains.
+`pressure-cove-v2` retires unfinished prototype journals without replaying them under new rules. The envelope recognizes v1 as retired content rather than marking the entire save read-only. Completed v1 outcomes and rewards remain settled, and first-clear rewards cannot be earned twice.
 
-A mooring is a physical safe landing reached by movement after deduction. A mistaken attempt follows ordinary reveal/damage rules; it cannot grant credit merely because a flag was placed. No hidden-truth solver, forced expendable-item purchase or mandatory guessing is allowed.
+Validation covers public-clue shore exploration, actual boarding and visits to each anchor, per-action replay, old-journal writeability, and abandonment. A repeated-wait test verifies that even 200 tides from shore do not reveal land, visit anchors or complete a floor. Finite walkthroughs are not a substitute for human attempts to bypass or trivialize the mechanic; this redesign requires renewed playtesting.
 
-## Delivery and acceptance
+## Overworld access
 
-1. Implement a reusable paired-reading state and renderer with exact signed semantics. Cover zero, positive/negative values, clipped/invalid footprints, mistaken flags and reading changes after tide.
-2. Author and validate each layout with a solver using only published ordinary and paired clues. At least one required inference on each floor must use the new reading; an ordinary-clue-only solver should not complete the intended route unaided.
-3. Teach the first useful inference in a board-anchored coach, highlighting the actual footprint and the next actionable cell. The player performs the action; clicking Continue alone must not complete the lesson.
-4. Integrate physical entry, independent replay journal, intermediate dialogue checkpoints, once-only rewards, ordinary missions/achievements and the resulting world outcome. Test failure, departure, resume and already-cleared saves.
-5. Verify narrow touch, keyboard and desktop interaction, three languages, reduced motion, clue badge visibility and no overlay on covered-cell backgrounds.
-6. Human playtesting decides clarity and pacing before accepting the stage. Do not claim a measured duration or Chapter Two completion from solver results.
-
-## Side-story boundary
-
-No side story is bundled into this stage specification. A later river-side story must introduce its own special gameplay, potentially a minigame; reskinning pressure comparisons does not qualify. It can span multiple stages and include a dedicated boss and a complete character outcome. Keep reward reveals inside the story's appropriate resolution rather than advertising exclusive rewards in the initial task.
-
-## Implemented build
-
-- Three authored 17×17, 19×17 and 19×19 reaches with about 18% mine density. The second entrance is reflected horizontally; the last reach reverses both axes. All current lanes, instrument footprints and landmarks follow the same transformation.
-- Fixed 2×2 comparisons progress from A–B to B–C and C–D. A known-safe reference bounds the first count. Each additional comparison is required by the public-information solver on its floor; neither ordinary clues alone nor the preceding floor's comparison set completes the intended route.
-- Public-information walkthroughs use tides, physically visit the moorings and finish without damage or consumable tools. Arbitrary mine truth and guessed flags are excluded from the deduction engine's evidence.
-- A board-anchored first-action coach disappears after opening the target tile and stays dismissed on reload. Detailed reading/tide explanations are collapsed by default. Comparison selection works with hover, focus and touch; values recompute after tides.
-- Old Ferry cell 85 is the physical entrance. Its marker disappears on completion; no fake road to an unimplemented upstream scene is drawn. The existing road back to Reedbank Camp remains accessible. The ending records the upstream timing clue and awards 180 first-clear supplies once.
-- The independent `pressure-cove-v1` journal shares equipment, skills and ordinary expedition progression. Replay of every action and once-only settlement are covered by regression tests. Further human playtesting determines clarity and pacing; no duration claim is implied.
+Old Ferry's two bridges and connecting shore road remain safe and revealed, including the eastern approach pads reserved for future scene exits. Mines live off this main route. Clearing a road must preserve prior exploration, flags elsewhere, health, campaign progress and rewards.

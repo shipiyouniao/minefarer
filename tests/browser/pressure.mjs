@@ -33,15 +33,10 @@ const pressure = new ExpeditionSession(repo.forCampaign('pressure-cove'), new Fa
 assert.ok(pressure.start('explorer', []))
 pressure.completeCampaignScene('pressure-entry')
 const first = storage.getItem(key)
-for (const action of solvePressureFloor(1).actions) assert.ok(pressure.dispatch(action))
-assert.ok(
-  pressure.dispatch({
-    type: 'relic',
-    relic: pressure.run.offers.find((x) => x === 'purse') ?? pressure.run.offers[0],
-  }),
-)
-pressure.completeCampaignScene('pressure-basin')
-const second = storage.getItem(key)
+const plan = solvePressureFloor(1).actions
+const firstTide = plan.findIndex((a) => a.type === 'end-turn')
+for (const action of plan.slice(0, firstTide)) assert.ok(pressure.dispatch(action))
+const boarded = storage.getItem(key)
 const browser = await chromium.launch({ channel: 'msedge' })
 try {
   for (const width of [390, 1440])
@@ -49,55 +44,120 @@ try {
       const page = await browser.newPage({
         viewport: { width, height: 1050 },
         hasTouch: width === 390,
-        reducedMotion: 'reduce',
+        reducedMotion: width === 390 ? 'reduce' : 'no-preference',
       })
+      console.log('Checking raft UI', width, language)
       const errors = []
       page.on('pageerror', (e) => errors.push(e.message))
-      await page.goto(base)
-      await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
+      await page.addInitScript(
+        ({ key }) => {
+          const value = sessionStorage.getItem('test.next-save')
+          if (value) {
+            localStorage.setItem(key, value)
+            sessionStorage.removeItem('test.next-save')
+          }
+        },
+        { key },
+      )
+      await page.goto(base, { waitUntil: 'domcontentloaded' })
+      await page.evaluate(({ value }) => sessionStorage.setItem('test.next-save', value), {
         key,
         value: entry,
       })
-      await page.goto(base + '?page=story&lang=' + language)
+      await page.goto(base + '?page=story&lang=' + language, { waitUntil: 'domcontentloaded' })
       await page.locator('[data-story-campaign][href*="pressure-cove"]').waitFor()
-      assert.ok(await page.locator('[data-story-cell="85"] .ridge-instrument').count())
-      await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
+      assert.ok(await page.locator('[data-story-cell="85"] svg').count())
+      await page.evaluate(({ value }) => sessionStorage.setItem('test.next-save', value), {
         key,
         value: first,
       })
-      await page.goto(base + '?page=campaign&stage=pressure-cove&lang=' + language)
-      await page.locator('.pressure-coach').waitFor()
-      assert.equal(await page.locator('[data-pressure-area="a"]').count(), 4)
-      assert.equal(await page.locator('[data-pressure-area="b"]').count(), 4)
-      const coach = await page.locator('.pressure-coach').boundingBox()
-      assert.ok(coach.x >= 0 && coach.x + coach.width <= width, 'coach fits narrow viewport')
-      await page.screenshot({ path: '.native/pressure-' + width + '-' + language + '.png' })
-      await page.locator('[data-side="a"] [data-cell="38"]').click()
-      await page.locator('.pressure-coach').waitFor({ state: 'detached' })
-      await page.reload()
-      assert.equal(await page.locator('.pressure-coach').count(), 0)
-      await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
-        key,
-        value: second,
+      await page.goto(base + '?page=campaign&stage=pressure-cove&lang=' + language, {
+        waitUntil: 'domcontentloaded',
       })
-      await page.goto(base)
-      await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
+      await page.locator('.pressure-objective').waitFor()
+      assert.equal(await page.locator('[data-pressure-pair]').count(), 0)
+      await page.locator('.pressure-objective [data-control="help"]').click()
+      assert.equal(await page.locator('dialog[open] .pressure-help svg').count(), 3)
+      await page.screenshot({ path: '.native/raft-help-' + width + '-' + language + '.png' })
+      await page.keyboard.press('Escape')
+      await page.goto(base, { waitUntil: 'domcontentloaded' })
+      await page.evaluate(({ value }) => sessionStorage.setItem('test.next-save', value), {
         key,
-        value: second,
+        value: boarded,
       })
-      await page.goto(base + '?page=campaign&stage=pressure-cove&lang=' + language)
-      await page.locator('[data-pressure-pair="1"]').click()
-      assert.equal(
-        await page.locator('[data-pressure-pair="1"]').getAttribute('aria-pressed'),
-        'true',
-      )
-      assert.equal(await page.locator('[data-pressure-area="a"]').count(), 4)
+      await page.goto(base + '?page=campaign&stage=pressure-cove&lang=' + language, {
+        waitUntil: 'domcontentloaded',
+      })
+      await page.locator('.dungeon-player').waitFor()
+      assert.equal(await page.locator('.dungeon-player .dungeon-sprite').count(), 1)
+      assert.equal(await page.locator('.pressure-water > .dungeon-sprite').count(), 0)
+      const start = await page.evaluate(() => ({
+        raft: document.querySelector('.pressure-raft').getBoundingClientRect().x,
+        player: document.querySelector('.dungeon-player').getBoundingClientRect().x,
+      }))
+      if (width === 1440)
+        await page.evaluate(() => {
+          const animate = Element.prototype.animate
+          Element.prototype.animate = function (frames, options) {
+            const result = animate.call(this, frames, options)
+            if (this.matches('.pressure-raft,.dungeon-player')) result.pause()
+            return result
+          }
+        })
+      await page.locator('.pressure-actions [data-control="end-turn"]').click()
+      if (width === 1440) {
+        const midpoint = await page.evaluate(() => {
+          const animations = document.getAnimations().filter((a) => a.id === 'ferry-crossing')
+          animations.forEach((a) => (a.currentTime = 325))
+          return {
+            count: animations.length,
+            targets: animations.map((a) => a.effect.target.className),
+            raft: document.querySelector('.pressure-raft').getBoundingClientRect().x,
+            player: document.querySelector('.dungeon-player').getBoundingClientRect().x,
+          }
+        })
+        assert.equal(
+          midpoint.count,
+          2,
+          'the real wait button must animate raft and single passenger',
+        )
+        assert.ok(midpoint.targets.includes('dungeon-player'))
+        assert.ok(Math.abs(midpoint.raft - start.raft) > 1, 'raft must move across the river')
+        assert.ok(
+          Math.abs(midpoint.raft - start.raft - (midpoint.player - start.player)) < 1,
+          'passenger and raft must move together',
+        )
+        const committed = await page.evaluate((key) => localStorage.getItem(key), key)
+        await page.locator('.pressure-actions [data-control="end-turn"]').dispatchEvent('click')
+        assert.equal(
+          await page.evaluate((key) => localStorage.getItem(key), key),
+          committed,
+          'duplicate tide input is blocked during the crossing',
+        )
+        await page.evaluate(async () => {
+          const animations = document.getAnimations().filter((a) => a.id === 'ferry-crossing')
+          animations.forEach((a) => a.finish())
+          await Promise.allSettled(animations.map((a) => a.finished))
+        })
+      } else
+        assert.equal(
+          await page.evaluate(
+            () => document.getAnimations().filter((a) => a.id === 'ferry-crossing').length,
+          ),
+          0,
+        )
+
+      await page.waitForTimeout(900)
+      await page.screenshot({ path: '.native/raft-crossing-' + width + '-' + language + '.png' })
+      const save = await page.evaluate((key) => localStorage.getItem(key), key)
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), save)
+      assert.equal(await page.locator('.pressure-water > .dungeon-sprite').count(), 0)
+      assert.equal(await page.locator('.dungeon-player .dungeon-sprite').count(), 1)
       assert.deepEqual(errors, [])
       await page.close()
     }
-  console.log(
-    'Pressure entry, action-based coach, reload and touch comparisons passed in three languages',
-  )
+  console.log('Raft entry, illustrated help, boarding tide and reload passed in three languages')
 } finally {
   await browser.close()
 }

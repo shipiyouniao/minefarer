@@ -1,3 +1,4 @@
+import { raftImage } from './pressure-view.js'
 import { campaignProgress } from '../game/campaign-catalog.js'
 import { regionalCamp, isRegionalCamp } from '../game/regional-camps.js'
 import { campSiteImage, storySiteName } from './story-assets.js'
@@ -95,7 +96,7 @@ export function atlasLocal(state: StoryViewState, scene: number, current: number
                                 ? message(lang, 'story.atlas-tree')
                                 : ''
         const marker = pressure
-          ? observatoryImage()
+          ? raftImage()
           : ferry
             ? drainageImage()
             : rescue

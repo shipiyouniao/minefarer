@@ -46,7 +46,7 @@ function decodeStage(
         ? Math.max(0, Math.min(4, Math.trunc(reader.number('lesson') ?? 0)))
         : 0,
     scenes:
-      id === 'reed-channels' &&
+      (id === 'reed-channels' || id === 'pressure-cove') &&
       reader.value('journal') != null &&
       !journal &&
       reader.value('cleared') !== true
