@@ -53,3 +53,9 @@ The formal Recollection facility is planned for the beginning of Chapter Two, in
 ## Verification
 
 Camera tests cover anchored zoom, edge bounds, tile coverage across viewport sizes, catalog completeness, discovery gates and task destinations. Route tests verify that every location is connected through actual scene doorways, the haul return remains one-way, and route states respect repair and dialogue checkpoints. Browser checks cover narrow and 4K layouts, three languages, actual slider drags and endpoint clicks/taps, native touch pinch with delayed release, direct location activation, camera restoration, transparent controls, keyboard use and unchanged serialized saves. Chapter-finale checks exercise the discovered northwest maps and physical route independently.
+
+## Continuous world discovery
+
+The world overview is one continuous terrain drawing under a discovery mask. Regional charts are no longer pasted into isolated radial windows. Unlocking both ends of an authored regional connection reveals its full-width terrain corridor and road as part of the same mask, so explored neighboring regions cannot remain separated by fog. Future chapter footprints and connections extend this geography; the eventual completed world must be continuously visible rather than a collection of disconnected map islands. The final campaign-wide reveal remains part of future chapter completion work.
+
+Old Ferry is an overworld exploration scene with covered ground, eleven hazards and two safe arrival points. Its local terrain revision migrates the former empty transit scene without retiring other world scenes, dialogue, tasks or campaign journals. Subsequent revealed cells and flags remain persistent.

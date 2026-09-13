@@ -75,3 +75,10 @@ export type AtlasGesture =
       readonly dragged: boolean
     }
   | { readonly kind: 'pinch'; readonly distance: number; readonly midpoint: AtlasPoint }
+
+/** A surveyed overland connection reveals continuous terrain between regional footprints. */
+export interface AtlasRegionConnection {
+  readonly from: AtlasRegionId
+  readonly to: AtlasRegionId
+  readonly via: AtlasPoint
+}

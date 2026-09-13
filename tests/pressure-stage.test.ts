@@ -1,3 +1,4 @@
+import { exploreOldFerry } from './old-ferry-helpers.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { solvePressureFloor, PRESSURE_DEPARTURE } from './pressure-helpers.js'
@@ -86,7 +87,7 @@ test('Pressure Cove has a physical gate, replays every action and rewards comple
   const world = new StorySession(camp)
   assert.ok(camp.story.accepted?.includes('investigate-pressure'))
   assert.ok(world.travelNorthwest())
-  assert.ok(world.dispatch({ type: 'visit', index: 85 }))
+  for (const action of exploreOldFerry(world.run!).actions) assert.ok(world.dispatch(action))
   const slot = repo.forCampaign('pressure-cove')
   let stage = new ExpeditionSession(slot, new FakeRuntime())
   assert.ok(stage.start('explorer', []))

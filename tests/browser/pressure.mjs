@@ -1,3 +1,4 @@
+import { exploreOldFerry } from '../../.native/tests/tests/old-ferry-helpers.js'
 import { solvePressureFloor } from '../../.native/tests/tests/pressure-helpers.js'
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
@@ -26,7 +27,7 @@ stage.completeCampaignScene('ferry-end')
 assert.ok(stage.returnToCamp())
 const world = new StorySession(camp)
 assert.ok(world.travelNorthwest())
-assert.ok(world.dispatch({ type: 'visit', index: 85 }))
+for (const action of exploreOldFerry(world.run).actions) assert.ok(world.dispatch(action))
 const entry = storage.getItem(key)
 const pressure = new ExpeditionSession(repo.forCampaign('pressure-cove'), new FakeRuntime())
 assert.ok(pressure.start('explorer', []))

@@ -1,4 +1,4 @@
-import { STORY_SCENE_IDS, restoreStoryWorld } from '../game/story-checkpoint.js'
+import { STORY_SCENE_IDS, restoreStoryWorld, storySceneRevision } from '../game/story-checkpoint.js'
 import { STORY_REVISION } from '../game/story-content.js'
 import { buildStoryBoard, createStoryRun, storyLessonComplete } from '../game/story.js'
 import type { JsonValue } from '../types/json.js'
@@ -71,6 +71,46 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
   ])
     if (typeof reader.value(key) !== 'boolean') return null
 
+  if (reader.value('terrainRevision') !== undefined && reader.number('terrainRevision') === null)
+    return null
+  const terrainRevision = reader.number('terrainRevision') ?? 0
+  if (
+    !Number.isInteger(terrainRevision) ||
+    terrainRevision < 0 ||
+    terrainRevision > storySceneRevision(id)
+  )
+    return null
+  if (id === 'old-ferry' && terrainRevision === 0) {
+    // The original transit scene had no covered ground, flags, hazards or collectibles.
+    if (
+      revealed.length ||
+      flagged.length ||
+      triggered.length ||
+      operated.length ||
+      initial.board.walls.includes(player) ||
+      phase !== 'exploring' ||
+      reader.value('collected')
+    )
+      return null
+    const safe = initial.board.game.cells[player]!
+    return {
+      id,
+      terrainRevision: 1,
+      operated: [],
+      player: !safe.mine && safe.visibility === 'revealed' ? player : initial.board.exit,
+      health,
+      phase,
+      revealed: [],
+      flagged: [],
+      triggered: [],
+      inspected: false,
+      practicedFlag: reader.value('practicedFlag') === true,
+      practicedReveal: reader.value('practicedReveal') === true,
+      collected: false,
+      rescuedSupplies: reader.value('rescuedSupplies') === true,
+    }
+  }
+
   const cells = initial.board.game.cells
   if (
     revealed.some(
@@ -99,6 +139,7 @@ function scene(value: JsonValue): StorySceneCheckpoint | null {
 
   const checkpoint: StorySceneCheckpoint = {
     id,
+    ...(terrainRevision ? { terrainRevision } : {}),
     operated,
     player,
     health,

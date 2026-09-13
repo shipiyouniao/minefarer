@@ -1,3 +1,4 @@
+import { STORY_SCENE_IDS, storySceneRevision } from '../game/story-checkpoint.js'
 import { isRegionalCamp } from '../game/regional-camps.js'
 import { EXPEDITION_RULES_REVISION } from './expedition-format.js'
 import { STORY_REVISION } from '../game/story-content.js'
@@ -60,6 +61,12 @@ export function storyEnvelopeStatus(text: string | null): 'supported' | 'unsuppo
 
   const campId = story.child('travel')?.string('campId')
   if (campId !== null && campId !== undefined && !isRegionalCamp(campId)) return 'unsupported'
+
+  for (const value of story.child('travel')?.child('world')?.array('scenes') ?? []) {
+    const scene = JsonObjectReader.from(value)
+    const id = STORY_SCENE_IDS.find((id) => id === scene?.string('id'))
+    if (id && (scene?.number('terrainRevision') ?? 0) > storySceneRevision(id)) return 'unsupported'
+  }
 
   if (![2, 3, 4].includes(story.number('schemaVersion') ?? -1)) return 'unsupported'
 

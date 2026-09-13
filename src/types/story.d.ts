@@ -294,6 +294,7 @@ export type StorySceneId =
 
 /** Only differences from authored terrain are stored; hazards and clue numbers are rebuilt. */
 export interface StorySceneCheckpoint {
+  readonly terrainRevision?: number
   readonly operated: readonly number[]
   readonly id: StorySceneId
   readonly player: number
