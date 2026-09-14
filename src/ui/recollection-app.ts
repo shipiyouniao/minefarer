@@ -98,7 +98,7 @@ export class RecollectionApp implements MountedGame {
     const floors = RECOLLECTION_FLOORS.map((kind) => {
       const copy = recollectionFloorCopy(language, kind)
       const locked = !unlocked.floors.includes(kind)
-      return `<label class="recollection-choice ${locked ? 'is-locked' : ''}"><input type="checkbox" data-recollection-choice="floor-${kind}" data-floor="${kind}" ${selected.floors.includes(kind) ? 'checked' : ''} ${locked ? 'disabled' : ''}>${spriteImage(kind === 'ordinary' ? 'exit' : kind === 'relay' ? 'bastion-pylon' : 'workshop')}<span><strong>${copy.name}</strong><small>${locked ? message(language, 'recollection.floor-locked') : copy.note}</small></span></label>`
+      return `<label class="recollection-choice ${locked ? 'is-locked' : ''}"><input type="checkbox" data-recollection-choice="floor-${kind}" data-floor="${kind}" ${selected.floors.includes(kind) ? 'checked' : ''} ${locked ? 'disabled' : ''}>${spriteImage(kind === 'river' ? 'river-boat' : kind === 'tidal' ? 'tide-core' : kind === 'ordinary' ? 'exit' : kind === 'relay' ? 'bastion-pylon' : 'workshop')}<span><strong>${copy.name}</strong><small>${locked ? (kind === 'tidal' ? message(language, 'recollection.tidal-locked') : kind === 'river' ? message(language, 'recollection.river-locked') : message(language, 'recollection.floor-locked')) : copy.note}</small></span></label>`
     }).join('')
     const bosses = RECOLLECTION_BOSSES.map((kind) => {
       const locked = !unlocked.bosses.includes(kind)

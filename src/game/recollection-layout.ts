@@ -1,3 +1,5 @@
+import { generateRecollectionRiver } from './recollection-river.js'
+import { recollectionCurrent } from './recollection-current.js'
 import { generateDungeon } from './dungeon-generator.js'
 import { adjacentSteps, shuffled } from './variant-board.js'
 import { neighbors, randomIndex } from './engine.js'
@@ -114,6 +116,16 @@ export function generateRecollectionFloor(
   seed: number,
   config: Config,
 ): RecollectionLayout {
+  if (kind === 'river') return generateRecollectionRiver(seed, config)
+  if (kind === 'tidal') {
+    for (let attempt = 0; attempt < 64; attempt++) {
+      const roomSeed = (seed + Math.imul(attempt, 0x45d9f3b)) >>> 0
+      const terrain = generateRecollectionFloor('routing', roomSeed, config)
+      const current = recollectionCurrent(terrain, roomSeed)
+      if (current) return { ...terrain, power: { ...terrain.power!, purpose: 'drainage' }, current }
+    }
+    throw new Error('Unable to generate connected tidal channels with functioning sluices')
+  }
   if (kind === 'ordinary') return generateDungeon(seed, config.mines, config.width, config.height)
   const next = randomIndex(seed ^ 0x7e1a9)
   const plan = kind === 'routing' ? planRecollectionPower(seed, config.width) : null

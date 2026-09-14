@@ -2,6 +2,14 @@ import { message } from '../i18n.js'
 import { feedPowered } from '../game/floor-power.js'
 import type { Expedition } from '../types/variants.js'
 import type { Language } from '../types/localization.js'
+import type { CurrentLane } from '../types/floor-tide.js'
+
+/** Derive the visible forecast from the lane's actual order, including vertical circulation. */
+export function currentArrow(lane: CurrentLane, width: number): string {
+  const step = ((lane.cells[1] ?? lane.cells[0]!) - lane.cells[0]!) * lane.direction
+
+  return step === width ? '↓' : step === -width ? '↑' : step > 0 ? '→' : '←'
+}
 /** Keep the tide explanation beside its board with a collapsible touch-friendly guide. */
 export function currentObjective(language: Language, run: Expedition): string {
   if (!run.current) return ''
@@ -12,6 +20,20 @@ export function renderCurrent(root: HTMLElement, run: Expedition, language: Lang
   if (!run.current || !run.power) return
   for (const lane of run.current.lanes) {
     const held = feedPowered(run.power, lane.hold)
+    const source = message(language, 'current.feed', {
+      row: Math.floor(lane.hold.junction / run.game.config.width) + 1,
+      column: (lane.hold.junction % run.game.config.width) + 1,
+      branch: lane.hold.branch === 0 ? 'A' : 'B',
+    })
+    const arrow = currentArrow(lane, run.game.config.width)
+    const direction =
+      arrow === '↑'
+        ? message(language, 'pressure.north')
+        : arrow === '↓'
+          ? message(language, 'pressure.south')
+          : arrow === '→'
+            ? message(language, 'pressure.east')
+            : message(language, 'pressure.west')
     for (const index of lane.cells) {
       const cell = root.querySelector<HTMLElement>(`[data-side="a"] [data-cell="${index}"]`)
       if (!cell) continue
@@ -20,11 +42,11 @@ export function renderCurrent(root: HTMLElement, run: Expedition, language: Lang
       if (index === lane.cells[0]) {
         const badge = document.createElement('span')
         badge.className = 'current-arrow'
-        badge.textContent = `${lane.hold.branch === 0 ? 'A' : 'B'} ${held ? '⌁' : lane.direction === 1 ? '→' : '←'}`
+        badge.textContent = `${lane.hold.branch === 0 ? 'A' : 'B'} ${held ? '⌁' : currentArrow(lane, run.game.config.width)}`
         badge.setAttribute('aria-hidden', 'true')
         cell.append(badge)
       }
-      const label = held ? message(language, 'current.held') : message(language, 'current.moving')
+      const label = `${held ? message(language, 'current.held') : message(language, 'current.moving')}, ${direction}, ${source}`
       cell.title = `${cell.title} ${label}`
       cell.setAttribute('aria-label', `${cell.getAttribute('aria-label')}, ${label}`)
     }

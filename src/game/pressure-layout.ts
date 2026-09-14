@@ -1,115 +1,129 @@
-import { authoredPowerLayout } from './authored-power-layout.js'
-import type { AuthoredPowerFloor } from '../types/floor-power.js'
+import { placedBoard } from './variant-board.js'
+import type { RiverFloorContent, RiverDirection } from '../types/pressure.js'
 import type { DungeonLayout } from '../types/dungeon-generation.js'
-export const PRESSURE_FLOORS: readonly AuthoredPowerFloor[] = [
+
+export const PRESSURE_FLOORS: readonly RiverFloorContent[] = [
+  {
+    rows: [
+      '###############',
+      '#~*~~~~~~~~~DE#',
+      '#*o~*~*o~~~~o.#',
+      '#~*~~~~~*~~~T~#',
+      '#~~*~~T~~~~*~~#',
+      '#~~~~~~~~~~~~~#',
+      '#**~~*###~~~~*#',
+      '#~o*~oA##~~~o~#',
+      '#~~~~*###**~~~#',
+      '#~**~~~~**~T~~#',
+      '#~~~~~~~~~*~~~#',
+      '#~~~~~~~*~~~~~#',
+      '#.oo~*~o~~*~*~#',
+      '#SBo~~~~~~~~*~#',
+      '###############',
+    ],
+  },
   {
     rows: [
       '#################',
-      '#ooo...###.*.*.*#',
-      '#oSo...###.*...*#',
-      '#ooo..*###**.*..#',
-      '#...**.###**...*#',
-      '#..**..###....*.#',
-      '#...*..###*..**.#',
-      '#..*.oo###oo....#',
-      '#....oo###oo....#',
-      '#....oo###oo.*..#',
-      '#...*.*###......#',
-      '#...*..###....*.#',
-      '#......###.....*#',
-      '#..*...###.....*#',
-      '#.....*###....E.#',
-      '#...*..###......#',
+      '#~~~~~~**~~~*~DE#',
+      '#~o~~~*~o~~~~~o.#',
+      '#~*~~~~~*~~~*~~~#',
+      '#~~~###~~*~~~~~*#',
+      '#~*oA##*~*~~~~~~#',
+      '#~~~###~~~~~~*~~#',
+      '#~~~~~*~~~~*~**~#',
+      '#*o~~~~*~~~~~~o*#',
+      '#~~~~~T**~~*T*~*#',
+      '#~~~~T~~~~###~**#',
+      '#~~***~**oA##**~#',
+      '#~~~**~~~~###~~~#',
+      '#~~~~~~~~~~~*~~~#',
+      '#.oo~~~~o~~~~~~~#',
+      '#SBo~~~~*~~~~~~~#',
       '#################',
     ],
-    power: { purpose: 'drainage', junctions: [], receivers: [], doors: [] },
   },
   {
     rows: [
       '###################',
-      '#ooo*...###..*.*.*#',
-      '#oSo*..*###......*#',
-      '#ooo..oo###oo..*..#',
-      '#*.*.*oo###oo.*.*.#',
-      '#*..**oo###oo.....#',
-      '#..*.*..###.*.*...#',
-      '#.......###...*...#',
-      '#.......###########',
-      '#.*.*.**###*......#',
-      '#.....*.###*......#',
-      '#...*.oo###oo..*..#',
-      '#.*...oo###oo.....#',
-      '#.**..oo###oo..*..#',
-      '#.E....*###*......#',
-      '#..*....###.......#',
+      '#~~T**~~~~~~~~~~DE#',
+      '#~o~~~~~*o~~~~T~o.#',
+      '#~~~*~~~~~~~~~~~~~#',
+      '#~~**~*~~~~###~*~~#',
+      '#~*~*~~~~*oA##~*~~#',
+      '#~~~*~~~o~~###~~**#',
+      '#~~~~~~~~*~~~~~*~*#',
+      '#*~*~~~~~~**~~*~~~#',
+      '#~o~~###~***~~~~o~#',
+      '#~~~oA##~*~~~~~*~~#',
+      '#*~~~###~~*~~~~~*~#',
+      '#*~*~**~~o~~~~~~~*#',
+      '#~~~~~~**~*~###*~*#',
+      '#~~~o~~~~~~oA##~~*#',
+      '#~~~~~~~*T~~###~~~#',
+      '#.oo~~~~~o*~***~*~#',
+      '#SBo~~*~~~~~~*~*~~#',
       '###################',
     ],
-    power: { purpose: 'drainage', junctions: [], receivers: [], doors: [] },
-  },
-  {
-    rows: [
-      '###################',
-      '#.......###.*...*.#',
-      '#.E....*###....*..#',
-      '#..*..oo###oo.*...#',
-      '#*.**.oo###oo...*.#',
-      '#*.*..oo###oo.....#',
-      '#..*...*###**.*...#',
-      '#*.*...*###.......#',
-      '#.....*.###*....*.#',
-      '###################',
-      '#....*.*###..*....#',
-      '#....*.*###.**....#',
-      '#.....*.###...*..*#',
-      '#....*oo###oo...*.#',
-      '#.*..*oo###oo.....#',
-      '#ooo..oo###oo.....#',
-      '#oSo...*###.*.*...#',
-      '#ooo....###.......#',
-      '###################',
-    ],
-    power: { purpose: 'drainage', junctions: [], receivers: [], doors: [] },
   },
 ]
-/** Static islands require boarding a raft; mine positions never rotate into free discoveries. */
+
+/** The chart shows a clockwise circulation; sideways paddling selects inner or outer channels. */
+function riverDirection(index: number, width: number, height: number): RiverDirection {
+  const x = (index % width) - (width - 1) / 2
+  const y = Math.floor(index / width) - (height - 1) / 2
+
+  return Math.abs(y) >= Math.abs(x) ? (y < 0 ? 'east' : 'west') : x > 0 ? 'south' : 'north'
+}
+
+/** Build fixed water minefields and honest eight-neighbor clues from authored content. */
+export function authoredRiverLayout(content: RiverFloorContent): DungeonLayout {
+  const width = content.rows[0]!.length
+  const height = content.rows.length
+  if (content.rows.some((row) => row.length !== width)) throw new RangeError('Ragged river chart')
+  const symbols = [...content.rows.join('')]
+  const entrance = symbols.indexOf('S')
+  const boat = symbols.indexOf('B')
+  const exit = symbols.indexOf('E')
+  if (entrance < 0 || boat < 0 || exit < 0)
+    throw new RangeError('River chart needs a departure, boat and exit')
+  const water = symbols.flatMap((symbol, index) => ('~*oBDT'.includes(symbol) ? [index] : []))
+  const mines = new Set(symbols.flatMap((symbol, index) => (symbol === '*' ? [index] : [])))
+  const game = placedBoard({ width, height, mines: mines.size }, mines, 0, entrance)
+
+  return {
+    entrance,
+    exit,
+    walls: symbols.flatMap((symbol, index) => ('#A'.includes(symbol) ? [index] : [])),
+    treasures: symbols.flatMap((symbol, index) => (symbol === 'T' ? [index] : [])),
+    game: {
+      ...game,
+      cells: game.cells.map((cell, index) => ({
+        ...cell,
+        visibility: 'oBDSEA.'.includes(symbols[index]!) ? 'revealed' : 'hidden',
+      })),
+    },
+    pressure: {
+      water,
+      currents: symbols.map((_, index) => riverDirection(index, width, height)),
+      docks: symbols.flatMap((symbol, index) => ('BD'.includes(symbol) ? [index] : [])),
+      boat,
+      anchored: true,
+      waits: 0,
+      moorings: symbols.flatMap((symbol, index) =>
+        symbol === 'A' ? [{ index, secured: false }] : [],
+      ),
+      voyage: [],
+      line: [boat],
+      ties: [boat],
+    },
+  }
+}
+
+/** Each authored crossing owns its coastline; old raft journals retire instead of replaying new rules. */
 export function pressureLayout(floor: number): DungeonLayout {
   const content = PRESSURE_FLOORS[floor - 1]
-  if (!content) throw new RangeError('Unknown ferry crossing')
-  const { power, ...base } = authoredPowerLayout(content)
-  const { width, height } = base.game.config,
-    left = (width / 2) | 0
-  const water = Array.from({ length: height - 2 }, (_, r) => [
-    (r + 1) * width + left - 1,
-    (r + 1) * width + left,
-    (r + 1) * width + left + 1,
-  ]).flat()
-  const stops =
-    floor === 1
-      ? [width * ((height / 2) | 0) + left - 1, width * ((height / 2) | 0) + left + 1]
-      : [
-          width * 4 + left - 1,
-          width * 4 + left + 1,
-          width * (height - 5) + left + 1,
-          width * (height - 5) + left - 1,
-        ]
-  if (floor === 3) stops.reverse()
-  const moorings =
-    floor === 1
-      ? [width * (height - 3) + width - 4]
-      : floor === 2
-        ? [width * 2 + width - 3, width * (height - 3) + width - 3]
-        : [width * (height - 3) + width - 3, width * 2 + width - 3]
-  return {
-    ...base,
-    walls: base.walls.filter((i) => i !== stops[0]),
-    game: {
-      ...base.game,
-      cells: base.game.cells.map((c, i) =>
-        water.includes(i) || content.rows.join('')[i] === 'o'
-          ? { ...c, visibility: 'revealed' }
-          : c,
-      ),
-    },
-    pressure: { water, stops, position: 0, waits: 0, moorings },
-  }
+  if (!content) throw new RangeError('Unknown river crossing')
+
+  return authoredRiverLayout(content)
 }

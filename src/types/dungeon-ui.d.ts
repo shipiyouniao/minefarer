@@ -1,5 +1,7 @@
 /** Generated raster assets used by terrain, landmarks, character and tool controls. */
 export type DungeonSprite =
+  | 'river-boat'
+  | 'river-dock'
   | 'rescuer'
   | 'skill-rescuer'
   | 'exit-closed'

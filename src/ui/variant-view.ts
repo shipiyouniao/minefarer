@@ -1,3 +1,4 @@
+import { renderRiverPassenger } from './pressure-view.js'
 import { renderFloorCircuits } from './floor-circuit-view.js'
 import { animateExitOpening, exitIsOpen } from './exit-performance.js'
 import { animateRescue } from './rescue-performance.js'
@@ -848,6 +849,7 @@ export class VariantView {
 
       player.dataset['number'] = String(clue)
       player.innerHTML = `${spriteImage(professionSprite(run.departure.profession))}${clue ? `<span class="landmark-clue">${clue}</span>` : ''}`
+      renderRiverPassenger(player, run)
       player.style.width = `${current.offsetWidth}px`
       player.style.height = `${current.offsetHeight}px`
       player.style.transform = `translate(${current.offsetLeft}px, ${current.offsetTop}px)`

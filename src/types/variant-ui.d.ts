@@ -28,6 +28,8 @@ export type VariantCommand =
         | 'skill'
         | 'attack'
         | 'brace'
+        | 'moor'
+        | 'haul'
         | 'end-turn'
         | 'shift'
         | 'help'

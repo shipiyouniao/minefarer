@@ -1,22 +1,25 @@
 /** Complete shared catalog: every supported language implements every key. */
 export interface MessageCatalog {
-  readonly 'pressure.static': string
-  readonly 'pressure.land': string
-  readonly 'pressure.ride': string
-  readonly 'pressure.board': string
-  readonly 'pressure.water': string
-  readonly 'pressure.raft': string
-  readonly 'pressure.wait': string
-  readonly 'pressure.help': string
+  readonly 'recollection.tidal': string
+  readonly 'recollection.tidal-note': string
+  readonly 'recollection.river': string
+  readonly 'recollection.river-note': string
+  readonly 'recollection.tidal-locked': string
+  readonly 'recollection.river-locked': string
 
-  readonly 'pressure.title': string
-  readonly 'pressure.task': string
+  readonly 'pressure.help': string
+  readonly 'pressure.wait': string
+  readonly 'pressure.raft': string
+  readonly 'pressure.water': string
+  readonly 'pressure.board': string
+  readonly 'pressure.ride': string
+  readonly 'pressure.land': string
+  readonly 'pressure.static': string
+  readonly 'pressure.objective': string
   readonly 'pressure.detail': string
   readonly 'pressure.floor-1': string
   readonly 'pressure.floor-2': string
   readonly 'pressure.floor-3': string
-  readonly 'pressure.progress': string
-  readonly 'pressure.objective': string
   readonly 'pressure.entry-1': string
   readonly 'pressure.entry-2': string
   readonly 'pressure.basin-1': string
@@ -25,6 +28,26 @@ export interface MessageCatalog {
   readonly 'pressure.boat-2': string
   readonly 'pressure.end-1': string
   readonly 'pressure.end-2': string
+  readonly 'pressure.title': string
+  readonly 'pressure.task': string
+  readonly 'pressure.progress': string
+  readonly 'pressure.raise': string
+  readonly 'pressure.lower': string
+  readonly 'pressure.haul': string
+  readonly 'pressure.haul-hint': string
+  readonly 'pressure.sailing': string
+  readonly 'pressure.sounding': string
+  readonly 'pressure.secure-hint': string
+  readonly 'pressure.secured': string
+  readonly 'pressure.exit': string
+  readonly 'pressure.north': string
+  readonly 'pressure.east': string
+  readonly 'pressure.south': string
+  readonly 'pressure.west': string
+  readonly 'pressure.guide-board': string
+  readonly 'pressure.guide-sail': string
+  readonly 'pressure.guide-moor': string
+  readonly 'pressure.blocked': string
 
   readonly 'atlas.travel': string
   readonly 'atlas.camp-view': string
@@ -58,6 +81,7 @@ export interface MessageCatalog {
   readonly 'loadout.effects.sonar': string
 
   readonly 'ferry.destination': string
+  readonly 'current.feed': string
   readonly 'current.title': string
   readonly 'current.guide': string
   readonly 'current.legend': string

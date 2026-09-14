@@ -1,3 +1,4 @@
+import { riverNeighbors } from './pressure.js'
 import { occupied } from './dungeon-occupancy.js'
 import { adjacentSteps } from './variant-board.js'
 import type { Expedition } from '../types/variants.js'
@@ -65,6 +66,8 @@ export function mobilityReady(run: Expedition): boolean {
 
 /** Walking uses the same one-edge, bidirectional portal in previews, movement and frontier search. */
 export function walkingNeighbors(run: Expedition, index: number): number[] {
+  if (run.pressure) return riverNeighbors(run, index)
+
   const ordinary = adjacentSteps(run.game, index)
   const rift = run.rift
   if (!rift || rift.room !== skillRoom(run)) return ordinary

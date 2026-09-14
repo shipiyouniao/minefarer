@@ -31,7 +31,7 @@ export function enterEncounter(run: Expedition): Expedition {
   if (!kind) throw new Error('An encounter needs a selected boss family')
   const slot = RECOLLECTION_BOSSES.indexOf(kind)
   // Ordinary-room controls must never survive the replacement by a tactical arena.
-  const { circuits, power, rail, ...arenaRun } = run
+  const { circuits, power, rail, current, pressure, ...arenaRun } = run
   run = arenaRun
   if (slot === 7) return enterTide(run)
 

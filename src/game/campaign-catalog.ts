@@ -11,7 +11,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
     id: 'pressure-cove',
     entrance: { scene: 'old-ferry', index: 85, fact: 'ferry-channel-cleared' },
     bounds: { width: 19, height: 19 },
-    revision: 'pressure-cove-v2',
+    revision: 'pressure-cove-v3',
     prerequisite: 'reed-channels',
     floors: 3,
     outcome: 'pressure-cove-cleared',

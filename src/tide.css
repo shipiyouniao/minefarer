@@ -238,108 +238,353 @@
 }
 
 .pressure-objective {
-  padding: 1rem;
-  border: 1px solid #b9d0c7;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-  background: #f3f8f1;
-}
-.pressure-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.7rem;
+  margin: 1rem 0;
 }
-.pressure-actions > span {
+.pressure-objective strong {
   margin-right: auto;
 }
+.pressure-objective > span {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pressure-objective button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 .pressure-water {
-  background: #bedadb !important;
-  border-color: #aac8c9 !important;
-  box-shadow: none !important;
   position: relative;
+  border-color: #a0b9b9 !important;
 }
-.pressure-raft {
+.pressure-water.revealed {
+  background: #d0e3df !important;
+  box-shadow: inset 0 0 0 1px #e9f3ed66 !important;
+}
+.pressure-water.hidden {
+  border-color: #a6bfbe !important;
+}
+.river-current {
   position: absolute;
-  inset: 15% 4% 5%;
-  border: 2px solid #967342;
-  border-radius: 20%;
-  background: repeating-linear-gradient(0deg, #c2a476 0 20%, #987b52 21% 24%);
-  box-shadow: 0 3px 2px #6f9a9b;
+  width: 19%;
+  height: 19%;
+  right: 7%;
+  bottom: 7%;
+  border-right: 1.5px solid #527f80;
+  border-top: 1.5px solid #527f80;
+  transform: rotate(45deg);
+  opacity: 0.65;
   pointer-events: none;
 }
-.pressure-next {
-  color: #527b7d;
-  font-size: 0.6em;
+[data-flow='north'] .river-current {
+  transform: rotate(-45deg);
 }
-.pressure-mooring {
+[data-flow='south'] .river-current {
+  transform: rotate(135deg);
+}
+[data-flow='west'] .river-current {
+  transform: rotate(225deg);
+}
+.river-landing .river-current {
+  display: none;
+}
+.river-dock-sprite {
   position: absolute;
-  font-size: 0.65em;
-  color: #406662;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+  opacity: 0.48;
   pointer-events: none;
 }
-.pressure-coach {
+.river-empty-boat {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(230px, 65vw);
-  padding: 0.8rem;
-  background: #fffdf2;
-  border: 1px solid #abc2ad;
-  border-radius: 1rem;
-  color: #345344;
-  font: 400 14px/1.7 sans-serif;
-  z-index: 35;
+  width: 150%;
+  height: 125%;
+  left: -25%;
+  top: -12.5%;
+  object-fit: contain;
+  z-index: 3;
   pointer-events: none;
-  box-shadow: 0 5px 18px #29493722;
-  text-align: left;
 }
-.pressure-water:has(.pressure-coach) {
-  z-index: 30;
+.river-passenger {
+  isolation: isolate;
+}
+.river-hull {
+  position: absolute;
+  width: 150%;
+  height: 125%;
+  left: -25%;
+  top: -12.5%;
+  object-fit: contain;
+  z-index: 0;
+}
+.dungeon-player.river-passenger > .dungeon-sprite {
+  position: absolute;
+  width: 61%;
+  height: 68%;
+  left: 19.5%;
+  top: 14%;
+  z-index: 2;
+}
+.river-passenger > .landmark-clue {
+  z-index: 4;
+}
+.river-dropped-anchor {
+  position: absolute;
+  width: 34%;
+  height: 34%;
+  bottom: -4%;
+  right: -3%;
+  object-fit: contain;
+  z-index: 3;
+}
+.river-anchored::before {
+  content: '';
+  position: absolute;
+  inset: 5%;
+  border: 1.5px dashed #477b75;
+  border-radius: 50%;
+  opacity: 0.7;
+  z-index: -1;
+}
+.river-rope {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+.river-rope polyline {
+  fill: none;
+  stroke: #9d794b;
+  stroke-width: 0.038;
+  stroke-dasharray: 0.09 0.06;
+  stroke-linecap: round;
+  opacity: 0.72;
+}
+.river-mooring {
+  position: relative;
+  background: #e0ddc5 !important;
+  cursor: pointer;
+}
+.river-mooring > .dungeon-sprite {
+  width: 94%;
+  height: 94%;
+}
+.river-mooring-anchor {
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  bottom: 3%;
+  right: 1%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.river-secured {
+  box-shadow: inset 0 0 0 2px #679578 !important;
+}
+.river-secured .river-mooring-anchor {
+  filter: drop-shadow(0 0 3px #fbd681);
+}
+.river-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  flex: 1 1 360px;
+  max-width: 760px;
+  align-items: stretch;
+}
+.pressure-hint {
+  grid-column: 1 / -1;
+  margin: 0 0 0.25rem;
+  font-size: 0.83rem;
+  line-height: 1.45;
+  color: #536962;
+}
+.river-control {
+  display: flex;
+  flex: 1;
+  min-width: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.7rem;
+  border: 1px solid #adc1b166;
+  background: #f8fcf5bb;
+  font: inherit;
+  font-size: 0.83rem;
+  color: #3a5f55;
+}
+.river-control img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.river-control:disabled {
+  opacity: 0.45;
+}
+.river-control[aria-pressed='true'] {
+  background: #d3e4da;
+  border-color: #6f998c;
+}
+.river-control:focus-visible {
+  outline: 2px solid #3c7b76;
+  outline-offset: 3px;
 }
 .pressure-help {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
 }
 .pressure-help section {
-  padding: 1rem;
-  border: 1px solid #c8d7c8;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #c7d4c3;
   border-radius: 1rem;
-  background: #f5f9f1;
+  background: #f7faf3;
+}
+.pressure-help h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+.pressure-help p {
+  margin: 0;
+  line-height: 1.65;
 }
 .pressure-help-picture {
-  padding: 1.5rem 0.3rem;
-  background: #d6e8e4;
-  border-radius: 0.7rem;
-  color: #5d7e77;
-  font-size: 1.6rem;
-  text-align: center;
+  border-radius: 0.6rem;
+  background: #d0e3df;
 }
-.pressure-help > p {
-  grid-column: 1/-1;
+.river-diagram {
+  position: relative;
+  width: 150px;
+  height: 112px;
+}
+.river-diagram-number {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  color: #438a79;
+  font-weight: 700;
+}
+.river-diagram-flag {
+  position: absolute;
+  left: 43px;
+  top: 9px;
+  width: 18px;
+}
+.river-diagram-boat {
+  position: absolute;
+  left: 25px;
+  top: 32px;
+  width: 65px;
+  height: 73px;
+}
+.river-diagram-boat > .dungeon-sprite {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.river-diagram-player {
+  position: absolute;
+  width: 34px;
+  height: 38px;
+  object-fit: contain;
+  top: 17px;
+  left: 15px;
+}
+.river-diagram-device {
+  position: absolute;
+  right: 2px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+}
+.river-diagram-device img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.river-diagram-route {
+  position: absolute;
+  right: 19px;
+  top: 19px;
+  width: 28px;
+  height: 28px;
+  color: #508378;
+}
+.river-diagram-3 .river-diagram-route {
+  transform: rotate(180deg);
 }
 @media (max-width: 650px) {
-  .pressure-help {
-    grid-template-columns: 1fr;
+  .pressure-help section {
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 0.6rem;
+    padding: 0.6rem;
+  }
+  .river-diagram {
+    width: 110px;
+    height: 108px;
+  }
+  .river-diagram-boat {
+    left: 8px;
+  }
+  .river-diagram-device {
+    width: 34px;
+    height: 34px;
+  }
+  .river-control {
+    min-width: 66px;
+    padding: 0.3rem;
+    font-size: 0.75rem;
+  }
+  .river-control img {
+    width: 25px;
+    height: 25px;
+  }
+  .pressure-hint {
+    font-size: 0.75rem;
   }
 }
 
-.pressure-occupied .pressure-mooring {
-  top: 2px;
-  left: 2px;
-  font-size: 0.3em;
+@media (max-width: 420px) {
+  .pressure-help section {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .pressure-help-picture {
+    display: grid;
+    justify-items: center;
+  }
+  .river-diagram {
+    width: 150px;
+    height: 100px;
+  }
 }
 
-.pressure-help-picture svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-@media (min-width: 1000px) {
-  .variant-board-panel .board.raft-board {
-    --cell-max: clamp(20px, calc((100svh - 560px) / var(--raft-rows) - var(--gap)), 88px);
+@media (max-width: 900px) {
+  #app:has(.river-controls) {
+    --dock-space: calc(180px + env(safe-area-inset-bottom, 0px));
+  }
+  .action-dock:has(.river-controls) {
+    flex-wrap: wrap;
+  }
+  .river-controls {
+    flex: 1 0 100%;
+    max-width: none;
+    gap: 0.4rem;
+  }
+  .river-control {
+    min-width: 0;
   }
 }

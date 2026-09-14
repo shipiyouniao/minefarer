@@ -1,5 +1,9 @@
 import { decodeRecollection } from './recollection-decoder.js'
-import { decodeCampaign, campaignWasRecovered } from './campaign-decoder.js'
+import {
+  decodeCampaign,
+  campaignWasRecovered,
+  campaignReturnedSupplies,
+} from './campaign-decoder.js'
 import { storyRewardCamp } from '../game/story-rewards.js'
 import { parseBattleLesson } from '../game/battle-lesson.js'
 import { campaignStage } from '../game/campaign-catalog.js'
@@ -272,7 +276,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   const campaign = originalCampaign === 'tower-road-v3' ? 'tower-road-v4' : originalCampaign
   if (
     reader.value('campaign') !== undefined &&
-    campaign !== 'pressure-cove-v2' &&
+    campaign !== 'pressure-cove-v3' &&
     campaign !== 'reed-channels-v3' &&
     campaign !== 'tower-road-v4' &&
     campaign !== 'tower-relay-v1' &&
@@ -360,7 +364,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   }
 
   return {
-    ...(campaign === 'pressure-cove-v2' ||
+    ...(campaign === 'pressure-cove-v3' ||
     campaign === 'reed-channels-v3' ||
     campaign === 'tower-road-v4' ||
     campaign === 'tower-relay-v1' ||
@@ -419,6 +423,8 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
 
       return integer(index, config.width * config.height - 1) ? { type, index } : null
     }
+    case 'haul':
+    case 'moor':
     case 'descend':
     case 'attack':
     case 'brace':
@@ -542,11 +548,6 @@ export function loadExpeditionSave(text: string | null): ExpeditionLoad | null {
     returnedSupplies = integer(checkpoint, 10000) ? checkpoint : 0
   }
 
-  // Crediting a valid camp must never produce a balance that the next load rejects.
-
-  if (returnedSupplies !== null)
-    returnedSupplies = Math.min(returnedSupplies, Number.MAX_SAFE_INTEGER - camp.supplies)
-
   const candidate = oldEnvelope || oldRules ? null : decodeJournal(raw)
   const journal = candidate?.departure.campaign ? null : candidate
   const recovered = returnedSupplies === null && journalValue !== null && !journal
@@ -557,6 +558,13 @@ export function loadExpeditionSave(text: string | null): ExpeditionLoad | null {
     journal: decodeJournal,
     records: decodeRecords,
   })
+  const campaignSupplies = campaignReturnedSupplies(campaignReader, campaign)
+  if (campaignSupplies > 0) returnedSupplies = (returnedSupplies ?? 0) + campaignSupplies
+
+  // Both recovery paths share the same saturating credit and atomic envelope write.
+  if (returnedSupplies !== null)
+    returnedSupplies = Math.min(returnedSupplies, Number.MAX_SAFE_INTEGER - camp.supplies)
+
   const recollection = decodeRecollection(reader.value('recollection'))
   const save: ExpeditionSave = {
     ...(recollection ? { recollection } : {}),

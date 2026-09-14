@@ -1,3 +1,4 @@
+import { riverControls } from './pressure-view.js'
 import { floorObjectiveComplete } from '../game/floor-circuits.js'
 import { recollectionFloorCopy } from './recollection-copy.js'
 import { signalCopy } from './signal-copy.js'
@@ -129,7 +130,7 @@ export function expeditionTemplate(
     .join('')
 
   return `
-    ${run.phase === 'boss' ? '' : `<p class="variant-status ${sharedStyles['variant-status']}" role="status" tabindex="-1">${status}</p>`}
+    ${run.phase === 'boss' || (run.pressure && run.phase === 'exploring') ? '' : `<p class="variant-status ${sharedStyles['variant-status']}" role="status" tabindex="-1">${status}</p>`}
     ${terminal ? `<button class="primary-button ${sharedStyles['primary-button']}" data-control="result">${t.viewResult} · +${earned}</button>` : ''}
     ${run.phase === 'reward' ? `<button class="primary-button ${sharedStyles['primary-button']}" data-control="rewards">${run.offers.length ? t.chooseRelic : t.nextFloor}</button><button class="secondary-button ${sharedStyles['secondary-button']} retreat-button ${gameplayStyles['retreat-button']}" data-control="retreat"><span aria-hidden="true">↶</span>${run.departure.campaign ? message(language, 'campaign.abandon') : t.retreat}</button>` : ''}
     ${run.rail ? railObjective(language, run) : run.power || run.pressure ? powerObjective(language, run) : run.circuits ? signalObjective(language, run) : run.departure.campaign && !run.encounter ? `<p class="variant-note">${message(language, 'campaign.objective', { count: run.collected.length, total: run.treasures.length })}</p>` : ''}<div class="board-play-area"><div class="expedition-layout">${run.encounter?.kind === 'tide' ? `<div class="tide-stage">${tidePlaybar(language, run)}${boardFrame('a', `${t.floor} ${run.floor}`, boardZoomTemplate(t.zoom))}</div>` : run.encounter?.kind === 'matrix' ? matrixBoardFrame(language, { ...run, encounter: run.encounter }) : run.encounter?.kind === 'mirror' ? `<div class="mirror-boards"><div class="mirror-active" data-realm="${run.encounter.active}">${boardFrame('a', mirrorBoardLabel(language, run, true), boardZoomTemplate(t.zoom))}</div><div class="mirror-comparison">${boardFrame('b', mirrorBoardLabel(language, run, false))}</div></div>` : run.encounter?.kind === 'clock' ? `<div class="clock-stage">${boardFrame('a', `${t.floor} ${run.floor}`, boardZoomTemplate(t.zoom))}</div>` : run.encounter?.kind === 'magnetic' ? `<div class="magnetic-stage">${magneticPlaybar(language, run)}${boardFrame('a', `${t.floor} ${run.floor}`, boardZoomTemplate(t.zoom))}</div>` : boardFrame('a', `${t.floor} ${run.floor}`, boardZoomTemplate(t.zoom))}<aside class="run-sidebar ${gameplayStyles['run-sidebar']}"><section class="run-overview ${gameplayStyles['run-overview']}">${activeTitleTemplate(language, run.departure.title)}<p class="variant-note ${sharedStyles['variant-note']}">${run.departure.campaign ? '' : `${t.difficulty} · ${difficultyCopy(language, run.departure.difficulty)} · `}${run.game.config.width} × ${run.game.config.height}</p><div class="variant-metrics ${sharedStyles['variant-metrics']}">${metric(t.floor, `${run.floor} / ${expeditionFloors(run.departure)}`)}${metric(t.loot, run.loot)}${metric(t.steps, run.steps)}</div>
@@ -139,6 +140,7 @@ export function expeditionTemplate(
         run.phase === 'exploring' || run.phase === 'boss'
           ? `<div class="variant-toolbar ${sharedStyles['variant-toolbar']}"><div class="action-dock ${gameplayStyles['action-dock']} expedition-dock" aria-label="${t.equipment}">
       <p class="dock-target-hint ${gameplayStyles['dock-target-hint']} tool-hint" role="status"></p>
+      ${run.pressure ? riverControls(language, run) : ''}
       ${run.phase === 'boss' ? tacticalControlsTemplate(language, run) : ''}
       ${run.departure.equipment.includes('sonar') || run.encounter?.kind === 'echo' ? toolButton('sonar', message(language, 'sonar-equipment.name'), expeditionSonarCharges(run)) : ''}${toolButton('probe', t.probes, run.probes)}${toolButton('scan', t.scans, run.scans)}
       ${professionSkillTemplate(language, run)}${boardControlsTemplate(language, inputMode, 'data-control')}</div>
