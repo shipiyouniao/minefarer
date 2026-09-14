@@ -1,4 +1,5 @@
-import { pressureGuide, animatePressure } from './pressure-view.js'
+import { riverCellAction } from '../game/pressure.js'
+import { pressureGuide, animatePressure, mountRiverLesson, pressureHint } from './pressure-view.js'
 import { pendingPressureScene } from '../game/pressure-story.js'
 import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
@@ -137,6 +138,11 @@ export class VariantApp implements VariantInputActions {
 
     if (this.session instanceof ExpeditionSession && !flag) {
       const run = this.session.run
+      if (run?.pressure) {
+        void this.performRiverAction(riverCellAction(run, index))
+        return
+      }
+
       if (run?.phase === 'boss') {
         const action = tacticalCellAction(run, index)
         const plan = tacticalPlan(run, action)
@@ -747,9 +753,13 @@ export class VariantApp implements VariantInputActions {
         this.input.cancelTools()
         this.expedition({ type: command.type })
         break
+      case 'moor':
+      case 'haul':
+        void this.performRiverAction({ type: command.type })
+        return
       case 'end-turn':
         if (this.session instanceof ExpeditionSession && this.session.run?.pressure) {
-          void this.performFerryTurn()
+          void this.performRiverAction()
           return
         }
         if (
@@ -1043,6 +1053,10 @@ export class VariantApp implements VariantInputActions {
 
     const session = this.session
     const run = session.run
+    if (run?.pressure) {
+      this.disposeCampaignLesson = mountRiverLesson(this.root, run, this.language)
+      return
+    }
     const step = session.campaignLesson
     if (!run || run.floor !== 1 || run.phase !== 'exploring' || step >= 4) return
 
@@ -1168,17 +1182,33 @@ export class VariantApp implements VariantInputActions {
     )
   }
 
-  /** Commit one tide, then animate its raft and passenger under the same input lock. */
-  private async performFerryTurn(): Promise<void> {
+  /** Commit a river action, then perform its boat, passenger or anchoring animation. */
+  private async performRiverAction(action: ExpeditionAction = { type: 'end-turn' }): Promise<void> {
     if (!(this.session instanceof ExpeditionSession)) return
     const before = this.session.run
-    if (!before?.pressure || !this.session.dispatch({ type: 'end-turn' })) return
+    if (!before?.pressure || !this.session.dispatch(action)) {
+      this.sounds.play('blocked')
+      const hint = this.root.querySelector('.pressure-hint')
+      if (hint && before?.pressure)
+        hint.textContent = before.pressure.anchored
+          ? pressureHint(this.language, before)
+          : message(this.language, 'pressure.blocked')
+      return
+    }
     const after = this.session.run
     if (!after) return
     const generation = ++this.walkGeneration
     this.moving = true
     this.turnPerformance = true
-    this.sounds.play('confirm')
+    this.input.cancelTools()
+    this.sounds.play(
+      cueForVitality(before, after) ??
+        (action.type === 'moor' || action.type === 'interact'
+          ? 'tide-anchor'
+          : action.type === 'reveal'
+            ? 'reveal'
+            : 'navigate'),
+    )
     this.render()
     try {
       await animatePressure(this.root, before, after)

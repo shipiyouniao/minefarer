@@ -1,10 +1,11 @@
+import type { FloorTide } from './floor-tide.js'
 import type { EncounterKind } from './tactical.js'
 import type { DungeonLayout } from './dungeon-generation.js'
 import type { FloorCircuits } from './floor-circuits.js'
 import type { FloorPower } from './floor-power.js'
 
 /** New families extend the same generated-room contract used by an expedition. */
-export type RecollectionFloor = 'ordinary' | 'relay' | 'routing'
+export type RecollectionFloor = 'ordinary' | 'relay' | 'routing' | 'tidal' | 'river'
 
 /** A departure takes its own copy; changing camp choices cannot alter a running memory. */
 export interface RecollectionSelection {
@@ -16,6 +17,7 @@ export interface RecollectionSelection {
 
 /** Generation supplies real mechanism state, consumed by the existing exploration rules. */
 export interface RecollectionLayout extends DungeonLayout {
+  readonly current?: FloorTide
   readonly circuits?: FloorCircuits
   readonly power?: FloorPower
 }

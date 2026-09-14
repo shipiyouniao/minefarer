@@ -62,6 +62,8 @@ export function parseVariantCommand(value: string): VariantCommand | null {
     case 'skill':
     case 'attack':
     case 'brace':
+    case 'moor':
+    case 'haul':
     case 'end-turn':
     case 'shift':
     case 'help':

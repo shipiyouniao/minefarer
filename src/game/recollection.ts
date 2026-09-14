@@ -9,7 +9,13 @@ import type {
   RecollectionSelection,
 } from '../types/recollection.js'
 
-export const RECOLLECTION_FLOORS: readonly RecollectionFloor[] = ['ordinary', 'relay', 'routing']
+export const RECOLLECTION_FLOORS: readonly RecollectionFloor[] = [
+  'ordinary',
+  'relay',
+  'routing',
+  'tidal',
+  'river',
+]
 export const RECOLLECTION_BOSSES: readonly EncounterKind[] = [
   'bastion',
   'brood',
@@ -28,8 +34,16 @@ export function recollectionUnlocks(save: ExpeditionSave): RecollectionSelection
     floors: RECOLLECTION_FLOORS.filter(
       (kind) =>
         kind === 'ordinary' ||
-        campaignProgress(save.campaign, kind === 'relay' ? 'tower-relay' : 'ridge-observatory')
-          .cleared,
+        campaignProgress(
+          save.campaign,
+          kind === 'relay'
+            ? 'tower-relay'
+            : kind === 'routing'
+              ? 'ridge-observatory'
+              : kind === 'tidal'
+                ? 'reed-channels'
+                : 'pressure-cove',
+        ).cleared,
     ),
     bosses: RECOLLECTION_BOSSES.filter(
       (kind) =>

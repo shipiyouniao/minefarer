@@ -39,3 +39,5 @@ Classic's unchanged rules preserve active boards; absent note metadata initializ
 `tests/expedition-retirement.test.ts` covers versions 1–3, one-time compensation, camp-only saves, checkpoint extraction, malformed journals, current replay, normal settlement and storage-write failures. `tests/browser/retirement.mjs` checks the return notice, retained purchases, refresh behavior and new departures in English, Chinese and Japanese at 320, 1280 and 3840 pixels. Existing battle, reward, settlement and scroll browser regressions run against current journals.
 
 Both compiler test routes remove their own generated test directory before compiling. Deleted historical test files therefore cannot survive as stale JavaScript and execute after their source has been removed.
+
+Campaign stages also have their own content revisions. Replacing a stage retires its unfinished journal at the same envelope boundary and credits its valid extraction checkpoint once, without replaying old stage rules. Completed stage outcomes and shared camp ownership remain intact.

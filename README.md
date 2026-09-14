@@ -10,7 +10,7 @@
 
 **Story campaign.** Start with the [prologue](docs/prologue.md), explore with Lumi and reach Lanternrest. Chapter One includes five main exploration stages, a boss stage and the independent [old-mine rescue](docs/quarry-rescue.md). Repair routes, rescue Nia, investigate the observatory and waterway, and reopen the western pass. Each stage has three authored floors and its own resumable attempt. An optional conversation points toward the quarry rescue after the first stage; hearing it is not an access or reward gate.
 
-**Chapter Two.** Cross into [Reedbank Camp](docs/chapter-two-opening.md), then investigate the stopped ferry through **[Reed Channels](docs/chapter-two-reed-channels.md)**: three authored minefields combine deduction with reversible sluices and persistent water-gauge readings. Continue from Old Ferry into **[Pressure Cove](docs/chapter-two-pressure-cove.md)**, three crossings where a drifting raft connects static minefields and separated riverbanks. Two of the chapter's five planned exploration stages are implemented; the remaining three, side story and boss stage are not yet playable. The long-term 40–50 hour campaign target is a plan, not the length of the current game.
+**Chapter Two.** Cross into [Reedbank Camp](docs/chapter-two-opening.md), then investigate the stopped ferry through **[Reed Channels](docs/chapter-two-reed-channels.md)**: three authored minefields combine deduction with reversible sluices and persistent water-gauge readings. Continue from Old Ferry into **[Pressure Cove](docs/chapter-two-pressure-cove.md)**, three water minefields where anchored soundings, directed currents and a recoverable rope determine the sailing route. Clearing each stage unlocks its independently generated counterpart in Recollection. Two of the chapter's five planned exploration stages are implemented; the remaining three, side story and boss stage are not yet playable. The long-term 40–50 hour campaign target is a plan, not the length of the current game.
 
 **Recollection.** Light the camp's pier lantern, choose a difficulty and select unlocked exploration mechanics and boss families. Generated ordinary minefields, relays and power-routing rooms vary between runs. Selected bosses are drawn without replacement until the pool is exhausted. Both camps share supplies, professions, equipment, titles and ordinary missions/achievements; Recollection and story stages keep independent attempts. Paused older expeditions remain resumable through the lantern. There is no separate legacy roguelite preparation menu or temporary camp entrance.
 
@@ -123,7 +123,7 @@ There are no runtime npm dependencies. The compilers, Vite, Node type definition
 
 ## Comparing the old and native build workflows
 
-The [build A/B experiment](docs/build-ab.md) compares TypeScript 6 checking plus Vite source bundling against TypeScript 7 checking/emission plus Vite JavaScript bundling. Both use the same refactored application, strict settings, lockfile, assets, and bundler. It records check, emit, bundle, and total wall times plus artifact sizes, with repeated alternating runs locally and in branch CI.
+The optional [build A/B experiment](docs/build-ab.md) compares TypeScript 6 checking plus Vite source bundling against TypeScript 7 checking/emission plus Vite JavaScript bundling. Both use the same refactored application, strict settings, lockfile, assets, and bundler. It records check, emit, bundle, and total wall times plus artifact sizes, with repeated alternating runs locally or through manual workflow dispatch. Historical results remain available; routine PRs and pushes do not run the benchmark.
 
 Use `npm run build:legacy`, `npm run build:native`, and `npm run bench:build -- --runs 6`. The default `npm run build` remains the native workflow. The experiment branch does not deploy to Pages.
 
@@ -255,7 +255,7 @@ The test suite covers exact mine counts, uniqueness, safe openings across seeds 
 
 ## CI and GitHub Pages
 
-[The workflow](.github/workflows/pages.yml) runs on pull requests, pushes to `main`, and manual dispatch. Its validation job performs:
+[The workflow](.github/workflows/pages.yml) runs on pull requests, pushes to `main` or `develop`, and manual dispatch. Its validation job performs:
 
 ```sh
 npm ci
@@ -264,7 +264,7 @@ npm run check
 node scripts/verify-build.mjs
 ```
 
-Pull requests run validation. Pushes to `main` and manual runs on `main` also upload `dist/` and deploy it to GitHub Pages after validation succeeds. The public game is hosted at [shipiyouniao.github.io/minefarer](https://shipiyouniao.github.io/minefarer/).
+Pull requests validate both stable and development asset paths without deploying. Pushes and manual runs on `main` or `develop` validate and package both branches, including the legacy behavior tests, then publish them together to GitHub Pages. The [stable game](https://shipiyouniao.github.io/minefarer/) uses `main`; the [development preview](https://shipiyouniao.github.io/minefarer/dev/) uses `develop`.
 
 For a fork, set **Settings → Pages → Source** to **GitHub Actions**. The current Vite `base` is `/minefarer/`; update `vite.config.ts` and the expected path in `scripts/verify-build.mjs` if the repository name or hosting path changes.
 

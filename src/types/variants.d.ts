@@ -163,7 +163,10 @@ export type ExpeditionAction =
   | { readonly type: 'sweep'; readonly row: number }
   | { readonly type: 'relic'; readonly relic: Relic }
   | { readonly type: 'skill'; readonly index?: number }
-  | { readonly type: 'retreat' | 'descend' | 'attack' | 'brace' | 'end-turn' | 'shift' }
+  | {
+      readonly type:
+        'retreat' | 'haul' | 'moor' | 'descend' | 'attack' | 'brace' | 'end-turn' | 'shift'
+    }
 
 /** Both layouts are generated together, excluding overlapping mines. */
 export interface Twin {

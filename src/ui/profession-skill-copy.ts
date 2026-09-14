@@ -63,6 +63,8 @@ export function professionSkillCopy(
 /** Present a short actionable availability message using only public resources and knowledge. */
 export function professionSkillStatus(language: Language, status: SkillAvailability): string {
   switch (status) {
+    case 'ashore-only':
+      return message(language, 'profession-skill-copy.ashore-only')
     case 'no-corridor':
       return message(language, 'rescuer.no-corridor')
     case 'no-passage':

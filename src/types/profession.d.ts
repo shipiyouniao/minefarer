@@ -14,4 +14,5 @@ export type SkillAvailability =
   | 'resources'
   | 'no-passage'
   | 'blocked-anchor'
+  | 'ashore-only'
   | 'no-corridor'

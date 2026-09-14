@@ -15,7 +15,7 @@ Use the [security policy](SECURITY.md) for suspected vulnerabilities. Do not pub
 Use Node.js 22.12 or later in the 22.x series, or Node.js 24 or later, with npm.
 
 1. Fork the repository and clone your fork.
-2. Create a focused branch from the latest `main`.
+2. Create a focused branch from the latest `develop`.
 3. Install the locked dependencies and start the native compiler and development server:
 
 ```sh
@@ -62,15 +62,15 @@ npm run build:legacy
 npm run build:native
 ```
 
-For performance claims, follow [the A/B measurement method](docs/build-ab.md): run `npm run bench:build -- --runs 6` on a clean, identified commit with development watchers stopped. Include raw samples, environment and tool versions, the build-input fingerprint, and limitations. Keep historical reports tied to their measured commits; do not relabel old measurements as results for new code.
+The TypeScript A/B benchmark is an optional experiment, not a routine validation or PR requirement. Run it only for an explicitly requested performance investigation. Follow [the measurement method](docs/build-ab.md): run `npm run bench:build -- --runs 6` on a clean, identified commit with development watchers stopped. Include raw samples, environment and tool versions, the build-input fingerprint, and limitations. Keep historical reports tied to their measured commits; do not relabel old measurements as results for new code.
 
 ## Submit a pull request
 
-Open the pull request against `main`. Explain the concrete problem, resulting behavior, and checks you ran. Include before/after screenshots for visual changes and reproduction details for bug fixes. Keep one coherent change per pull request and respond to review feedback in that scope.
+Open feature and fix pull requests against `develop`. Merge `develop` into `main` only for an agreed milestone release. Explain the concrete problem, resulting behavior, and checks you ran. Include before/after screenshots for visual changes and reproduction details for bug fixes. Keep one coherent change per pull request and respond to review feedback in that scope.
 
 Do not commit `node_modules/`, `dist/`, `.native/`, or generated `.bench/` trees. Selected benchmark reports belong in `docs/` with their provenance. New artwork should be stored in the repository with an accurate description of its source and any generation prompt in [artwork notes](docs/artwork.md).
 
-Pull requests run validation. Only the `main` branch can deploy the public game through the Pages workflow.
+Pull requests run validation without deploying. Pushes to `develop` or `main` validate and assemble both Pages sites: [`main` serves the stable game](https://shipiyouniao.github.io/minefarer/) and [`develop` serves the development preview](https://shipiyouniao.github.io/minefarer/dev/). A development merge updates the preview while rebuilding the stable site from its unchanged `main` revision.
 
 ## Contribution terms
 

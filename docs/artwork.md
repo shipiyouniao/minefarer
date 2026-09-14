@@ -42,3 +42,7 @@ The west-line control console is an original transparent PNG generated for the f
 ## Old-mine rescue
 
 The cart and Toma are original transparent chibi sprites, generated separately and stored unchanged. See [the complete prompts and asset map](quarry-rescue-artwork.md). Track geometry, route forecasts and cart movement use local SVG/HTML and the accepted gameplay path.
+
+## River navigation
+
+The wooden skiff and mooring pier are original transparent generated PNG sprites. See [the asset map and complete prompts](river-artwork.md). The existing Tidekeeper anchor is reused; the current profession remains a separate sprite above the boat.

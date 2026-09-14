@@ -2,36 +2,65 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
-  'pressure.help': 'How to cross',
-  'pressure.wait': 'Wait for tide',
-  'pressure.raft': 'Raft · step aboard',
-  'pressure.water': 'River · cross aboard the raft',
-  'pressure.board': 'Find a safe way to the bank, then click the raft to board.',
-  'pressure.ride': 'Once aboard, choose Wait for tide to ride to the next landing.',
-  'pressure.land':
-    'You have reached the bank. Click a revealed shore tile to get off, then find the anchor.',
-  'pressure.static':
-    'Mines and clues stay put. Waiting moves only the raft and never uncovers the banks.',
-  'pressure.objective': 'Ride to the other bank, find the anchors, then reach the exit.',
-  'pressure.detail':
-    'At Old Ferry, ride the raft across and reach the anchors to restore the crossing.',
-  'pressure.floor-1': 'Floor 1 · A ride across',
-  'pressure.floor-2': 'Floor 2 · Choose your landing',
-  'pressure.floor-3': 'Floor 3 · Around the broken bank',
-  'pressure.entry-1':
-    'The bridge is gone. That raft is still drifting between the banks—it should carry us.',
-  'pressure.entry-2': 'I will find a way to the bank first. Then we can board.',
-  'pressure.basin-1': 'There are four stops here. Watch where the raft goes before stepping off.',
-  'pressure.basin-2': 'The upper bank is blocked. I will stay aboard and go around.',
-  'pressure.boat-1':
-    'Both banks have collapsed sections. Find the anchors so we can use the remaining landings.',
-  'pressure.boat-2': 'All right. I know the order of the stops now.',
-  'pressure.end-1': 'The ropes are secured. People can cross between the banks again.',
-  'pressure.end-2': 'There is another broken bridge upstream. Let us take a look next.',
+  'recollection.tidal': 'Tidal sluices',
+  'recollection.tidal-note': 'Switch the sluices to hold tidal channels and connect the pumps.',
+  'recollection.river': 'River navigation',
+  'recollection.river-note':
+    'Sound and navigate a fresh river, secure moorings and reach the exit.',
+  'recollection.tidal-locked': 'Clear Reed Channels to unlock',
+  'recollection.river-locked': 'Clear Pressure Cove to unlock',
 
+  'pressure.help': 'River guide',
+  'pressure.wait': 'Drift one tile',
+  'pressure.raft': 'Boat · click to board',
+  'pressure.water': 'Waterway',
+  'pressure.board':
+    'Board at a dock, then lower the anchor to sound the eight neighboring cells. Each number counts nearby mines.',
+  'pressure.ride':
+    'Raise the anchor and choose known safe water. Paddle downstream or across; upstream needs another route.',
+  'pressure.land':
+    'Stop beside a mooring, lower the anchor and click it to secure the rope. This becomes your new return point.',
+  'pressure.static': 'Water mines and clues stay in place.',
+  'pressure.objective': 'Clear a route, secure the moorings and dock at the exit.',
+  'pressure.detail': 'Sail from Old Ferry, clear the cove mines and reconnect its island moorings.',
+  'pressure.floor-1': 'Floor 1 · A path beneath the water',
+  'pressure.floor-2': 'Floor 2 · Between the islands',
+  'pressure.floor-3': 'Floor 3 · A line home',
+  'pressure.entry-1':
+    'Easy with the oars. There are mines in the water too. Drop the anchor and read the nearby numbers.',
+  'pressure.entry-2': 'Right. A safe channel first.',
+  'pressure.basin-1':
+    'The current turns around these islands. Getting there is easy; keep a rope ready for the way back.',
+  'pressure.basin-2': 'I will secure that mooring first. It should save us a long trip back.',
+  'pressure.boat-1':
+    'More channels here. If one runs out, haul back along the rope. No need to force it.',
+  'pressure.boat-2': 'We have kept our way back.',
+  'pressure.end-1': 'All the ropes are secure. The next crossing will be a lot less frightening.',
+  'pressure.end-2': 'My arms could use a rest after that.',
   'pressure.title': 'Pressure Cove',
-  'pressure.task': 'The broken crossing',
+  'pressure.task': 'Ropes between islands',
   'pressure.progress': 'Moorings {count}/{total}',
+  'pressure.raise': 'Raise anchor',
+  'pressure.lower': 'Drop anchor',
+  'pressure.haul': 'Haul back',
+  'pressure.haul-hint':
+    'Haul back along your sailed route to the last secured rope. Discoveries and marks stay on the chart.',
+  'pressure.sailing': 'Sail downstream or across. Drop anchor to examine nearby water.',
+  'pressure.sounding':
+    'The boat is steady. Examine the eight neighboring tiles; raise anchor to move.',
+  'pressure.secure-hint':
+    'Drop anchor beside this mooring, then click it to attach your return rope.',
+  'pressure.secured': 'Rope secured',
+  'pressure.exit': 'Moorings secured. Dock at the exit.',
+  'pressure.north': 'Current north',
+  'pressure.east': 'Current east',
+  'pressure.south': 'Current south',
+  'pressure.west': 'Current west',
+  'pressure.guide-board': 'Board and sound',
+  'pressure.guide-sail': 'Follow the current',
+  'pressure.guide-moor': 'Anchor and secure',
+  'pressure.blocked':
+    'That route is unavailable. Check the current or haul back and try another channel.',
 
   'atlas.travel': 'Fast travel',
   'atlas.camp-view': 'View camp',
@@ -70,11 +99,12 @@ export const enMessages: MessageCatalog = {
     'Start with 2 sonar charges|Recover 1 charge per 12 safe digs, capped at 3|Read the mine count in a 3×3 area|Numbers in the area stay clear|Only the center tile is opened',
 
   'ferry.destination': 'Old Ferry',
+  'current.feed': 'Sluice: row {row}, column {column}, branch {branch}',
   'current.title': 'Tides and shelter',
   'current.guide':
-    'Switching a sluice shifts an entire bank: the powered bank stays still while each row of the other bank cycles one tile along its arrow. You, mines and flags travel with the ground; numbers update. Walls, controls and entrances stay anchored. Plan which route the tide will connect.',
+    'Switching sluices cycles disconnected lanes one cell along their arrows, horizontally or vertically. Tiles carry the player, mines and marks; numbers update. Walls, devices and exits stay fixed.',
   'current.legend':
-    'Teal: held bank. Sand: moving bank. Dark tiles are covered; pale tiles are revealed. Each lane starts with its bank and direction.',
+    'Teal lanes stay still; sand-colored lanes move. Dark tiles are covered. Each lane starts with its branch and direction.',
   'current.held': 'Sheltered lane: fixed while connected',
   'current.moving': 'Current lane: cycles along the arrow if disconnected after switching',
 
@@ -1849,6 +1879,7 @@ export const enMessages: MessageCatalog = {
   'rescuer.skill-note':
     'Choose a square 2–4 cells away in a straight cardinal line. The entire route must be revealed and unobstructed. Move there and gain 1 shield, capped at 2. Once per floor; costs 1 action point in battle.',
   'rescuer.no-corridor': 'Clear a straight safe corridor at least 2 cells long.',
+  'profession-skill-copy.ashore-only': 'Disembark before placing or returning to a waymark.',
   'rescuer.landing': 'Lifeline landing',
   'rail.guide-brake':
     'Send the cart onto a brake plate to open its matching gate. Your character cannot press it. The gate stays open after the cart leaves.',

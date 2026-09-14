@@ -4,7 +4,7 @@ Recollection does not load the authored campaign boards. Each departure stores i
 
 ## Exploration construction
 
-All three initial families retain the ordinary dungeon's exact mine count, connected safe floor, varied entrance, distant exit and three treasure chests. Mechanisms do not remove mines or reveal safe rectangles. A displaced treasure is relocated instead of discarded.
+All five families retain the ordinary dungeon's exact mine count, connected safe floor, varied entrance, distant exit and three treasure chests. Mechanisms do not remove mines or reveal safe rectangles. River navigation prunes safe water that cannot be reached through the generated currents; it preserves every mine. A displaced treasure is relocated instead of discarded.
 
 - **Ordinary:** uses the existing dungeon generator directly.
 - **Relays:** generates 2–3 controls on 9-wide boards, 2–4 on 11/13-wide boards and 3–5 on 15/17-wide boards. Every control has a nonzero, truthful neighborhood clue. All controls must be physically operated before the stairs open.
@@ -13,6 +13,14 @@ All three initial families retain the ordinary dungeon's exact mine count, conne
 Control locations spread across the reachable minefield instead of forming one cluster. Terrain generation accepts a room only when every required control has a legal numbered location. Its bounded fallback retains seed variation and must meet the same placement condition; it cannot silently drop objectives to make a room fit.
 
 Switches change power, not physical access. Every terminal's ancestor selectors can therefore be configured in order, and recorded terminals remain complete after rerouting. The tests enumerate every selector state in representative layouts and complete the resulting room through the real interaction rules.
+
+## Chapter Two families
+
+Completion of Reed Channels unlocks **Tidal sluices**. A new generated routing graph controls disjoint horizontal or vertical strips of 2–5 cells. Strips contain both safe cells and mines, and their lengths, directions, count and controlling feeds vary. Removing all moving cells must leave a connected static shore; every moving position must touch that shore. Thus every safe tile stays reachable under any sequence of strip rotations. Selectors and consoles remain fixed. Flags and other tile-bound knowledge travel with their cells; ordinary numbers are recomputed.
+
+Completion of Pressure Cove unlocks **River navigation**. A fresh dungeon seed generates the water minefield, then a spring or circulation field supplies public current directions independently of hidden mine truth. Downstream and cross-stream edges determine the reachable component. Unreachable safe cells become banks; the remaining component must retain at least 75% of the original safe floor. Endpoints, 1–3 moorings and three chests are selected within that component. Sounding requires an anchored boat; sailing requires discovered water. The recorded rope provides a return along the route actually sailed. This generator does not import authored campaign rows.
+
+Both generators use bounded candidate retries with the same invariants. They cannot fall back to a campaign template, reduce the mine budget or discard required objectives. Chapter unlock tests reject premature departures; accepted-action tests cover new floors and exact reloads. Boss entry removes exploration-only water and current state.
 
 ## Existing bosses
 
@@ -39,6 +47,8 @@ node node_modules/typescript/bin/tsc -p tsconfig.test.json --outDir .native/test
 RECOLLECTION_RANDOM_SEEDS=128 node --test .native/tests/tests/recollection-randomness.test.js
 ```
 
-PowerShell uses `$env:RECOLLECTION_RANDOM_SEEDS = '128'` before the test command. The expanded audit covers 13,824 exploration layouts and 5,120 boss entries, including 640 additional Mirror boards. The test output lists distinct minefields for every difficulty/family/floor group. These checks complement accepted-action completion and exact-save-replay tests.
+PowerShell uses `$env:RECOLLECTION_RANDOM_SEEDS = '128'` before the test command. With all five exploration families, the expanded audit covers 23,040 exploration layouts and 5,120 boss entries, including 640 additional Mirror boards. The test output lists distinct minefields for every difficulty/family/floor group. These checks complement accepted-action completion and exact-save-replay tests.
 
-The September 11, 2026 run on Node 22.18.0 with TypeScript 7.0.2 passed all 148 groups. Every group produced 128 distinct primary minefields; all five Mirror groups also produced 128 distinct secondary minefields. This is measured sample evidence, not a claim of uniqueness across the entire seed space.
+The historical September 11, 2026 run, before the two Chapter Two families were added, on Node 22.18.0 with TypeScript 7.0.2 passed all 148 groups. Every group produced 128 distinct primary minefields; all five Mirror groups also produced 128 distinct secondary minefields. This is measured sample evidence, not a claim of uniqueness across the entire seed space.
+
+The September 14, 2026 expanded run with the Chapter Two families passed all 220 groups: each produced 128 distinct primary minefields, and all five Mirror groups produced 128 distinct secondary minefields. Separate river/tide tests cover directed access, varied mechanisms, arbitrary switch sequences, chapter unlocks and accepted-action reloads.

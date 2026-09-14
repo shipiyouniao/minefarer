@@ -35,7 +35,7 @@ export function powerObjective(language: Language, run: Expedition): string {
   if (!run.power) return ''
   const current = currentObjective(language, run)
   const recollection = run.departure.recollection
-    ? recollectionFloorCopy(language, 'routing')
+    ? recollectionFloorCopy(language, run.current ? 'tidal' : 'routing')
     : null
 
   if (run.power.purpose === 'restoration')
@@ -44,7 +44,7 @@ export function powerObjective(language: Language, run: Expedition): string {
   const ferry = run.departure.campaign === 'reed-channels-v3'
   const drainage = run.power.purpose === 'drainage'
 
-  return `${current}<section class="signal-objective power-objective" aria-live="polite"><strong>${run.departure.campaign === 'reed-channels-v3' ? ferryFloorName(language, run.floor) : drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor)}</strong><p>${powerObjectiveComplete(run.power) ? (ferry ? message(language, 'ferry.exit-ready') : drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : ferry ? message(language, 'ferry.objective') : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${ferry ? message(language, 'ferry.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
+  return `${current}<section class="signal-objective power-objective" aria-live="polite"><strong>${recollection?.name ?? (ferry ? ferryFloorName(language, run.floor) : drainage ? waterwayFloorName(language, run.floor) : observatoryFloorName(language, run.floor))}</strong><p>${powerObjectiveComplete(run.power) ? (ferry ? message(language, 'ferry.exit-ready') : drainage ? message(language, 'waterway.exit-ready') : message(language, 'ridge.exit-ready')) : recollection ? recollection.note : ferry ? message(language, 'ferry.objective') : drainage ? message(language, 'waterway.objective') : message(language, 'ridge.objective')}</p><span>${ferry ? message(language, 'ferry.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : drainage ? message(language, 'waterway.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length }) : message(language, 'ridge.progress', { count: run.power.receivers.filter((entry) => entry.recorded).length, total: run.power.receivers.length })}</span><button type="button" class="power-help secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'ridge.network')}</button></section>`
 }
 
 /** Identify a source and branch with text as well as color, including in accessible labels. */

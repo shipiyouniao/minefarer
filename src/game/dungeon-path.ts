@@ -1,3 +1,4 @@
+import { riverSurveyPath } from './pressure.js'
 import { adjacentSteps } from './variant-board.js'
 import { occupied } from './dungeon-occupancy.js'
 import { walkingNeighbors } from './mobility-skills.js'
@@ -77,6 +78,7 @@ export function approachPath(run: Expedition, destination: number): number[] | n
   if (!cell || cell.visibility === 'flagged') return null
 
   if (cell.visibility === 'revealed') return walkingPath(run, destination)
+  if (run.pressure?.water.includes(destination)) return riverSurveyPath(run, destination)
 
   let best: number[] | null = null
 

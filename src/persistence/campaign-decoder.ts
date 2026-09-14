@@ -100,3 +100,39 @@ export function campaignWasRecovered(
     return id !== null && !campaign?.stages.find((stage) => stage.id === id)?.journal
   })
 }
+
+/** Settle a retired stage's bounded checkpoint without loading its former game rules. */
+export function campaignReturnedSupplies(
+  reader: JsonObjectReader | null,
+  campaign: CampaignSave | undefined,
+): number {
+  let supplies = 0
+  const settled = new Set<CampaignStageId>()
+  for (const value of reader?.array('stages') ?? []) {
+    const entry = JsonObjectReader.from(value)
+    const id = parseCampaignStage(entry?.string('id') ?? null)
+    const journal = entry?.child('journal')
+    const revision = journal?.child('departure')?.string('campaign')
+    if (
+      !id ||
+      settled.has(id) ||
+      !journal ||
+      !revision ||
+      campaign?.stages.find((stage) => stage.id === id)?.journal
+    )
+      continue
+    if (revision === campaignStage(id).revision) continue
+    settled.add(id)
+
+    const checkpoint = journal.number('returnSupplies')
+    if (
+      checkpoint !== null &&
+      Number.isInteger(checkpoint) &&
+      checkpoint >= 0 &&
+      checkpoint <= 10000
+    )
+      supplies += checkpoint
+  }
+
+  return supplies
+}

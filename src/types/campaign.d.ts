@@ -22,7 +22,7 @@ export type CampaignStageId =
   | 'quarry-rescue'
   | 'northwest-bastion'
 export type CampaignRevision =
-  | 'pressure-cove-v2'
+  | 'pressure-cove-v3'
   | 'reed-channels-v3'
   | 'tower-road-v4'
   | 'tower-relay-v1'
