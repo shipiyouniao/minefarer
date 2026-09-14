@@ -62,7 +62,7 @@ npm run build:legacy
 npm run build:native
 ```
 
-For performance claims, follow [the A/B measurement method](docs/build-ab.md): run `npm run bench:build -- --runs 6` on a clean, identified commit with development watchers stopped. Include raw samples, environment and tool versions, the build-input fingerprint, and limitations. Keep historical reports tied to their measured commits; do not relabel old measurements as results for new code.
+The TypeScript A/B benchmark is an optional experiment, not a routine validation or PR requirement. Run it only for an explicitly requested performance investigation. Follow [the measurement method](docs/build-ab.md): run `npm run bench:build -- --runs 6` on a clean, identified commit with development watchers stopped. Include raw samples, environment and tool versions, the build-input fingerprint, and limitations. Keep historical reports tied to their measured commits; do not relabel old measurements as results for new code.
 
 ## Submit a pull request
 

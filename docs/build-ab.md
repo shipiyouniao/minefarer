@@ -1,6 +1,6 @@
 # TypeScript 6 + Vite versus TypeScript 7 native + Vite
 
-This experiment compares two complete build workflows for the same refactored Minesweeper application. It runs on the `refactor/oop-fp-ts7-ab` branch and does not deploy that branch to GitHub Pages.
+This experiment compares two complete build workflows for the same refactored Minesweeper application. It began on the `refactor/oop-fp-ts7-ab` branch. The scripts and recorded results remain available for explicitly requested performance investigations; the benchmark is not part of routine validation and does not run automatically on pull requests or pushes.
 
 ## The two variants
 
@@ -53,9 +53,9 @@ Phase medians need not sum to the median of total times. Artifact gzip sizes use
 
 ## CI and result records
 
-[The A/B workflow](../.github/workflows/ab.yml) performs installation, dependency audit, formatting checks, native checks/tests/build, Pages path validation, legacy-compiled tests, and the complete comparison on one Ubuntu runner using Node.js 22.18.0. It publishes a readable job summary and an artifact containing the JSON, Markdown report, and both sites.
+[The A/B workflow](../.github/workflows/ab.yml) runs only through manual dispatch. When requested, it performs installation, dependency audit, formatting checks, native checks/tests/build, Pages path validation, legacy-compiled tests, and the complete comparison on one Ubuntu runner using Node.js 22.18.0. It publishes a readable job summary and an artifact containing the JSON, Markdown report, and both sites.
 
-The Pages workflow only deploys `refs/heads/main`, including for manual dispatch. The experiment workflow has read-only repository permissions and no deployment job.
+The separate Pages workflow validates pull requests without deploying them. Pushes and manual runs on `main` or `develop` publish the stable game from `main` and the `/dev/` preview from `develop`. The experiment workflow has read-only repository permissions and no deployment job.
 
 ## Recorded results — September 3, 2026
 

@@ -1,7 +1,6 @@
 name: TypeScript build A/B
 
 on:
-  pull_request:
   workflow_dispatch:
 
 permissions:

@@ -123,7 +123,7 @@ There are no runtime npm dependencies. The compilers, Vite, Node type definition
 
 ## Comparing the old and native build workflows
 
-The [build A/B experiment](docs/build-ab.md) compares TypeScript 6 checking plus Vite source bundling against TypeScript 7 checking/emission plus Vite JavaScript bundling. Both use the same refactored application, strict settings, lockfile, assets, and bundler. It records check, emit, bundle, and total wall times plus artifact sizes, with repeated alternating runs locally and in branch CI.
+The optional [build A/B experiment](docs/build-ab.md) compares TypeScript 6 checking plus Vite source bundling against TypeScript 7 checking/emission plus Vite JavaScript bundling. Both use the same refactored application, strict settings, lockfile, assets, and bundler. It records check, emit, bundle, and total wall times plus artifact sizes, with repeated alternating runs locally or through manual workflow dispatch. Historical results remain available; routine PRs and pushes do not run the benchmark.
 
 Use `npm run build:legacy`, `npm run build:native`, and `npm run bench:build -- --runs 6`. The default `npm run build` remains the native workflow. The experiment branch does not deploy to Pages.
 
@@ -255,7 +255,7 @@ The test suite covers exact mine counts, uniqueness, safe openings across seeds 
 
 ## CI and GitHub Pages
 
-[The workflow](.github/workflows/pages.yml) runs on pull requests, pushes to `main`, and manual dispatch. Its validation job performs:
+[The workflow](.github/workflows/pages.yml) runs on pull requests, pushes to `main` or `develop`, and manual dispatch. Its validation job performs:
 
 ```sh
 npm ci
@@ -264,7 +264,7 @@ npm run check
 node scripts/verify-build.mjs
 ```
 
-Pull requests run validation. Pushes to `main` and manual runs on `main` also upload `dist/` and deploy it to GitHub Pages after validation succeeds. The public game is hosted at [shipiyouniao.github.io/minefarer](https://shipiyouniao.github.io/minefarer/).
+Pull requests validate both stable and development asset paths without deploying. Pushes and manual runs on `main` or `develop` validate and package both branches, including the legacy behavior tests, then publish them together to GitHub Pages. The [stable game](https://shipiyouniao.github.io/minefarer/) uses `main`; the [development preview](https://shipiyouniao.github.io/minefarer/dev/) uses `develop`.
 
 For a fork, set **Settings → Pages → Source** to **GitHub Actions**. The current Vite `base` is `/minefarer/`; update `vite.config.ts` and the expected path in `scripts/verify-build.mjs` if the repository name or hosting path changes.
 
