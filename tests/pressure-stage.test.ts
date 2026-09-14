@@ -1,4 +1,5 @@
 import { recollectionUnlocks } from '../src/game/recollection.js'
+import { professionSkillAvailability } from '../src/game/profession-skills.js'
 import { downstreamCell } from '../src/game/pressure.js'
 import { walkingPath } from '../src/game/dungeon-path.js'
 import { storyEnvelopeStatus, encodeStory } from '../src/persistence/story-encoder.js'
@@ -8,7 +9,7 @@ import test from 'node:test'
 import { solvePressureFloor, PRESSURE_DEPARTURE } from './pressure-helpers.js'
 import { createExpedition, actExpedition } from '../src/game/expedition.js'
 import { VariantRepository } from '../src/persistence/variant-repository.js'
-import { MemoryStorage, FakeRuntime } from './helpers.js'
+import { MemoryStorage, FakeRuntime, CURRENT_DEPARTURE } from './helpers.js'
 import { readyChapterTwo } from './recollection-helpers.js'
 import { StorySession } from '../src/application/story-session.js'
 import { ExpeditionSession } from '../src/application/expedition-session.js'
@@ -54,6 +55,39 @@ test('three water minefields require local soundings, directed sailing and secur
         relic: run.offers.find((entry) => entry === 'purse') ?? run.offers[0]!,
       })
   }
+})
+
+test('waymarkers cannot strand a return mark on water and retain their skill after disembarking', () => {
+  // Recollection starts aboard, so the first skill action must already be unavailable.
+  for (const difficulty of ['relaxed', 'standard', 'advanced', 'expert', 'abyss'] as const) {
+    const river = createExpedition({
+      ...CURRENT_DEPARTURE,
+      profession: 'waymarker',
+      difficulty,
+      seed: 7,
+      recollection: { floors: ['river'], bosses: ['bastion'] },
+    })
+    assert.equal(river.player, river.pressure!.boat)
+    assert.equal(professionSkillAvailability(river), 'ashore-only')
+    assert.equal(actExpedition(river, { type: 'skill' }), river)
+    assert.equal(river.waymark, undefined)
+  }
+
+  // The authored shore lets the same character board, disembark and place a valid mark.
+  const shore = createExpedition({ ...PRESSURE_DEPARTURE, profession: 'waymarker' })
+  const aboard = actExpedition(shore, { type: 'move', index: shore.pressure!.boat })
+  assert.notEqual(aboard, shore)
+  assert.equal(actExpedition(aboard, { type: 'skill' }), aboard)
+  const landed = actExpedition(aboard, { type: 'move', index: shore.player })
+  assert.notEqual(landed, aboard)
+  assert.equal(professionSkillAvailability(landed), 'ready')
+  const placed = actExpedition(landed, { type: 'skill' })
+  assert.equal(placed.waymark!.index, landed.player)
+  assert.equal(placed.skillUsed, false)
+  const boardedAgain = actExpedition(placed, { type: 'move', index: placed.pressure!.boat })
+  assert.equal(professionSkillAvailability(boardedAgain), 'ashore-only')
+  assert.equal(actExpedition(boardedAgain, { type: 'skill' }), boardedAgain)
+  assert.deepEqual(boardedAgain.waymark, placed.waymark)
 })
 
 test('an empty or anchored boat cannot drift, reveal distant water or secure anchors from shore', () => {

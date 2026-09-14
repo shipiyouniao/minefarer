@@ -1879,6 +1879,7 @@ export const enMessages: MessageCatalog = {
   'rescuer.skill-note':
     'Choose a square 2–4 cells away in a straight cardinal line. The entire route must be revealed and unobstructed. Move there and gain 1 shield, capped at 2. Once per floor; costs 1 action point in battle.',
   'rescuer.no-corridor': 'Clear a straight safe corridor at least 2 cells long.',
+  'profession-skill-copy.ashore-only': 'Disembark before placing or returning to a waymark.',
   'rescuer.landing': 'Lifeline landing',
   'rail.guide-brake':
     'Send the cart onto a brake plate to open its matching gate. Your character cannot press it. The gate stays open after the cart leaves.',

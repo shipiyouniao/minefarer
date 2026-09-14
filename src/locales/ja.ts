@@ -1752,6 +1752,7 @@ export const jaMessages: MessageCatalog = {
   'rescuer.skill-note':
     '上下左右の直線上、2～4マス先を選ぶ。経路はすべて開いた安全なマスで、障害物がないこと。そこへ移動して盾を1枚得る（上限2枚）。各階1回、戦闘中は行動点数1を消費。',
   'rescuer.no-corridor': 'まず2マス以上続く、まっすぐな安全通路を開こう。',
+  'profession-skill-copy.ashore-only': '目印を置く・戻るには、先に船から降りよう。',
   'rescuer.landing': 'ロープの着地点',
   'rail.guide-brake':
     '制動板にトロッコを乗せると、対応する柵が開く。プレイヤーが乗っても動かない。車が離れても柵は開いたまま。',

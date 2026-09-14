@@ -1,4 +1,5 @@
 import { currentWaymark, mobilityReady, riftLandings, useMobilitySkill } from './mobility-skills.js'
+import { aboardRiverBoat } from './pressure.js'
 import { rescueLandings, useRescueSkill } from './rescue-skill.js'
 import { available, claim } from './relic-effects.js'
 import { inspectArea } from './dungeon-discovery.js'
@@ -106,6 +107,9 @@ export function professionSkillAvailability(run: Expedition): SkillAvailability 
   if (run.phase !== 'exploring' && run.phase !== 'boss') return 'inactive'
 
   if (run.skillUsed) return 'used'
+
+  // A water mark cannot be revisited without its boat; reject placement as well as return.
+  if (run.departure.profession === 'waymarker' && aboardRiverBoat(run)) return 'ashore-only'
 
   if (run.departure.profession === 'rescuer')
     return rescueLandings(run).length ? 'ready' : 'no-corridor'

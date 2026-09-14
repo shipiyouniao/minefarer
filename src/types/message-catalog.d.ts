@@ -192,6 +192,7 @@ export interface MessageCatalog {
   readonly 'rescuer.skill': string
   readonly 'rescuer.skill-note': string
   readonly 'rescuer.no-corridor': string
+  readonly 'profession-skill-copy.ashore-only': string
   readonly 'rescuer.landing': string
   readonly 'rail.guide-brake': string
   readonly 'rail.diagram-covered': string

@@ -1688,6 +1688,7 @@ export const zhMessages: MessageCatalog = {
   'rescuer.skill-note':
     '选择同一直线上 2–4 格外的位置，沿途必须已揭开且没有障碍。移动到目标并获得 1 层护盾（最多 2 层）。每层一次，战斗中消耗 1 点行动点数。',
   'rescuer.no-corridor': '先清出一条至少 2 格长的直线安全通道。',
+  'profession-skill-copy.ashore-only': '上岸后才能设置或返回锚点。',
   'rescuer.landing': '绞索落点',
   'rail.guide-brake':
     '把矿车送上制动板，对应的栅门就会打开。人踩上去不算；车离开以后，门也不会关上。',
