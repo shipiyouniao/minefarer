@@ -266,7 +266,11 @@ node scripts/verify-build.mjs
 
 Pull requests validate both stable and development asset paths without deploying. Pushes and manual runs on `main` or `develop` validate and package both branches, including the legacy behavior tests, then publish them together to GitHub Pages. The [stable game](https://shipiyouniao.github.io/minefarer/) uses `main`; the [development preview](https://shipiyouniao.github.io/minefarer/dev/) uses `develop`.
 
-For a fork, set **Settings → Pages → Source** to **GitHub Actions**. The current Vite `base` is `/minefarer/`; update `vite.config.ts` and the expected path in `scripts/verify-build.mjs` if the repository name or hosting path changes.
+The account root (`https://shipiyouniao.github.io/`) belongs to the separate personal website repository. This workflow publishes only the Minefarer project site, never the personal homepage. The artifact root becomes `/minefarer/` on GitHub Pages; do not add another `minefarer/` directory inside it. Game routes and existing save namespaces remain unchanged.
+
+`npm run check:pages` verifies that production builds accept only `/minefarer/` and `/minefarer/dev/`, rejecting account-root and unrelated paths. Artifact validation rejects assets escaping those paths and custom-domain files. Deployment also verifies the project Pages destination.
+
+For a fork, set **Settings → Pages → Source** to **GitHub Actions**. If the repository name or hosting path changes, update the allowed bases in `vite.config.ts`, `scripts/test-pages-boundary.mjs`, `scripts/verify-build.mjs`, and the workflow's destination check together.
 
 ## Artwork and project history
 

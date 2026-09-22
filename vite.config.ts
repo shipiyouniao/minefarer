@@ -18,6 +18,17 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
     },
     plugins: [
+      {
+        name: 'project-pages-boundary',
+        configResolved(config) {
+          if (
+            config.command === 'build' &&
+            !['/minefarer/', '/minefarer/dev/'].includes(config.base)
+          ) {
+            throw new Error('Minefarer builds must stay under /minefarer/ or /minefarer/dev/')
+          }
+        },
+      },
       tailwindcss(),
       ...(benchmark
         ? [

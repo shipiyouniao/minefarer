@@ -1,4 +1,4 @@
-name: Check and deploy
+name: Check and deploy Minefarer project site
 
 on:
   push:
@@ -76,6 +76,8 @@ jobs:
           cp -a development/dist/. site/dev/
           test -f site/index.html
           test -f site/dev/index.html
+          test ! -e site/CNAME
+          test ! -e site/dev/CNAME
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
@@ -91,6 +93,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/configure-pages@v5
+        id: pages
+      - name: Check project site destination
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: test "$PAGES_BASE_PATH" = /minefarer
       - name: Deploy stable and development together
         id: deployment
         uses: actions/deploy-pages@v4

@@ -3,8 +3,12 @@ import { spawnSync } from 'node:child_process'
 import assert from 'node:assert/strict'
 
 const base = process.env.BUILD_BASE_PATH || '/minefarer/'
-assert.ok(base.startsWith('/') && base.endsWith('/'))
+assert.ok(['/minefarer/', '/minefarer/dev/'].includes(base))
+assert.ok(!(await readdir('dist')).some((name) => name.toLowerCase() === 'cname'))
 const html = await readFile('dist/index.html', 'utf8')
+for (const match of html.matchAll(/(?:src|href)="(\/[^"?#]+)"/g)) {
+  assert.ok(match[1].startsWith(base), `Asset escapes game deployment: ${match[1]}`)
+}
 const assets = [...html.matchAll(/(?:src|href)="([^"?#]+)"/g)]
   .map((match) => match[1])
   .filter((path) => path.startsWith(base))
