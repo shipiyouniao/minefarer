@@ -40,7 +40,7 @@ async function aligned(page) {
   })
 }
 
-/** Probe the exposed frame gutters and sticky clue bands after both axes have moved. */
+/** Probe the exposed frame gutters and sticky clue bands after horizontal panning. */
 async function clipped(page) {
   return page.evaluate(() => {
     const viewport = document.querySelector('.survey-viewport')
@@ -70,9 +70,46 @@ async function clipped(page) {
         columnGap === undefined ||
         Boolean(at(columnGap, c.top + 4)?.closest('.survey-column-heads')),
       horizontalPinned: !viewport.scrollLeft || Math.abs(r.left - v.left) < 1,
-      verticalPinned: !viewport.scrollTop || Math.abs(c.top - v.top) < 1,
+      noVerticalScroll: viewport.scrollTop === 0 && viewport.scrollHeight === viewport.clientHeight,
     }
   })
+}
+
+/** The complete grid belongs to the page, with no cropped final row or nested vertical scroller. */
+async function fits(page, enlarged) {
+  const sizes = await page.evaluate(() => {
+    const viewport = document.querySelector('.survey-viewport')
+    const grid = document.querySelector('.survey-grid').getBoundingClientRect()
+    const cell = document.querySelector('[data-cell]').getBoundingClientRect()
+    return {
+      overflow: viewport.scrollHeight - viewport.clientHeight,
+      gridHeight: grid.height,
+      cellSize: cell.height,
+      minimum: Math.max(
+        24,
+        parseFloat(getComputedStyle(document.querySelector('.survey-line')).lineHeight),
+      ),
+      available: document.querySelector('.ruleset-host').clientHeight - 100,
+    }
+  })
+  assert.equal(sizes.overflow, 0)
+  assert.ok(sizes.cellSize >= (enlarged ? 40 : 24))
+  if (!enlarged && sizes.cellSize > sizes.minimum + 0.1)
+    assert.ok(sizes.gridHeight <= sizes.available + 1)
+
+  await page.locator('[data-cell]').last().focus()
+  assert.equal(
+    await page
+      .locator('[data-cell]')
+      .last()
+      .evaluate((cell) => {
+        const box = cell.getBoundingClientRect()
+        const host = document.querySelector('.ruleset-host').getBoundingClientRect()
+        const dock = document.querySelector('.survey-dock').getBoundingClientRect()
+        return box.top >= host.top && box.bottom <= Math.min(host.bottom, dock.top)
+      }),
+    true,
+  )
 }
 
 try {
@@ -82,7 +119,9 @@ try {
     [800, 900],
     [1440, 900],
     [3840, 2160],
+    [3840, 600],
     [1440, 600],
+    [844, 390],
   ]) {
     const page = await browser.newPage({ viewport: { width, height } })
     const errors = []
@@ -108,7 +147,10 @@ try {
         e.scrollLeft = 0
         e.scrollTop = 0
       })
-      await page.locator('.survey-board-surface').scrollIntoViewIfNeeded()
+      await viewport.evaluate((e) => {
+        const host = document.querySelector('.ruleset-host')
+        host.scrollTop += e.getBoundingClientRect().top - host.getBoundingClientRect().top - 12
+      })
       assert.deepEqual(await aligned(page), { columns: true, rows: true, pageOverflow: false })
       for (const end of [false, true]) {
         await viewport.evaluate((e, end) => {
@@ -121,9 +163,10 @@ try {
           rowGapCovered: true,
           columnGapCovered: true,
           horizontalPinned: true,
-          verticalPinned: true,
+          noVerticalScroll: true,
         })
       }
+      await fits(page, enlarged)
       if (width === 390 || (width === 1440 && height === 900))
         await page.screenshot({
           path: `.native/survey-clipping-${width}-${enlarged}.png`,
@@ -132,7 +175,7 @@ try {
     }
     assert.deepEqual(errors, [])
     console.log(
-      `Survey ${width}x${height}: text bounds, first row, both-axis clipping and zoom passed`,
+      `Survey ${width}x${height}: aligned clues, horizontal panning, full height and zoom passed`,
     )
     await page.close()
   }

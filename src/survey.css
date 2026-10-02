@@ -4,17 +4,28 @@
 }
 .survey-viewport {
   padding: 0;
-  max-height: min(72dvh, 1200px);
+  /* Only pan horizontally here; the page owns all vertical movement, including zoom. */
   scroll-padding: 130px;
 }
 .survey-grid {
   --gap: 3px;
   --clue-size: clamp(15px, 1.1vw, 21px);
+  --clue-line-height: calc(var(--clue-size) * 1.25);
   --header: calc(var(--row-runs) * (var(--clue-size) + 6px) + 12px);
-  --cell: clamp(
+  --column-header: calc(var(--column-runs) * (var(--clue-line-height) + 6px) + 6px);
+  /* Reserve the clue band, panel chrome and fixed dock before fitting the grid height. */
+  --height-fit: calc(
+    (100dvh - var(--dock-space) - 100px - var(--column-header) - var(--rows) * var(--gap)) /
+      var(--rows)
+  );
+  --cell: max(
     24px,
-    calc((100cqi - var(--header) - var(--columns) * var(--gap)) / var(--columns)),
-    clamp(40px, 3vw, 60px)
+    var(--clue-line-height),
+    min(
+      calc((100cqi - var(--header) - var(--columns) * var(--gap)) / var(--columns)),
+      var(--height-fit),
+      clamp(40px, 3vw, 60px)
+    )
   );
   display: grid;
   grid-template-columns: var(--header) max-content;
@@ -84,7 +95,7 @@
   border-radius: 4px;
   background: var(--surface-alt);
   color: var(--muted);
-  font: 500 var(--clue-size) var(--mono);
+  font: 500 var(--clue-size) / var(--clue-line-height) var(--mono);
   box-shadow: 0 0 0 2px var(--surface);
 }
 .survey-line strong {

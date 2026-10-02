@@ -53,6 +53,11 @@ export class SurveyView {
 
     const grid = this.element('.survey-grid')
 
+    grid.style.setProperty('--rows', String(state.game.config.height))
+    grid.style.setProperty(
+      '--column-runs',
+      String(Math.max(...state.columns.map((runs) => runs.length), 1)),
+    )
     grid.style.setProperty(
       '--row-runs',
       String(Math.max(...state.rows.map((runs) => runs.length), 1)),
@@ -167,7 +172,7 @@ export class SurveyView {
     return this.board.navigate(index, key)
   }
 
-  /** Keep the row and column headers in the same scroll container at either zoom level. */
+  /** Enlarge targets without introducing a second vertical scroll container. */
   toggleZoom(): void {
     this.enlarged = !this.enlarged
     this.element('.survey-board-panel').classList.toggle('survey-enlarged', this.enlarged)
