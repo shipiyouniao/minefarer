@@ -8,6 +8,9 @@ import { MemoryStorage, FakeRuntime } from '../../.native/tests/tests/helpers.js
 import { VariantRepository } from '../../.native/tests/src/persistence/variant-repository.js'
 import { StorySession } from '../../.native/tests/src/application/story-session.js'
 import { ExpeditionSession } from '../../.native/tests/src/application/expedition-session.js'
+import { riverSoundingCells } from '../../.native/tests/src/game/pressure.js'
+import { message } from '../../.native/tests/src/i18n.js'
+import { deduceMines } from '../../.native/tests/src/game/mine-deduction.js'
 const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE)
 const base = process.env.GAME_URL || 'http://127.0.0.1:5173/minefarer/'
 const key = 'minesweeper.variants.v1.expedition'
@@ -34,18 +37,12 @@ assert.ok(pressure.start('explorer', []))
 pressure.completeCampaignScene('pressure-entry')
 const first = storage.getItem(key)
 const plan = solvePressureFloor(1).actions
-const voyageIndex = plan.findIndex((action, index) => index > 0 && action.type === 'move')
+const voyageIndex = plan.findIndex((action, index) => action.type === 'sail')
 for (const action of plan.slice(0, voyageIndex)) assert.ok(pressure.dispatch(action))
 const ready = storage.getItem(key)
 const voyage = plan[voyageIndex]
 assert.ok(pressure.dispatch(voyage))
 const sailed = pressure.run
-for (const action of plan.slice(voyageIndex + 1)) {
-  if (action.type === 'interact') break
-  assert.ok(pressure.dispatch(action))
-}
-const mooringSave = storage.getItem(key)
-const mooring = plan.find((action) => action.type === 'interact')
 const browser = await chromium.launch({ channel: 'msedge' })
 try {
   for (const [width, language] of [
@@ -98,6 +95,62 @@ try {
     )
     assert.equal(await page.locator('.river-passenger > .dungeon-sprite').count(), 1)
     assert.equal(await page.locator('.river-empty-boat').count(), 0)
+    assert.equal(await page.locator('[data-river-lesson="survey"]').count(), 1)
+    const aboardStorage = new MemoryStorage()
+    aboardStorage.setItem(key, await page.evaluate((key) => localStorage.getItem(key), key))
+    const aboard = new ExpeditionSession(
+      new VariantRepository(aboardStorage).forCampaign('pressure-cove'),
+      new FakeRuntime(),
+    ).run
+    const inReach = [...riverSoundingCells(aboard)].filter(
+      (index) => aboard.game.cells[index].visibility === 'hidden',
+    )
+    assert.deepEqual(
+      (
+        await page
+          .locator('.river-surveyable')
+          .evaluateAll((cells) => cells.map((cell) => Number(cell.dataset.cell)))
+      ).sort((a, b) => a - b),
+      inReach.sort((a, b) => a - b),
+      'the visual survey area exactly matches legal water reveals, including banks',
+    )
+    const colors = await page.evaluate(() =>
+      ['.river-surveyable', '.river-out-of-range', '.pressure-water.revealed'].map((selector) => {
+        const style = getComputedStyle(document.querySelector(selector))
+        return style.backgroundColor + style.backgroundImage
+      }),
+    )
+    assert.equal(
+      new Set(colors).size,
+      3,
+      'unrevealed, revealed and unreachable water stay distinct',
+    )
+    assert.equal(await page.locator('.river-survey-key').count(), 1)
+    const controlLayout = await page.locator('.river-controls').evaluate((node) => ({
+      display: getComputedStyle(node).display,
+      maxWidth: getComputedStyle(node).maxWidth,
+    }))
+    assert.equal(controlLayout.display, 'grid')
+    if (width > 900)
+      assert.equal(
+        controlLayout.maxWidth,
+        '760px',
+        'desktop river controls retain their base layout',
+      )
+    const beforePreview = await page.evaluate((key) => localStorage.getItem(key), key)
+    await press(page.locator('[data-control^="river-plan:"]').first())
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), beforePreview)
+    assert.ok(await page.locator('.river-planned-line .is-unknown').count())
+    assert.equal(await page.locator('[data-control="sail"]').isEnabled(), false)
+    assert.ok(
+      await page.evaluate(
+        () =>
+          document.querySelector('.ruleset-host').getBoundingClientRect().bottom <=
+          document.querySelector('.action-dock').getBoundingClientRect().top + 1,
+      ),
+      'the wrapped dock never overlaps the scrolling game surface',
+    )
+    await page.screenshot({ path: `.native/river-route-preview-${width}-${language}.png` })
     await press(page.locator('.pressure-objective [data-control="help"]'))
     assert.equal(await page.locator('dialog[open] .pressure-help section').count(), 4)
     assert.equal(
@@ -106,6 +159,44 @@ try {
     )
     await page.screenshot({ path: `.native/river-help-${width}-${language}.png` })
     await page.keyboard.press('Escape')
+    // Dismiss through the actual guide without changing the save.
+    await press(page.locator('[data-river-lesson="survey"] button'))
+    assert.equal(await page.locator('.river-lesson').count(), 0)
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), beforePreview)
+    const beforeRejected = await page.evaluate((key) => localStorage.getItem(key), key)
+    await press(page.locator('.river-out-of-range').first())
+    assert.equal(
+      await page.locator('.pressure-hint').textContent(),
+      message(language, 'pressure.out-of-range'),
+    )
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), beforeRejected)
+    // A real accepted survey also finishes the guide; choosing a route alone does not.
+    await load(beforePreview)
+    await page.locator('[data-river-lesson="survey"]').waitFor()
+    const safeCandidates = [...deduceMines(aboard.game, aboard.walls).safe].filter((index) =>
+      inReach.includes(index),
+    )
+    const visibleSafe = await page.evaluate(
+      (indices) =>
+        indices.find((index) => {
+          const cell = document.querySelector(`[data-cell="${index}"]`)
+          const rect = cell.getBoundingClientRect()
+          return cell.contains(
+            document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2),
+          )
+        }),
+      safeCandidates,
+    )
+    assert.notEqual(
+      visibleSafe,
+      undefined,
+      'the teaching panel leaves a deducible survey cell available to click',
+    )
+    await press(page.locator(`[data-cell="${visibleSafe}"]`))
+    assert.equal(await page.locator('.river-lesson').count(), 0)
+    await page.reload()
+    await page.locator('.river-passenger').waitFor()
+    assert.equal(await page.locator('.river-lesson').count(), 0)
     await load(ready)
     await page.locator('.river-passenger').waitFor()
     if (!reduced)
@@ -117,7 +208,12 @@ try {
           return result
         }
       })
-    await press(page.locator(`[data-side="a"] [data-cell="${voyage.index}"]`))
+    const beforeSelection = await page.evaluate((key) => localStorage.getItem(key), key)
+    await press(page.locator(`[data-control="river-plan:${voyage.index}"]`))
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), beforeSelection)
+    assert.ok(await page.locator('.river-planned-line').count())
+    assert.ok(await page.locator('[data-control="sail"]').isEnabled())
+    await press(page.locator('[data-control="sail"]'))
     if (!reduced) {
       await page.waitForFunction(() =>
         document.getAnimations().some((animation) => animation.id === 'river-voyage'),
@@ -135,7 +231,7 @@ try {
       assert.ok(geometry.target, 'hull and single passenger share the same moving element')
       assert.ok(Number(geometry.hero) > Number(geometry.hull), 'passenger stays above the boat')
       const committed = await page.evaluate((key) => localStorage.getItem(key), key)
-      await page.locator('.river-controls [data-control="moor"]').dispatchEvent('click')
+      await page.locator('.river-controls [data-control="sail"]').dispatchEvent('click')
       assert.equal(
         await page.evaluate((key) => localStorage.getItem(key), key),
         committed,
@@ -155,19 +251,28 @@ try {
       ).run,
       sailed,
     )
-    await press(page.locator('.river-controls [data-control="moor"]'))
-    if (!reduced) {
-      await page.waitForFunction(() =>
-        document.getAnimations().some((animation) => animation.id === 'river-anchor'),
-      )
-      await page.evaluate(() => document.getAnimations().forEach((animation) => animation.finish()))
-    }
-    await page.locator('.river-dropped-anchor').waitFor()
+    assert.deepEqual(
+      (
+        await page
+          .locator('.river-surveyable')
+          .evaluateAll((cells) => cells.map((cell) => Number(cell.dataset.cell)))
+      ).sort((a, b) => a - b),
+      [...riverSoundingCells(sailed)]
+        .filter((index) => sailed.game.cells[index].visibility === 'hidden')
+        .sort((a, b) => a - b),
+      'arriving at another berth updates the highlighted survey area',
+    )
+    assert.equal(
+      await page
+        .locator('[data-control="moor"],[data-control="end-turn"],.river-dropped-anchor')
+        .count(),
+      0,
+    )
     await page.evaluate(() => {
       document.querySelector('.ruleset-host').scrollTop = 0
     })
     await page.screenshot({ path: `.native/river-crossing-${width}-${language}.png` })
-    const buttons = await page.locator('.river-controls button').evaluateAll((nodes) =>
+    const buttons = await page.locator('.river-departure button').evaluateAll((nodes) =>
       nodes.map((node) => ({
         width: node.getBoundingClientRect().width,
         top: node.getBoundingClientRect().top,
@@ -175,7 +280,7 @@ try {
     )
     assert.ok(
       buttons.every((button) => button.width >= 80 && Math.abs(button.top - buttons[0].top) < 1),
-      'the three sailing controls share one usable row',
+      'departure and return controls share one usable row',
     )
     assert.ok(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
@@ -188,14 +293,49 @@ try {
         ),
       ),
     )
-    await load(mooringSave)
-    await press(page.locator(`[data-side="a"] [data-cell="${mooring.index}"]`))
-    await page.locator('.river-secured').waitFor()
-    assert.equal(await page.locator('.river-lesson').count(), 0)
+    await press(page.locator('[data-control="haul"]'))
+    if (!reduced)
+      await page.evaluate(() => document.getAnimations().forEach((animation) => animation.finish()))
+    await page.waitForFunction(() =>
+      document.getAnimations().every((animation) => animation.id !== 'river-voyage'),
+    )
+    const afterReturn = new MemoryStorage()
+    afterReturn.setItem(key, await page.evaluate((key) => localStorage.getItem(key), key))
+    assert.equal(
+      new ExpeditionSession(
+        new VariantRepository(afterReturn).forCampaign('pressure-cove'),
+        new FakeRuntime(),
+      ).run.pressure.boat,
+      pressure.run.pressure.line[0],
+    )
+    if (width === 1440 && language === 'zh') {
+      await load(ready)
+      await page.locator('.river-passenger').waitFor()
+      await page.evaluate(() => {
+        const animate = Element.prototype.animate
+        Element.prototype.animate = function (frames, options) {
+          const result = animate.call(this, frames, options)
+          result.pause()
+          return result
+        }
+      })
+      await press(page.locator(`[data-control="river-plan:${voyage.index}"]`))
+      await press(page.locator('[data-control="sail"]'))
+      await page.waitForFunction(() =>
+        document.getAnimations().some((entry) => entry.id === 'river-voyage'),
+      )
+      await press(page.locator('[data-campaign-return]'))
+      await page.locator('.river-controls').waitFor({ state: 'detached' })
+      assert.equal(
+        await page.locator('#app').evaluate((app) => app.style.getPropertyValue('--dock-space')),
+        '',
+        'leaving mid-voyage releases the newly rendered dock mount',
+      )
+    }
     assert.deepEqual(errors, [])
     await page.close()
     console.log(
-      `River boarding, soundings guide, sailing, anchoring and mooring: ${width}px ${language}`,
+      `River route selection, whole voyages, return, guide and stacking: ${width}px ${language}`,
     )
   }
 } finally {

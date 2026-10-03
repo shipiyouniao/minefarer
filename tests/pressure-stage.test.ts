@@ -1,7 +1,6 @@
 import { recollectionUnlocks } from '../src/game/recollection.js'
 import { professionSkillAvailability } from '../src/game/profession-skills.js'
-import { downstreamCell } from '../src/game/pressure.js'
-import { walkingPath } from '../src/game/dungeon-path.js'
+import { riverRoutes } from '../src/game/pressure.js'
 import { storyEnvelopeStatus, encodeStory } from '../src/persistence/story-encoder.js'
 import { exploreOldFerry } from './old-ferry-helpers.js'
 import assert from 'node:assert/strict'
@@ -15,16 +14,64 @@ import { StorySession } from '../src/application/story-session.js'
 import { ExpeditionSession } from '../src/application/expedition-session.js'
 import { solveFerry } from './ferry-helpers.js'
 import { campaignProgress } from '../src/game/campaign-catalog.js'
+import { loadExpeditionSave } from '../src/persistence/variant-decoders.js'
+import { EXPEDITION_RULES_REVISION } from '../src/persistence/expedition-format.js'
 
-test('three water minefields require local soundings, directed sailing and secured moorings', () => {
+test('a rules revision banks an old campaign checkpoint even when its content ID has not changed', () => {
+  const repo = new VariantRepository(new MemoryStorage())
+  readyChapterTwo(repo)
+  const save = repo.expedition()!
+  const raw = JSON.stringify({
+    ...save,
+    journal: null,
+    story: encodeStory(save.story!),
+    campaign: {
+      schemaVersion: 1,
+      stages: [
+        {
+          id: 'tower-control',
+          cleared: false,
+          lesson: 4,
+          scenes: [],
+          records: [],
+          recordSaved: false,
+          journal: {
+            rulesRevision: EXPEDITION_RULES_REVISION - 1,
+            returnSupplies: 175,
+            departure: { campaign: 'tower-control-v1' },
+            actions: [],
+          },
+        },
+      ],
+    },
+  })
+  const loaded = loadExpeditionSave(raw)!
+  assert.equal(loaded.save.camp.supplies, save.camp.supplies + 175)
+  assert.equal(loaded.save.campaign!.stages[0]!.journal, null)
+  const encoded = JSON.stringify({ ...loaded.save, story: encodeStory(loaded.save.story!) })
+  assert.equal(loadExpeditionSave(encoded)!.returnedSupplies, null)
+  for (const revision of [null, -1, EXPEDITION_RULES_REVISION, EXPEDITION_RULES_REVISION + 1]) {
+    const malformed = JSON.parse(raw)
+    malformed.campaign.stages[0].journal.rulesRevision = revision
+    assert.equal(
+      loadExpeditionSave(JSON.stringify(malformed))!.save.camp.supplies,
+      save.camp.supplies,
+    )
+  }
+})
+
+test('three crossings require whole-route deductions and continuous voyages without an anchor toggle', () => {
   let run = createExpedition(PRESSURE_DEPARTURE)
   for (let floor = 1; floor <= 3; floor++) {
     const solved = solvePressureFloor(floor)
     assert.ok(solved, `crossing ${floor}`)
     assert.equal(solvePressureFloor(floor, false), null)
-    assert.ok(solved.actions.filter((action) => action.type === 'reveal').length >= 14 * floor)
-    assert.ok(solved.actions.some((action) => action.type === 'moor'))
-    assert.ok(solved.actions.some((action) => action.type === 'interact'))
+    assert.ok(solved.actions.filter((action) => action.type === 'reveal').length >= 4)
+    assert.ok(solved.actions.filter((action) => action.type === 'sail').length >= 3)
+    assert.ok(
+      solved.run.collected.length < solved.run.treasures.length,
+      'optional branches can be skipped',
+    )
     const mines = run.game.cells.map((cell) => cell.mine)
     for (const action of solved.actions) {
       const before = run
@@ -32,7 +79,6 @@ test('three water minefields require local soundings, directed sailing and secur
       assert.notEqual(run, before, JSON.stringify(action))
       if (run.pressure!.water.includes(run.player)) assert.equal(run.pressure!.boat, run.player)
       if (action.type === 'reveal' && before.pressure!.water.includes(action.index)) {
-        assert.ok(before.pressure!.anchored)
         assert.equal(run.player, before.player, 'sounding never walks onto a hidden mine')
         assert.deepEqual(
           run.collected,
@@ -46,7 +92,6 @@ test('three water minefields require local soundings, directed sailing and secur
       run.game.cells.map((cell) => cell.mine),
       mines,
     )
-    assert.ok(run.pressure!.moorings.every((entry) => entry.secured))
     assert.equal(run.health, run.maxHealth)
     assert.equal(run.phase, floor === 3 ? 'won' : 'reward')
     if (run.phase === 'reward')
@@ -57,16 +102,39 @@ test('three water minefields require local soundings, directed sailing and secur
   }
 })
 
+test('quick-open checks a reachable channel without moving the boat', () => {
+  let run = createExpedition(PRESSURE_DEPARTURE)
+  for (const action of solvePressureFloor(1)!.actions) {
+    run = actExpedition(run, action)
+    if (run.player !== run.pressure!.boat) continue
+    for (const [index, cell] of run.game.cells.entries()) {
+      if (cell.visibility !== 'revealed' || !cell.adjacent) continue
+      const next = actExpedition(run, { type: 'chord', index })
+      if (
+        next.game.cells.filter((c) => c.visibility === 'revealed').length <=
+        run.game.cells.filter((c) => c.visibility === 'revealed').length
+      )
+        continue
+      assert.equal(next.player, run.player)
+      assert.equal(next.pressure!.boat, run.pressure!.boat)
+      assert.equal(next.health, run.health)
+      return
+    }
+  }
+  assert.fail('Expected a useful public-clue quick-open before departure')
+})
+
 test('waymarkers cannot strand a return mark on water and retain their skill after disembarking', () => {
-  // Recollection starts aboard, so the first skill action must already be unavailable.
+  // After boarding, a movement skill cannot leave a mark behind in the water.
   for (const difficulty of ['relaxed', 'standard', 'advanced', 'expert', 'abyss'] as const) {
-    const river = createExpedition({
+    let river = createExpedition({
       ...CURRENT_DEPARTURE,
       profession: 'waymarker',
       difficulty,
       seed: 7,
       recollection: { floors: ['river'], bosses: ['bastion'] },
     })
+    river = actExpedition(river, { type: 'move', index: river.pressure!.boat })
     assert.equal(river.player, river.pressure!.boat)
     assert.equal(professionSkillAvailability(river), 'ashore-only')
     assert.equal(actExpedition(river, { type: 'skill' }), river)
@@ -90,36 +158,29 @@ test('waymarkers cannot strand a return mark on water and retain their skill aft
   assert.deepEqual(boardedAgain.waymark, placed.waymark)
 })
 
-test('an empty or anchored boat cannot drift, reveal distant water or secure anchors from shore', () => {
+test('previews expose geometry and known flags, never concealed mines; ordinary movement cannot bypass a voyage', () => {
   const shore = createExpedition(PRESSURE_DEPARTURE)
-  assert.equal(actExpedition(shore, { type: 'end-turn' }), shore)
-  for (const entry of shore.pressure!.moorings)
-    assert.equal(actExpedition(shore, { type: 'interact', index: entry.index }), shore)
-  let aboard = actExpedition(shore, { type: 'move', index: shore.pressure!.boat })
-  assert.notEqual(aboard, shore)
-  assert.equal(actExpedition(aboard, { type: 'end-turn' }), aboard)
-  const board = aboard.game
-  for (let count = 0; count < 200; count++) aboard = actExpedition(aboard, { type: 'end-turn' })
-  assert.equal(aboard.game, board)
-  assert.ok(aboard.pressure!.moorings.every((entry) => !entry.secured))
-  assert.equal(actExpedition(aboard, { type: 'reveal', index: 20 }), aboard)
-  assert.equal(actExpedition(shore, { type: 'reveal', index: shore.pressure!.boat + 2 }), shore)
-})
-
-test('sailing cannot replace a forbidden upstream step with ordinary ground movement', () => {
-  let run = createExpedition(PRESSURE_DEPARTURE)
-  let detours = 0
-  for (const action of solvePressureFloor(1)!.actions) {
-    const path = action.type === 'move' ? walkingPath(run, action.index) : null
-    run = actExpedition(run, action)
-    if (path && path.length > 1 && run.player === run.pressure!.boat) {
-      const previous = path.at(-2)!
-      if (!run.pressure!.water.includes(previous)) continue
-      const back = walkingPath(run, previous)
-      if (!back || back.length > 2) detours++
-    }
+  assert.equal(actExpedition(shore, { type: 'sail', index: shore.pressure!.boat - 15 }), shore)
+  const aboard = actExpedition(shore, { type: 'move', index: shore.pressure!.boat })
+  const routes = riverRoutes(aboard)
+  assert.ok(routes.length >= 2)
+  const altered = {
+    ...aboard,
+    game: {
+      ...aboard.game,
+      cells: aboard.game.cells.map((cell) =>
+        cell.visibility === 'hidden' ? { ...cell, mine: !cell.mine, adjacent: 8 } : cell,
+      ),
+    },
   }
-  assert.ok(detours >= 2, 'actual routes contain upstream edges that require a circuit or a rope')
+  assert.deepEqual(riverRoutes(altered), routes)
+  for (const route of routes) {
+    assert.ok(route.path.length >= 5)
+    assert.equal(actExpedition(aboard, { type: 'move', index: route.launch }), aboard)
+    assert.equal(actExpedition(aboard, { type: 'end-turn' }), aboard)
+    if (route.unknown.length)
+      assert.equal(actExpedition(aboard, { type: 'sail', index: route.launch }), aboard)
+  }
 })
 
 test('hauling retraces only the paid-out rope without erasing discoveries or generating new travel', () => {
@@ -136,7 +197,7 @@ test('hauling retraces only the paid-out rope without erasing discoveries or gen
   assert.deepEqual(returned.pressure!.voyage, [...river.line].reverse())
   assert.deepEqual(returned.pressure!.line, [returned.player])
   assert.equal(returned.game, run.game)
-  assert.equal(returned.travelled, run.travelled)
+  assert.deepEqual(returned.travelled, run.travelled)
   assert.equal(actExpedition(returned, { type: 'haul' }), returned)
 })
 
@@ -188,7 +249,7 @@ test('Pressure Cove has a physical gate, replays every action and rewards comple
                 journal: {
                   ...entry.journal!,
                   returnSupplies: 175,
-                  departure: { ...entry.journal!.departure, campaign: 'pressure-cove-v2' },
+                  departure: { ...entry.journal!.departure, campaign: 'pressure-cove-v3' },
                 },
               }
             : entry,
@@ -217,13 +278,12 @@ test('Pressure Cove has a physical gate, replays every action and rewards comple
   assert.ok(retired.start('explorer', []))
   retired.completeCampaignScene('pressure-entry')
   assert.ok(retired.dispatch({ type: 'move', index: retired.run!.pressure!.boat }))
-  assert.ok(retired.dispatch({ type: 'moor' }))
-  assert.equal(
+  assert.deepEqual(
     new ExpeditionSession(
       new VariantRepository(oldStorage).forCampaign('pressure-cove'),
       new FakeRuntime(),
-    ).run?.pressure?.anchored,
-    false,
+    ).run,
+    retired.run,
   )
 
   const abandonedStorage = new MemoryStorage()
@@ -279,27 +339,24 @@ test('Pressure Cove has a physical gate, replays every action and rewards comple
   assert.equal(repo.expedition()!.camp.supplies, supplies)
 })
 
-test('drifting onto a discovered chest collects it once, while hauling grants no second reward', () => {
+test('one voyage visits every intermediate tile and collects treasure only once, with no required berth checklist', () => {
   let run = createExpedition(PRESSURE_DEPARTURE)
   for (const action of solvePressureFloor(1)!.actions) {
+    if (action.type === 'sail') {
+      const route = riverRoutes(run).find((route) => route.launch === action.index)!
+      const treasure = route.path[2]!
+      const fixture = { ...run, treasures: [treasure], collected: [] }
+      const sailed = actExpedition(fixture, action)
+      assert.equal(sailed.player, route.destination)
+      assert.deepEqual(sailed.pressure!.voyage, route.path)
+      assert.ok(route.path.every((index) => sailed.travelled.includes(index)))
+      assert.deepEqual(sailed.collected, [treasure])
+      const returned = actExpedition(sailed, { type: 'haul' })
+      assert.equal(returned.loot, sailed.loot)
+      assert.equal(actExpedition(returned, action).loot, sailed.loot)
+      return
+    }
     run = actExpedition(run, action)
-    const target = downstreamCell(run, run.player)
-    if (
-      run.player !== run.pressure!.boat ||
-      run.pressure!.anchored ||
-      target === null ||
-      !run.pressure!.water.includes(target) ||
-      run.game.cells[target]!.visibility !== 'revealed'
-    )
-      continue
-    const fixture = { ...run, treasures: [target], collected: [] }
-    const drifted = actExpedition(fixture, { type: 'end-turn' })
-    assert.notEqual(drifted, fixture)
-    assert.deepEqual(drifted.collected, [target])
-    assert.ok(drifted.loot > fixture.loot)
-    assert.ok(drifted.travelled.includes(target))
-    assert.equal(actExpedition(drifted, { type: 'haul' }).loot, drifted.loot)
-    return
   }
-  assert.fail('the playable river must include a known downstream landing')
+  assert.fail('Expected a whole voyage')
 })

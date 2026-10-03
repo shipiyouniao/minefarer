@@ -1,6 +1,6 @@
 # River navigation artwork
 
-Generated with OpenAI ImageGen on September 14, 2026. Both transparent PNGs are stored unchanged; game code composites the current profession above the empty hull. The existing [Tidekeeper anchor](tidekeeper-artwork.md) is reused for anchoring and moorings.
+Generated with OpenAI ImageGen on September 14, 2026. Both transparent PNGs are stored unchanged; game code composites the current profession above the empty hull. Continuous-voyage navigation uses the skiff and pier; the former anchor-toggle decoration has been removed.
 
 | Asset             | File                                   | Use                                                          |
 | ----------------- | -------------------------------------- | ------------------------------------------------------------ |

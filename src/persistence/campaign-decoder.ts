@@ -1,3 +1,4 @@
+import { EXPEDITION_RULES_REVISION } from './expedition-format.js'
 import { PRESSURE_SCENES } from '../game/pressure-story.js'
 import { FERRY_SCENES } from '../game/ferry-story.js'
 import { RAIL_SCENES } from '../game/rail-story.js'
@@ -121,7 +122,13 @@ export function campaignReturnedSupplies(
       campaign?.stages.find((stage) => stage.id === id)?.journal
     )
       continue
-    if (revision === campaignStage(id).revision) continue
+    const rulesRevision = journal.number('rulesRevision')
+    const olderRules =
+      rulesRevision !== null &&
+      Number.isInteger(rulesRevision) &&
+      rulesRevision >= 1 &&
+      rulesRevision < EXPEDITION_RULES_REVISION
+    if (revision === campaignStage(id).revision && !olderRules) continue
     settled.add(id)
 
     const checkpoint = journal.number('returnSupplies')

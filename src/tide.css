@@ -333,24 +333,6 @@
 .river-passenger > .landmark-clue {
   z-index: 4;
 }
-.river-dropped-anchor {
-  position: absolute;
-  width: 34%;
-  height: 34%;
-  bottom: -4%;
-  right: -3%;
-  object-fit: contain;
-  z-index: 3;
-}
-.river-anchored::before {
-  content: '';
-  position: absolute;
-  inset: 5%;
-  border: 1.5px dashed #477b75;
-  border-radius: 50%;
-  opacity: 0.7;
-  z-index: -1;
-}
 .river-rope {
   position: absolute;
   inset: 0;
@@ -368,33 +350,9 @@
   stroke-linecap: round;
   opacity: 0.72;
 }
-.river-mooring {
-  position: relative;
-  background: #e0ddc5 !important;
-  cursor: pointer;
-}
-.river-mooring > .dungeon-sprite {
-  width: 94%;
-  height: 94%;
-}
-.river-mooring-anchor {
-  position: absolute;
-  width: 40%;
-  height: 40%;
-  bottom: 3%;
-  right: 1%;
-  object-fit: contain;
-  pointer-events: none;
-}
-.river-secured {
-  box-shadow: inset 0 0 0 2px #679578 !important;
-}
-.river-secured .river-mooring-anchor {
-  filter: drop-shadow(0 0 3px #fbd681);
-}
 .river-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.5rem;
   flex: 1 1 360px;
   max-width: 760px;
@@ -469,19 +427,6 @@
   width: 150px;
   height: 112px;
 }
-.river-diagram-number {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  color: #438a79;
-  font-weight: 700;
-}
-.river-diagram-flag {
-  position: absolute;
-  left: 43px;
-  top: 9px;
-  width: 18px;
-}
 .river-diagram-boat {
   position: absolute;
   left: 25px;
@@ -503,29 +448,6 @@
   top: 17px;
   left: 15px;
 }
-.river-diagram-device {
-  position: absolute;
-  right: 2px;
-  bottom: 10px;
-  width: 44px;
-  height: 44px;
-}
-.river-diagram-device img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.river-diagram-route {
-  position: absolute;
-  right: 19px;
-  top: 19px;
-  width: 28px;
-  height: 28px;
-  color: #508378;
-}
-.river-diagram-3 .river-diagram-route {
-  transform: rotate(180deg);
-}
 @media (max-width: 650px) {
   .pressure-help section {
     grid-template-columns: 110px minmax(0, 1fr);
@@ -538,10 +460,6 @@
   }
   .river-diagram-boat {
     left: 8px;
-  }
-  .river-diagram-device {
-    width: 34px;
-    height: 34px;
   }
   .river-control {
     min-width: 66px;
@@ -587,4 +505,129 @@
   .river-control {
     min-width: 0;
   }
+}
+
+.river-route-options,
+.river-departure {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.river-route-options .river-control {
+  padding: 0.35rem 0.6rem;
+  min-height: 38px;
+}
+.river-departure [data-control='sail']:enabled {
+  background: #315c50;
+  color: #fff;
+}
+.river-berth-label {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font: 700 12px var(--mono);
+  color: #355e54;
+  z-index: 4;
+  background: #f7fbefdd;
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.river-planned-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+.river-planned-line line {
+  stroke: #418678;
+  stroke-width: 0.065;
+  opacity: 0.8;
+}
+.river-planned-line .is-unknown {
+  stroke: #a98644;
+  stroke-dasharray: 0.12 0.12;
+}
+.river-board .river-planned.revealed {
+  background: #c0dfd1 !important;
+}
+.river-board .river-planned.hidden {
+  background: #afd3bd !important;
+}
+.river-board .river-plan-blocked {
+  box-shadow: inset 0 0 0 2px #b57c58 !important;
+}
+.river-board .river-plan-stop {
+  box-shadow: inset 0 0 0 2px #507d69 !important;
+}
+
+.river-board .cell.wall-cell {
+  background: #d8e0c6;
+  border-color: #bec9ad;
+}
+.river-board .pressure-water.revealed,
+.river-swatch.revealed {
+  background: #edf5ef !important;
+}
+.river-board .river-surveyable.hidden,
+.river-swatch.available {
+  background: #afd3bd !important;
+}
+.river-board .river-surveyable.hidden {
+  box-shadow: inset 0 2px 0 #e5f5e8 !important;
+  cursor: pointer;
+}
+.river-board .river-out-of-range.hidden,
+.river-swatch.distant {
+  background: repeating-linear-gradient(135deg, #cbd3d0 0 5px, #d1d9d6 5px 6px) !important;
+}
+.river-board .river-out-of-range.hidden {
+  cursor: help;
+}
+.river-board .river-out-of-range .river-current {
+  opacity: 0.3;
+}
+.river-board .pressure-water.frontier {
+  border-color: #91b8a3 !important;
+}
+.river-survey-key {
+  margin: 0.4rem 0 0.8rem;
+  padding-inline: 1.5rem;
+  color: #526d62;
+}
+.river-survey-key small {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+}
+.river-survey-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  font-size: 0.78rem;
+}
+.river-survey-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.river-swatch {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #91b8a3;
+  border-radius: 0.2rem;
+}
+.pressure-help .river-survey-legend {
+  margin-bottom: 0.5rem;
+}
+
+.river-diagram > svg {
+  width: 100%;
+  height: 100%;
+}
+.river-diagram .river-diagram-boat {
+  width: 32%;
+  height: 40%;
 }

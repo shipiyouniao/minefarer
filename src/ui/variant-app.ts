@@ -1,5 +1,12 @@
 import { riverCellAction } from '../game/pressure.js'
-import { pressureGuide, animatePressure, mountRiverLesson, pressureHint } from './pressure-view.js'
+import {
+  pressureGuide,
+  animatePressure,
+  mountRiverLesson,
+  mountRiverDock,
+  renderRiverPlan,
+  riverRejectionHint,
+} from './pressure-view.js'
 import { pendingPressureScene } from '../game/pressure-story.js'
 import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
@@ -60,6 +67,9 @@ import { VariantView } from './variant-view.js'
 
 /** Coordinates special-mode sessions with dedicated input and rendering adapters. */
 export class VariantApp implements VariantInputActions {
+  private disposeRiverDock: (() => void) | null = null
+  private riverSelection: number | null = null
+  private riverLessonDismissed = false
   private readonly root: HTMLElement
   private readonly session: ExpeditionSession | TwinSession
   private readonly repository: VariantRepository
@@ -753,15 +763,21 @@ export class VariantApp implements VariantInputActions {
         this.input.cancelTools()
         this.expedition({ type: command.type })
         break
-      case 'moor':
+      case 'river-plan':
+        this.riverSelection = command.value
+        this.render()
+        this.root
+          .querySelector<HTMLElement>(`[data-control="river-plan:${command.value}"]`)
+          ?.focus({ preventScroll: true })
+        return
+      case 'sail':
+        if (this.riverSelection !== null)
+          void this.performRiverAction({ type: 'sail', index: this.riverSelection })
+        return
       case 'haul':
         void this.performRiverAction({ type: command.type })
         return
       case 'end-turn':
-        if (this.session instanceof ExpeditionSession && this.session.run?.pressure) {
-          void this.performRiverAction()
-          return
-        }
         if (
           this.session instanceof ExpeditionSession &&
           (this.session.run?.encounter?.kind === 'magnetic' ||
@@ -891,8 +907,10 @@ export class VariantApp implements VariantInputActions {
 
   /** Release all owned effects before routing to another game mode or hot reload. */
   dispose(): void {
-    this.disposeCampaignLesson?.()
+    // Cancelling a committed animation can render once more and replace both mounts.
     this.cancelMovement()
+    this.disposeRiverDock?.()
+    this.disposeCampaignLesson?.()
     this.session.persist()
     this.input.dispose()
     this.view.dispose()
@@ -904,6 +922,8 @@ export class VariantApp implements VariantInputActions {
 
   /** Render one session snapshot, showing terminal twin layouts consistently on both sides. */
   private render(): void {
+    this.disposeRiverDock?.()
+    this.disposeRiverDock = null
     // Uncover before measuring cell geometry, so a resumed board never starts at zero width.
     this.view.chrome(
       this.repository.available,
@@ -951,6 +971,8 @@ export class VariantApp implements VariantInputActions {
         run?.encounter?.kind === 'mirror' ? run.encounter.other.game : null,
         run,
       )
+      if (run?.pressure) renderRiverPlan(this.root, run, this.language, this.riverSelection)
+      if (run?.pressure) this.disposeRiverDock = mountRiverDock(this.root)
       this.renderCampaignLesson()
       this.renderSignalScene()
       if (run?.phase === 'boss' && !this.paused && !this.turnPerformance && !this.view.dialogOpen) {
@@ -1054,7 +1076,11 @@ export class VariantApp implements VariantInputActions {
     const session = this.session
     const run = session.run
     if (run?.pressure) {
-      this.disposeCampaignLesson = mountRiverLesson(this.root, run, this.language)
+      if (!this.riverLessonDismissed && !session.riverLessonComplete)
+        this.disposeCampaignLesson = mountRiverLesson(this.root, run, this.language, () => {
+          this.riverLessonDismissed = true
+          this.render()
+        })
       return
     }
     const step = session.campaignLesson
@@ -1182,32 +1208,26 @@ export class VariantApp implements VariantInputActions {
     )
   }
 
-  /** Commit a river action, then perform its boat, passenger or anchoring animation. */
-  private async performRiverAction(action: ExpeditionAction = { type: 'end-turn' }): Promise<void> {
+  /** Commit a river action, then animate the boat and passenger along that exact voyage. */
+  private async performRiverAction(action: ExpeditionAction): Promise<void> {
     if (!(this.session instanceof ExpeditionSession)) return
     const before = this.session.run
     if (!before?.pressure || !this.session.dispatch(action)) {
       this.sounds.play('blocked')
       const hint = this.root.querySelector('.pressure-hint')
       if (hint && before?.pressure)
-        hint.textContent = before.pressure.anchored
-          ? pressureHint(this.language, before)
-          : message(this.language, 'pressure.blocked')
+        hint.textContent = riverRejectionHint(this.language, before, action)
       return
     }
     const after = this.session.run
     if (!after) return
+    if (before.player !== after.player) this.riverSelection = null
     const generation = ++this.walkGeneration
     this.moving = true
     this.turnPerformance = true
     this.input.cancelTools()
     this.sounds.play(
-      cueForVitality(before, after) ??
-        (action.type === 'moor' || action.type === 'interact'
-          ? 'tide-anchor'
-          : action.type === 'reveal'
-            ? 'reveal'
-            : 'navigate'),
+      cueForVitality(before, after) ?? (action.type === 'reveal' ? 'reveal' : 'navigate'),
     )
     this.render()
     try {

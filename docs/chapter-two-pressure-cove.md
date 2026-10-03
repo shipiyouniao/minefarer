@@ -1,45 +1,45 @@
 # Chapter Two, stage two: Pressure Cove
 
-Pressure Cove replaces the former ferry-between-stops design with three authored water minefields. Old Ferry remains the physical campaign entry. Players identify safe water, choose a route through currents and secure island moorings before docking at the exit.
+Pressure Cove is a route-planning crossing. The boat leaves a berth, follows the public current arrows through a complete reach, and stops at the next berth. There is no manual anchor toggle, one-cell drift action or required mooring checklist.
 
-## Sailing and deduction
+## Reading and sailing
 
-- **Board at a dock.** The boat has its own position; the character cannot walk over water without it.
-- **Lower the anchor to sound nearby water.** The eight surrounding cells are within reach. Their clues count neighboring mines exactly as in ordinary Minesweeper. Sounding a cell does not move the boat, collect a chest or count as travel. A mistaken sounding resolves normal expedition mine damage.
-- **Raise the anchor to sail.** Click discovered safe water to follow a real navigable route. Currents allow downstream movement and sideways paddling, so islands and changes in current matter. Direct upstream movement is blocked. The drift button advances one already discovered downstream cell; it provides no new information.
-- **Secure a mooring.** Stop beside it, lower the anchor and click its illustrated bollard. Each secured mooring adds a return point along the rope already paid out behind the boat.
-- **Haul back when a branch is unsuitable.** Follow the recorded rope to the previous return point. Repeated hauling can return through earlier points to the departure dock. This preserves discoveries and flags without revealing new tiles or granting repeat travel rewards.
+1. Board at the departure pier. The boat and passenger remain one moving unit.
+2. Select a direction in the bottom dock. Preview the entire route and its destination. Solid segments are revealed water; dashed segments are unknown. Flags block departure regardless of whether the player's hypothesis is correct. Preview never inspects hidden mines.
+3. Use the ordinary numbers, flags, quick-open and profession tools to check the route. From a berth, soundings reach its outgoing channels and their immediate banks. They reveal information without moving the boat or collecting distant treasure.
+4. Once every route cell is revealed and unflagged, launch. The boat follows all turns and cannot stop between berths. Ordinary walking cannot bypass this rule, even over fully revealed water.
+5. Choose another branch or return along the last sailed reach. Backtracking preserves discoveries and never grants duplicate treasure or travel credit. Reach the exit pier to finish; optional berths and chests need not all be visited.
 
-Mines and numbers stay fixed during this mechanic. Tidal rearrangement belongs to Reed Channels and its separate Recollection family. Profession tools remain available, while movement skills cannot abandon the hull in the middle of the river.
+Mines and numbers stay fixed. The continuous trip changes where the next decision can be made; it does not shuffle the board as Reed Channels does.
 
-## Authored crossings
+## Three authored charts
 
-| Crossing                  | Board   | Mines | Moorings | Focus                                                 |
-| ------------------------- | ------- | ----- | -------- | ----------------------------------------------------- |
-| Water beneath the path    | 15 × 15 | 26    | 1        | Sounding and the first current circuit                |
-| Around the divided island | 17 × 17 | 38    | 2        | Choosing branches and returning to a mooring          |
-| Leave a return line       | 19 × 19 | 51    | 3        | Connecting several routes without losing the way back |
+| Crossing            | Board   | Mines | Berths | Route decisions                                                                                                  |
+| ------------------- | ------- | ----: | -----: | ---------------------------------------------------------------------------------------------------------------- |
+| Beyond the shortcut | 15 × 15 |    26 |      9 | Identify blocked direct reaches, follow a bend and choose whether to visit the lower treasure branch.            |
+| Choose a branch     | 17 × 17 |    38 |     12 | Cross between channels after a blocked shortcut; choose the shorter exit branch or an optional treasure circuit. |
+| Connected bends     | 19 × 19 |    51 |     16 | Combine several reaches, compare two exit routes and use safe returns for optional side branches.                |
 
-Every crossing has three optional chests. They must be physically reached. The exit opens after all moorings are secured; merely discovering its tile does not finish the floor. The authored charts have accepted-action walkthroughs using public clues, including raising/lowering the anchor and actual navigation. These walkthroughs demonstrate completion, not a measured playtime or a guarantee that the stage cannot be simplified by a skilled player.
+Each chart has three optional chests. The second and third charts rotate their geography, including clues and current arrows, so departure and exit are not always at the same corner. Islands separate reaches. The shared builder receives authored network edges, fixed seeds and mine budgets; these campaign charts remain deterministic.
 
-## Presentation
+## Interface
 
-The generated wooden skiff sits below the existing profession sprite in one moving layer. Boarding, sailing along intermediate cells, hauling, dropping the anchor and securing a mooring have dedicated performances. Reduced motion commits the same actions immediately. The generated pier and existing anchor image replace text symbols both on the board and on the large bottom-dock controls.
+The board labels berths with letters, draws the selected whole route and highlights its destination. Selecting a route is presentation only; the separate departure button commits it, including on touch devices. An uncleared route keeps that button disabled and explains the remaining unknown water or flags. Green covered water is within sounding reach, pale water is revealed, and gray hatched covered water is out of reach. A board legend explains that green indicates reach, not safety; the fills and accessible labels follow the same geometry as legal reveals.
 
-The first crossing attaches a boarding card to the scene, then moves contextual guidance into the bottom dock once aboard. The existing help dialog has four short illustrated steps. All instructions, accessible labels and current directions are translated into English, Chinese and Japanese. See [the sprites and exact prompts](river-artwork.md).
+The existing boat and pier art are retained. Boat and passenger animate through every intermediate square, and input remains locked during the committed voyage. Reduced motion uses the same accepted action immediately. The first boarding hint remains attached to the boat, then teaches surveyable cells after boarding. It can be dismissed, and accepted surveys end the introduction across reloads. Out-of-range and flagged clicks receive specific feedback. The illustrated guide and all three language catalogs describe the rules.
 
-![River navigation on desktop](images/river-navigation-desktop.png)
+![Whole-route preview on desktop](images/river-routes-desktop.png)
 
-[Mobile view](images/river-navigation-mobile.png).
+[Touch preview](images/river-routes-mobile.png).
 
-## Recollection
+## Recollection and saves
 
-Clearing **Reed Channels** unlocks **Tidal sluices**; clearing **Pressure Cove** unlocks **River navigation**. Unlocks belong to the shared camp and are checked at departure. Neither family uses campaign rows or a fixed campaign seed.
+Clearing Pressure Cove still unlocks River navigation. Recollection builds a fresh directed berth network with a safe spanning tree and hazardous alternative reaches, seed-dependent mines, different endpoints and three reachable chests. It does not reuse campaign charts. The chosen difficulty's exact mine budget is retained.
 
-River generation varies terrain, mines, currents, endpoints, mooring count and locations. It retains the selected difficulty's exact mine budget and three treasures. Safe cells outside the directed sailing component become banks; every objective is reachable. The tidal family generates its own power graph and variable moving strips, with connectivity preserved through switch changes. See [generation invariants and audit instructions](recollection-randomness.md).
+`pressure-cove-v4` replaces v1–v3. Expedition rules revision **16** retires prior active journals at the persistence boundary, banking their valid extraction checkpoint once. This also covers a campaign journal whose content ID is unchanged but whose shared rules revision is old. Camp ownership, currency, completed stages and already granted rewards remain intact; no old anchor engine is retained.
 
-## Persistence and validation
+## Validation and playtest status
 
-`pressure-cove-v3` retires unfinished v1/v2 campaign attempts instead of replaying obsolete rules. Permanent chapter completion, equipment, supplies and previously settled rewards remain. No old ferry engine is retained.
+Automated checks cover public-clue completion of all three charts, real turns and multi-cell voyages, inability to walk through channels, preview privacy, optional treasure settlement, backtracking, per-action replay, old-journal retirement and generated network connectivity. Browser checks cover preview-before-departure, unknown-route gating, the single animated passenger, input locking, returns, narrow viewports and three languages.
 
-Regression coverage includes public-clue campaign completion, per-action save replay, chapter-gated Recollection choices, generated exploration completion and boss entry without leftover river/tide state. Separate browser checks exercise boarding, illustrated help, navigation, anchoring, moorings and stacking at 320, 390, 1440 and 3840 pixels, including all three translations and reduced motion.
+These checks establish rule correctness and completion paths. Human acceptance of the redesigned gameplay is still pending.

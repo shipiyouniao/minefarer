@@ -1,24 +1,60 @@
 import { message } from '../i18n.js'
 import { icon } from '../icons.js'
-import { aboardRiverBoat, downstreamCell, riverMooringReady } from '../game/pressure.js'
+import { aboardRiverBoat, riverRoutes, riverSoundingCells } from '../game/pressure.js'
 import { pressureFloorName } from './pressure-copy.js'
 import { sharedStyles } from './shared-styles.js'
 import { spriteImage } from './dungeon-sprites.js'
 import { mountAnchoredLesson } from './anchored-lesson.js'
-import type { Expedition } from '../types/variants.js'
+import type { Expedition, ExpeditionAction } from '../types/variants.js'
 import type { Language } from '../types/localization.js'
+
+/** Reserve the actual wrapped control height, and restore shared layout on mode disposal. */
+export function mountRiverDock(root: HTMLElement): (() => void) | null {
+  const dock = root.querySelector<HTMLElement>('.action-dock:has(.river-controls)')
+  const app = root.closest<HTMLElement>('#app')
+  if (!dock || !app) return null
+  const previous = app.style.getPropertyValue('--dock-space')
+  /** Font loading, translation and resizing can all change the fixed dock's height. */
+  const measure = (): void => {
+    app.style.setProperty('--dock-space', `${Math.ceil(dock.getBoundingClientRect().height)}px`)
+  }
+  measure()
+  const observer = new ResizeObserver(measure)
+  observer.observe(dock)
+  return () => {
+    observer.disconnect()
+    if (previous) app.style.setProperty('--dock-space', previous)
+    else app.style.removeProperty('--dock-space')
+  }
+}
 
 /** One contextual instruction follows the real boat state, without duplicating quest prose. */
 export function pressureHint(language: Language, run: Expedition): string {
   const river = run.pressure
   if (!river) return ''
-  if (river.moorings.every((entry) => entry.secured)) return message(language, 'pressure.exit')
   if (!aboardRiverBoat(run)) return message(language, 'pressure.board')
-  if (!river.anchored) return message(language, 'pressure.sailing')
-  if (river.moorings.some((entry) => riverMooringReady(run, entry.index)))
-    return message(language, 'pressure.secure-hint')
-
   return message(language, 'pressure.sounding')
+}
+
+/** Explain a rejected click from public reach and marks, never from covered mine values. */
+export function riverRejectionHint(
+  language: Language,
+  run: Expedition,
+  action: ExpeditionAction,
+): string {
+  if (action.type === 'reveal' && run.pressure?.water.includes(action.index)) {
+    if (!aboardRiverBoat(run)) return message(language, 'pressure.board-first')
+    if (!riverSoundingCells(run).has(action.index))
+      return message(language, 'pressure.out-of-range')
+    if (run.game.cells[action.index]?.visibility === 'flagged')
+      return message(language, 'pressure.flagged')
+  }
+  return message(language, 'pressure.blocked')
+}
+
+/** Reuse the board's actual fills in the legend and illustrated guide. */
+function riverSurveyLegend(language: Language): string {
+  return `<div class="river-survey-legend"><span><i class="river-swatch available" aria-hidden="true"></i>${message(language, 'pressure.surveyable')}</span><span><i class="river-swatch revealed" aria-hidden="true"></i>${message(language, 'pressure.surveyed')}</span><span><i class="river-swatch distant" aria-hidden="true"></i>${message(language, 'pressure.distant')}</span></div>`
 }
 
 /** Keep stage identity and progress by the board; sailing controls use the shared bottom dock. */
@@ -26,7 +62,7 @@ export function pressureObjective(language: Language, run: Expedition): string {
   const river = run.pressure
   if (!river) return ''
 
-  return `<section class="pressure-objective"><strong>${run.departure.recollection ? message(language, 'recollection.river') : pressureFloorName(language, run.floor)}</strong><span>${message(language, 'pressure.progress', { count: river.moorings.filter((entry) => entry.secured).length, total: river.moorings.length })}</span><button class="secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'pressure.help')}</button></section>`
+  return `<section class="pressure-objective"><strong>${run.departure.recollection ? message(language, 'recollection.river') : pressureFloorName(language, run.floor)}</strong><span>${message(language, 'pressure.objective')}</span><button class="secondary-button ${sharedStyles['secondary-button']}" data-control="help" aria-haspopup="dialog">${icon('help')}${message(language, 'pressure.help')}</button></section>`
 }
 
 /** Large labeled image buttons remain accessible by mouse, keyboard and touch. */
@@ -34,16 +70,8 @@ export function riverControls(language: Language, run: Expedition): string {
   const river = run.pressure
   if (!river) return ''
   const aboard = aboardRiverBoat(run)
-  const target = downstreamCell(run, run.player)
-  const canDrift =
-    aboard &&
-    !river.anchored &&
-    target !== null &&
-    river.water.includes(target) &&
-    run.game.cells[target]?.visibility === 'revealed' &&
-    !run.game.cells[target]?.mine
-
-  return `<div class="river-controls"><p class="pressure-hint" role="status">${pressureHint(language, run)}</p><button class="river-control" data-control="moor" aria-pressed="${river.anchored}" ${aboard ? '' : 'disabled'}>${spriteImage('tide-anchor')}<span>${river.anchored ? message(language, 'pressure.raise') : message(language, 'pressure.lower')}</span></button><button class="river-control" data-control="end-turn" ${canDrift ? '' : 'disabled'}>${spriteImage('river-boat')}<span>${message(language, 'pressure.wait')}</span></button><button class="river-control" data-control="haul" ${aboard && river.line.length > 1 ? '' : 'disabled'}>${spriteImage('river-dock')}<span>${message(language, 'pressure.haul')}</span></button></div>`
+  const routes = riverRoutes(run)
+  return `<div class="river-controls"><p class="pressure-hint" role="status">${pressureHint(language, run)}</p><div class="river-route-options">${routes.map((route) => `<button class="river-control" data-control="river-plan:${route.launch}" aria-pressed="false">${route.launch < run.player - 1 ? '↑' : route.launch > run.player + 1 ? '↓' : route.launch < run.player ? '←' : '→'} <span>${message(language, 'pressure.berth', { id: String.fromCharCode(65 + river.docks.indexOf(route.destination)) })}</span></button>`).join('')}</div><div class="river-departure"><button class="river-control" data-control="sail" disabled>${spriteImage('river-boat')}<span>${message(language, 'pressure.depart')}</span></button><button class="river-control" data-control="haul" ${aboard && river.line.length > 1 ? '' : 'disabled'}>${spriteImage('river-dock')}<span>${message(language, 'pressure.haul')}</span></button></div></div>`
 }
 
 /** Teach actual boat actions with the same sprites used on the board. */
@@ -51,17 +79,17 @@ export function pressureGuide(language: Language): string {
   const headings = [
     message(language, 'pressure.guide-board'),
     message(language, 'pressure.guide-sail'),
-    message(language, 'pressure.guide-moor'),
+    message(language, 'pressure.guide-stop'),
     message(language, 'pressure.haul'),
   ]
   const notes = [
     message(language, 'pressure.board'),
-    message(language, 'pressure.ride'),
+    message(language, 'pressure.survey-guide') + ' ' + message(language, 'pressure.ride'),
     message(language, 'pressure.land'),
     message(language, 'pressure.haul-hint'),
   ]
 
-  return `<div class="pressure-help">${headings.map((heading, step) => `<section><div class="pressure-help-picture" aria-hidden="true">${crossingDiagram(step)}</div><div><h3>${step + 1}. ${heading}</h3><p>${notes[step]}</p></div></section>`).join('')}</div>`
+  return `<div class="pressure-help">${headings.map((heading, step) => `<section><div class="pressure-help-picture" aria-hidden="true">${crossingDiagram(step)}</div><div><h3>${step + 1}. ${heading}</h3>${step === 1 ? riverSurveyLegend(language) : ''}<p>${notes[step]}</p></div></section>`).join('')}</div>`
 }
 
 /** Currents are public geometry; covered numbers and flags remain owned by BoardView. */
@@ -70,20 +98,49 @@ export function renderPressure(root: HTMLElement, run: Expedition, language: Lan
   if (!river) return
   const board = root.querySelector<HTMLElement>('[data-side="a"]')
   board?.classList.add('river-board')
+  const sounding = riverSoundingCells(run)
+  const aboard = aboardRiverBoat(run)
+  root.querySelector('.river-survey-key')?.remove()
+  board
+    ?.closest('.board-viewport')
+    ?.insertAdjacentHTML(
+      'beforebegin',
+      `<div class="river-survey-key">${riverSurveyLegend(language)}<small>${aboard ? message(language, 'pressure.survey-note') : message(language, 'pressure.board-first')}</small></div>`,
+    )
 
   for (const index of river.water) {
     const cell = root.querySelector<HTMLElement>(`[data-side="a"] [data-cell="${index}"]`)
     if (!cell) continue
     cell.classList.add('pressure-water')
-    cell.dataset['flow'] = river.currents[index]!
-    cell.insertAdjacentHTML('beforeend', '<span class="river-current" aria-hidden="true"></span>')
+    const hidden = run.game.cells[index]?.visibility === 'hidden'
+    const available = hidden && run.phase === 'exploring' && sounding.has(index)
+    cell.classList.toggle('river-surveyable', available)
+    cell.classList.toggle('river-out-of-range', hidden && !available)
+    if (river.currents[index]) {
+      cell.classList.add('river-channel')
+      cell.dataset['flow'] = river.currents[index]!
+      cell.insertAdjacentHTML('beforeend', '<span class="river-current" aria-hidden="true"></span>')
+    }
     cell.setAttribute(
       'aria-label',
-      `${cell.getAttribute('aria-label')}, ${message(language, 'pressure.water')}, ${river.currents[index] === 'north' ? message(language, 'pressure.north') : river.currents[index] === 'south' ? message(language, 'pressure.south') : river.currents[index] === 'east' ? message(language, 'pressure.east') : message(language, 'pressure.west')}`,
+      `${cell.getAttribute('aria-label')}, ${message(language, 'pressure.water')}, ${!river.currents[index] ? '' : river.currents[index] === 'north' ? message(language, 'pressure.north') : river.currents[index] === 'south' ? message(language, 'pressure.south') : river.currents[index] === 'east' ? message(language, 'pressure.east') : message(language, 'pressure.west')}`,
     )
+    if (hidden)
+      cell.setAttribute(
+        'aria-label',
+        `${cell.getAttribute('aria-label')}, ${available ? message(language, 'pressure.surveyable') : message(language, 'pressure.distant')}`,
+      )
     if (river.docks.includes(index)) {
       cell.classList.add('river-landing')
       cell.insertAdjacentHTML('afterbegin', spriteImage('river-dock', 'river-dock-sprite'))
+      cell.insertAdjacentHTML(
+        'beforeend',
+        `<span class="river-berth-label">${String.fromCharCode(65 + river.docks.indexOf(index))}</span>`,
+      )
+      cell.setAttribute(
+        'aria-label',
+        `${cell.getAttribute('aria-label')}, ${message(language, 'pressure.berth', { id: String.fromCharCode(65 + river.docks.indexOf(index)) })}`,
+      )
     }
     if (index === river.boat && !aboardRiverBoat(run)) {
       cell.classList.add('river-boat-cell')
@@ -101,39 +158,13 @@ export function renderPressure(root: HTMLElement, run: Expedition, language: Lan
       `<svg class="river-rope" viewBox="0 0 ${width} ${run.game.config.height}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"/></svg>`,
     )
   }
-  for (const mooring of river.moorings) {
-    const cell = root.querySelector<HTMLElement>(`[data-side="a"] [data-cell="${mooring.index}"]`)
-    if (!cell) continue
-    cell.classList.remove('wall-cell')
-    cell.classList.add('river-mooring')
-    cell.classList.toggle('river-secured', mooring.secured)
-    cell.setAttribute(
-      'aria-disabled',
-      String(mooring.secured && !river.water.includes(mooring.index)),
-    )
-    cell.setAttribute(
-      'aria-label',
-      mooring.secured
-        ? message(language, 'pressure.secured')
-        : message(language, 'pressure.secure-hint'),
-    )
-    cell.innerHTML =
-      spriteImage('river-dock') +
-      spriteImage('tide-anchor', 'river-mooring-anchor') +
-      (run.game.cells[mooring.index]?.visibility === 'revealed'
-        ? `<span class="landmark-clue">${run.game.cells[mooring.index]?.adjacent || ''}</span>`
-        : '')
-  }
 }
 
 /** Put the hull under the single existing character within one moving stacking context. */
 export function renderRiverPassenger(player: HTMLElement, run: Expedition): void {
   if (!aboardRiverBoat(run)) return
   player.classList.add('river-passenger')
-  player.classList.toggle('river-anchored', run.pressure!.anchored)
   player.insertAdjacentHTML('afterbegin', spriteImage('river-boat', 'river-hull'))
-  if (run.pressure!.anchored)
-    player.insertAdjacentHTML('beforeend', spriteImage('tide-anchor', 'river-dropped-anchor'))
 }
 
 /** Anchor the first crossing's live hints to the scene, outside tile stacking contexts. */
@@ -141,20 +172,21 @@ export function mountRiverLesson(
   root: HTMLElement,
   run: Expedition,
   language: Language,
+  dismiss: () => void,
 ): (() => void) | null {
   const river = run.pressure
-  if (
-    !river ||
-    run.floor !== 1 ||
-    aboardRiverBoat(run) ||
-    run.phase !== 'exploring' ||
-    river.moorings.some((entry) => entry.secured)
-  )
-    return null
+  if (!river || run.floor !== 1 || run.phase !== 'exploring' || river.line.length > 1) return null
   const panel = document.createElement('section')
   panel.className = 'campaign-lesson river-lesson'
   panel.setAttribute('aria-live', 'polite')
-  panel.innerHTML = `<strong>${message(language, 'pressure.help')}</strong><p>${pressureHint(language, run)}</p>`
+  const aboard = aboardRiverBoat(run)
+  panel.dataset['riverLesson'] = aboard ? 'survey' : 'board'
+  panel.innerHTML = `<strong>${aboard ? message(language, 'pressure.survey-title') : message(language, 'pressure.help')}</strong><p>${aboard ? message(language, 'pressure.survey-lesson') : pressureHint(language, run)}</p>`
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.textContent = message(language, 'campaign.lesson-skip')
+  button.addEventListener('click', dismiss)
+  panel.append(button)
 
   return mountAnchoredLesson(root, panel, `[data-side="a"] [data-cell="${river.boat}"]`)
 }
@@ -204,7 +236,7 @@ export async function animatePressure(
     const path = both
       ? after.pressure.voyage
       : aboardRiverBoat(before)
-        ? [...after.pressure.voyage, after.player]
+        ? [before.player, after.player]
         : [before.player, after.player]
     const target =
       !aboardRiverBoat(before) && aboardRiverBoat(after)
@@ -212,44 +244,6 @@ export async function animatePressure(
         : player
     const animation = animateRiverRoute(root, target, path)
     if (animation) animations.push(animation)
-    if (aboardRiverBoat(before) && !aboardRiverBoat(after)) {
-      const hull = root.querySelector<HTMLElement>('.river-empty-boat')
-      const sailed = animateRiverRoute(root, hull, after.pressure.voyage)
-      if (sailed) animations.push(sailed)
-    }
-  }
-  if (before.pressure.anchored !== after.pressure.anchored) {
-    const anchor =
-      root.querySelector<HTMLElement>('.river-dropped-anchor') ??
-      root.querySelector<HTMLElement>('[data-control="moor"] img')
-    if (anchor) {
-      const animation = anchor.animate(
-        [
-          { transform: 'translateY(-18px) scale(.6)', opacity: 0 },
-          { transform: 'translateY(0) scale(1)', opacity: 1 },
-        ],
-        { duration: 420, easing: 'ease-out' },
-      )
-      animation.id = 'river-anchor'
-      animations.push(animation)
-    }
-  }
-  const secured = after.pressure.moorings.find(
-    (entry) =>
-      entry.secured && !before.pressure!.moorings.find((old) => old.index === entry.index)?.secured,
-  )
-  if (secured) {
-    const target = root.querySelector<HTMLElement>(
-      `[data-cell="${secured.index}"] .river-mooring-anchor`,
-    )
-    if (target) {
-      const animation = target.animate(
-        [{ transform: 'scale(1)' }, { transform: 'scale(1.45)' }, { transform: 'scale(1)' }],
-        { duration: 500 },
-      )
-      animation.id = 'river-secure'
-      animations.push(animation)
-    }
   }
 
   await Promise.allSettled(animations.map((animation) => animation.finished))
@@ -260,7 +254,65 @@ export function raftImage(): string {
   return spriteImage('river-boat')
 }
 
-/** Small diagrams distinguish surveying, following a current, mooring and retracing a rope. */
+/** Small diagrams distinguish soundings, whole voyages, berths and a safe return. */
 function crossingDiagram(step: number): string {
-  return `<div class="river-diagram river-diagram-${step}"><span class="river-diagram-number">1</span><span class="river-diagram-flag">${icon('flag')}</span><span class="river-diagram-route">${icon('arrow')}</span><span class="river-diagram-boat">${spriteImage('river-boat')}${spriteImage('player', 'river-diagram-player')}</span><span class="river-diagram-device">${spriteImage(step === 2 || step === 3 ? 'river-dock' : 'tide-anchor')}</span></div>`
+  const cells = Array.from(
+    { length: 20 },
+    (_, index) =>
+      `<rect x="${(index % 5) * 28 + 3}" y="${Math.floor(index / 5) * 26 + 3}" width="25" height="23" rx="3" fill="${index > 14 || index % 5 === 4 ? '#b9d6ce' : '#e2eee3'}"/>`,
+  ).join('')
+  const returning = step === 3
+  return `<div class="river-diagram river-diagram-${step}"><svg viewBox="0 0 145 108" aria-hidden="true">${cells}<path d="M 15 93 H 127 V 15" fill="none" stroke="${returning ? '#9d794b' : '#4f8c7b'}" stroke-width="3" ${step < 2 ? 'stroke-dasharray="5 5"' : ''}/><path d="${returning ? 'M 45 88 L 39 93 L 45 98' : 'M 122 51 L 127 45 L 132 51'}" fill="none" stroke="#376455" stroke-width="3"/><text x="10" y="73" fill="#315b4b" font-size="12">A</text><text x="116" y="14" fill="#315b4b" font-size="12">B</text><text x="39" y="70" fill="#3269a8" font-size="14">1</text><text x="68" y="70" fill="#9b7748" font-size="14">⚑</text></svg><span class="river-diagram-boat" style="left:${step === 2 ? '65%' : '0%'};top:${step === 2 ? '0%' : '57%'}">${spriteImage('river-boat')}${spriteImage('player', 'river-diagram-player')}</span></div>`
+}
+
+/** Paint a selected whole voyage using visible evidence only; mobile selection never launches. */
+export function renderRiverPlan(
+  root: HTMLElement,
+  run: Expedition,
+  language: Language,
+  launch: number | null,
+): void {
+  const river = run.pressure
+  if (!river) return
+  const route = riverRoutes(run).find((entry) => entry.launch === launch)
+  for (const button of root.querySelectorAll<HTMLElement>('[data-control^="river-plan:"]'))
+    button.setAttribute(
+      'aria-pressed',
+      String(button.dataset['control'] === `river-plan:${launch}`),
+    )
+  const sail = root.querySelector<HTMLButtonElement>('[data-control="sail"]')
+  if (sail) sail.disabled = !route || route.unknown.length > 0 || route.blocked.length > 0
+  const hint = root.querySelector('.pressure-hint')
+  if (hint && route)
+    hint.textContent = route.blocked.length
+      ? message(language, 'pressure.route-blocked')
+      : route.unknown.length
+        ? message(language, 'pressure.route-unknown', { count: route.unknown.length })
+        : message(language, 'pressure.route-ready', {
+            id: String.fromCharCode(65 + river.docks.indexOf(route.destination)),
+            count: route.path.length - 1,
+          })
+  for (const cell of root.querySelectorAll<HTMLElement>('[data-side="a"] [data-cell]')) {
+    const index = Number(cell.dataset['cell'])
+    cell.classList.toggle('river-planned', !!route?.path.includes(index))
+    cell.classList.toggle('river-plan-unknown', !!route?.unknown.includes(index))
+    cell.classList.toggle('river-plan-blocked', !!route?.blocked.includes(index))
+    cell.classList.toggle('river-plan-stop', route?.destination === index)
+  }
+  root.querySelector('.river-planned-line')?.remove()
+  const board = root.querySelector('[data-side="a"]')
+  if (!route || !board) return
+  const width = run.game.config.width
+  const segments = route.path
+    .slice(1)
+    .map((index, i) => {
+      const previous = route.path[i]!
+      const uncertain = route.unknown.includes(index) || route.unknown.includes(previous)
+      return `<line x1="${(previous % width) + 0.5}" y1="${Math.floor(previous / width) + 0.5}" x2="${(index % width) + 0.5}" y2="${Math.floor(index / width) + 0.5}" ${uncertain ? 'class="is-unknown"' : ''}/>`
+    })
+    .join('')
+  board.insertAdjacentHTML(
+    'beforeend',
+    `<svg class="river-planned-line" viewBox="0 0 ${width} ${run.game.config.height}" preserveAspectRatio="none" aria-hidden="true">${segments}</svg>`,
+  )
 }

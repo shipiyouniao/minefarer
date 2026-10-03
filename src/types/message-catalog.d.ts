@@ -7,8 +7,13 @@ export interface MessageCatalog {
   readonly 'recollection.tidal-locked': string
   readonly 'recollection.river-locked': string
 
+  readonly 'pressure.guide-stop': string
+  readonly 'pressure.berth': string
+  readonly 'pressure.depart': string
+  readonly 'pressure.route-blocked': string
+  readonly 'pressure.route-unknown': string
+  readonly 'pressure.route-ready': string
   readonly 'pressure.help': string
-  readonly 'pressure.wait': string
   readonly 'pressure.raft': string
   readonly 'pressure.water': string
   readonly 'pressure.board': string
@@ -30,23 +35,25 @@ export interface MessageCatalog {
   readonly 'pressure.end-2': string
   readonly 'pressure.title': string
   readonly 'pressure.task': string
-  readonly 'pressure.progress': string
-  readonly 'pressure.raise': string
-  readonly 'pressure.lower': string
   readonly 'pressure.haul': string
   readonly 'pressure.haul-hint': string
-  readonly 'pressure.sailing': string
   readonly 'pressure.sounding': string
-  readonly 'pressure.secure-hint': string
-  readonly 'pressure.secured': string
-  readonly 'pressure.exit': string
+  readonly 'pressure.surveyable': string
+  readonly 'pressure.surveyed': string
+  readonly 'pressure.distant': string
+  readonly 'pressure.survey-note': string
+  readonly 'pressure.survey-title': string
+  readonly 'pressure.survey-lesson': string
+  readonly 'pressure.survey-guide': string
+  readonly 'pressure.board-first': string
+  readonly 'pressure.out-of-range': string
+  readonly 'pressure.flagged': string
   readonly 'pressure.north': string
   readonly 'pressure.east': string
   readonly 'pressure.south': string
   readonly 'pressure.west': string
   readonly 'pressure.guide-board': string
   readonly 'pressure.guide-sail': string
-  readonly 'pressure.guide-moor': string
   readonly 'pressure.blocked': string
 
   readonly 'atlas.travel': string

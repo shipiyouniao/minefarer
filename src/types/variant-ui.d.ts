@@ -28,7 +28,7 @@ export type VariantCommand =
         | 'skill'
         | 'attack'
         | 'brace'
-        | 'moor'
+        | 'sail'
         | 'haul'
         | 'end-turn'
         | 'shift'
@@ -51,7 +51,12 @@ export type VariantCommand =
   | { readonly type: 'difficulty'; readonly value: VariantDifficulty }
   | {
       readonly type:
-        'skill-target' | 'rail-control' | 'matrix-pick' | 'mark-crystal' | 'attune-cell'
+        | 'river-plan'
+        | 'skill-target'
+        | 'rail-control'
+        | 'matrix-pick'
+        | 'mark-crystal'
+        | 'attune-cell'
       readonly value: number
     }
   | { readonly type: 'profession'; readonly value: Profession }

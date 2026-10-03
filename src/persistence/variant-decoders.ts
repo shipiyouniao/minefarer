@@ -276,7 +276,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   const campaign = originalCampaign === 'tower-road-v3' ? 'tower-road-v4' : originalCampaign
   if (
     reader.value('campaign') !== undefined &&
-    campaign !== 'pressure-cove-v3' &&
+    campaign !== 'pressure-cove-v4' &&
     campaign !== 'reed-channels-v3' &&
     campaign !== 'tower-road-v4' &&
     campaign !== 'tower-relay-v1' &&
@@ -364,7 +364,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   }
 
   return {
-    ...(campaign === 'pressure-cove-v3' ||
+    ...(campaign === 'pressure-cove-v4' ||
     campaign === 'reed-channels-v3' ||
     campaign === 'tower-road-v4' ||
     campaign === 'tower-relay-v1' ||
@@ -398,6 +398,7 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
   const type = reader.string('type')
 
   switch (type) {
+    case 'sail':
     case 'anchor':
     case 'attune':
     case 'mark-crystal':
@@ -424,7 +425,6 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
       return integer(index, config.width * config.height - 1) ? { type, index } : null
     }
     case 'haul':
-    case 'moor':
     case 'descend':
     case 'attack':
     case 'brace':
