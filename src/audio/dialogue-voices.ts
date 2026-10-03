@@ -93,6 +93,8 @@ export function playerDialogueCue(profession: Profession): DialogueCue {
 /** Each boss family has its own audible silhouette instead of sharing one low beep. */
 export function bossDialogueCue(kind: EncounterKind): DialogueCue {
   switch (kind) {
+    case 'keelcrab':
+      return 'dialogue-boss'
     case 'bastion':
       return 'dialogue-boss'
     case 'brood':

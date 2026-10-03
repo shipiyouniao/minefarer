@@ -8,6 +8,11 @@ export function loadoutCopy(
   item: Equipment,
 ): { lore: string; effects: readonly string[] } {
   switch (item) {
+    case 'pilot-bell':
+      return {
+        lore: message(language, 'pilot-bell.lore'),
+        effects: message(language, 'pilot-bell.effects').split('|'),
+      }
     case 'probe':
       return {
         lore: message(language, 'loadout.lore.probe'),

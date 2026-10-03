@@ -254,6 +254,11 @@ export function upgradeCopy(language: Language, upgrade: Upgrade): VariantDescri
 /** Describe equipment costs and starting bonuses. */
 export function equipmentCopy(language: Language, equipment: Equipment): VariantDescription {
   switch (equipment) {
+    case 'pilot-bell':
+      return {
+        name: message(language, 'pilot-bell.name'),
+        note: message(language, 'pilot-bell.note'),
+      }
     case 'sonar':
       return {
         name: message(language, 'sonar-equipment.name'),

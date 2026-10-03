@@ -43,7 +43,9 @@ export function riverRoutes(run: Expedition): RiverRoute[] {
           unknown: path.filter((cell) => run.game.cells[cell]?.visibility === 'hidden'),
           blocked: path.filter(
             (cell) =>
-              run.game.cells[cell]?.visibility === 'flagged' ||
+              (run.game.cells[cell]?.visibility === 'flagged' &&
+                (run.encounter?.kind !== 'keelcrab' ||
+                  path.filter((i) => run.game.cells[i]?.visibility === 'flagged').length > 1)) ||
               (run.game.cells[cell]?.visibility === 'revealed' && run.game.cells[cell]?.mine),
           ),
         })

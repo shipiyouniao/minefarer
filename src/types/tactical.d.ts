@@ -1,4 +1,5 @@
 import type { MatrixEncounter } from './matrix.js'
+import type { KeelcrabEncounter } from './keelcrab.js'
 import type { TideEncounter } from './tide.js'
 import type { EchoEncounter } from './echo.js'
 import type { Expedition, ExpeditionAction, Relic } from './variants.js'
@@ -10,7 +11,7 @@ import type { MagneticEncounter } from './magnetic.js'
 
 /** Released encounter families have independent rules and artwork. */
 export type EncounterKind =
-  'bastion' | 'brood' | 'mirror' | 'magnetic' | 'clock' | 'echo' | 'matrix' | 'tide'
+  'bastion' | 'brood' | 'mirror' | 'magnetic' | 'clock' | 'echo' | 'matrix' | 'tide' | 'keelcrab'
 
 /** A public control protects one armor section until its surrounding flags are calibrated. */
 export interface ShieldPylon {
@@ -108,6 +109,7 @@ export interface BroodEncounter extends TacticalState {
 
 /** A finite encounter union keeps each boss's state and rules explicit. */
 export type TacticalEncounter =
+  | KeelcrabEncounter
   | TideEncounter
   | MatrixEncounter
   | EchoEncounter

@@ -1,4 +1,5 @@
 import { attuneMatrix, noteMatrix, advanceMatrix, strikeMatrix } from './matrix-battle.js'
+import { actKeelcrab } from './keelcrab-battle.js'
 import { anchorTide, advanceTide, strikeTide } from './tide-battle.js'
 import { advanceEcho, openEcho, strikeEcho } from './echo-battle.js'
 import { useExpeditionSonar } from './expedition-sonar.js'
@@ -39,6 +40,8 @@ function correctFlags(run: Expedition, index: number): boolean {
 function interact(run: Expedition, index: number): Expedition {
   const encounter = run.encounter
   if (!encounter) return run
+
+  if (encounter.kind === 'keelcrab') return run
 
   if (encounter.kind === 'tide') return run
 
@@ -110,6 +113,7 @@ function interact(run: Expedition, index: number): Expedition {
 function endTurn(run: Expedition): Expedition {
   const encounter = run.encounter
   if (!encounter) return run
+  if (encounter.kind === 'keelcrab') return run
 
   if (encounter.kind === 'tide') return advanceTide({ ...run, encounter })
 
@@ -170,6 +174,7 @@ export function actBattle(
   action: ExpeditionAction,
   explore: ExploreTransition,
 ): Expedition {
+  if (run.encounter?.kind === 'keelcrab') return actKeelcrab(run, action, explore)
   const encounter = run.encounter
   const plan = tacticalPlan(run, action)
   if (!encounter || !plan.allowed) return run

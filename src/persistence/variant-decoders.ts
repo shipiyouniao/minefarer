@@ -67,7 +67,8 @@ export function parseProfession(value: string | null): Profession | null {
 
 /** Accept only the declared exploration tools and combat equipment. */
 export function parseEquipment(value: string | null): Equipment | null {
-  return value === 'sonar' ||
+  return value === 'pilot-bell' ||
+    value === 'sonar' ||
     value === 'probe' ||
     value === 'scanner' ||
     value === 'guard' ||
@@ -167,7 +168,8 @@ function decodeMilestones(value: JsonValue, completed: number): MilestoneProgres
         value === 'clock' ||
         value === 'echo' ||
         value === 'matrix' ||
-        value === 'tide') &&
+        value === 'tide' ||
+        value === 'keelcrab') &&
       !bossKinds.includes(value)
     )
       bossKinds.push(value)
@@ -189,7 +191,8 @@ function decodeMilestones(value: JsonValue, completed: number): MilestoneProgres
       kind === 'clock' ||
       kind === 'echo' ||
       kind === 'matrix' ||
-      kind === 'tide')
+      kind === 'tide' ||
+      kind === 'keelcrab')
       ? {
           seed,
           floor,
@@ -264,6 +267,9 @@ function decodeCamp(reader: JsonObjectReader | null): Camp | null {
     ...(reader.array('storyProfessions')?.includes('rescuer')
       ? { storyProfessions: ['rescuer'] as const }
       : {}),
+    ...(reader.array('storyEquipment')?.includes('pilot-bell')
+      ? { storyEquipment: ['pilot-bell'] as const }
+      : {}),
     ...(progress === undefined ? {} : { milestones: decodeMilestones(progress, completed) }),
   }
 }
@@ -277,6 +283,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   if (
     reader.value('campaign') !== undefined &&
     campaign !== 'pressure-cove-v4' &&
+    campaign !== 'wreck-harbor-v3' &&
     campaign !== 'reed-channels-v3' &&
     campaign !== 'tower-road-v4' &&
     campaign !== 'tower-relay-v1' &&
@@ -364,7 +371,8 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   }
 
   return {
-    ...(campaign === 'pressure-cove-v4' ||
+    ...(campaign === 'wreck-harbor-v3' ||
+    campaign === 'pressure-cove-v4' ||
     campaign === 'reed-channels-v3' ||
     campaign === 'tower-road-v4' ||
     campaign === 'tower-relay-v1' ||
@@ -398,6 +406,20 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
   const type = reader.string('type')
 
   switch (type) {
+    case 'convoy': {
+      const orders = reader.array('orders')
+      return orders &&
+        orders.length >= 2 &&
+        orders.length <= 4 &&
+        orders.every(
+          (index) => typeof index === 'number' && integer(index, config.width * config.height - 1),
+        )
+        ? { type, orders: orders as number[] }
+        : null
+    }
+    case 'convoy-undo':
+    case 'convoy-reset':
+      return { type }
     case 'sail':
     case 'anchor':
     case 'attune':
@@ -455,13 +477,16 @@ export function decodeJournal(reader: JsonObjectReader | null): ExpeditionJourna
   const actions: ExpeditionAction[] = []
   const ordinary = expeditionConfig(departure, 1)
   const arena = encounterTier(departure.difficulty).config
+  const naval = departure.recollection?.bosses.includes('keelcrab')
+    ? campaignStage('wreck-harbor').bounds
+    : { width: 0, height: 0 }
   // Decode the broad dimension envelope; replay still validates each action against its actual room.
   const bounds = departure.campaign
     ? { ...ordinary, ...campaignStage(departure.campaign).bounds }
     : {
         ...ordinary,
-        width: Math.max(ordinary.width, arena.width),
-        height: Math.max(ordinary.height, arena.height),
+        width: Math.max(ordinary.width, arena.width, naval.width),
+        height: Math.max(ordinary.height, arena.height, naval.height),
       }
 
   for (const value of values) {

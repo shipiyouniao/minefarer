@@ -1,4 +1,5 @@
 import { pendingPressureScene } from '../game/pressure-story.js'
+import { wreckLines } from './wreck-copy.js'
 import { pressureLines } from './pressure-copy.js'
 import { pendingFerryScene } from '../game/ferry-story.js'
 import { ferryLines } from './ferry-copy.js'
@@ -318,6 +319,42 @@ export class StoryApp implements MountedGame {
         },
       )
     const ferryScene = pendingFerryScene(null, this.session.camp.stageProgress('reed-channels'))
+    const pressureProgress = this.session.camp.stageProgress('pressure-cove')
+    if (
+      !pressureScene &&
+      pressureProgress.cleared &&
+      !pressureProgress.scenes.includes('wreck-rumor') &&
+      state.board.scene.id === 'old-ferry' &&
+      !this.root.querySelector('dialog[open]')
+    )
+      this.signal.present(
+        this.root,
+        this.language,
+        'wreck-rumor',
+        wreckLines(this.language, 'wreck-rumor'),
+        state.loadout.profession,
+        () => {
+          this.session.camp.acceptWreckRumor()
+          this.render()
+        },
+      )
+    const wreck = this.session.camp.stageProgress('wreck-harbor')
+    if (
+      wreck.cleared &&
+      !wreck.scenes.includes('wreck-end') &&
+      !this.root.querySelector('dialog[open]')
+    )
+      this.signal.present(
+        this.root,
+        this.language,
+        'wreck-end',
+        wreckLines(this.language, 'wreck-end'),
+        state.loadout.profession,
+        () => {
+          this.session.camp.completeStageScene('wreck-harbor', 'wreck-end')
+          this.render()
+        },
+      )
     if (ferryScene && !this.root.querySelector('dialog[open]'))
       this.signal.present(
         this.root,

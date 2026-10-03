@@ -42,6 +42,7 @@ function equipmentTemplate(
   if (!camp.upgrades.includes('workshop'))
     return `<div class="camp-locked ${campStyles['camp-locked']}">${spriteImage('workshop')}<h2>${upgradeCopy(language, 'workshop').name}</h2><p>${upgradeCopy(language, 'workshop').note}</p></div>`
 
+  if (selected === 'pilot-bell' && !camp.storyEquipment?.includes('pilot-bell')) selected = 'probe'
   const spent = equipment.reduce((total, item) => total + equipmentCost(item), 0)
 
   const copy = loadoutCopy(language, selected)
@@ -52,7 +53,14 @@ function equipmentTemplate(
       ? message(language, 'loadout.full')
       : message(language, 'loadout.blocked')
   return `<div class="loadout-budget" role="meter" aria-label="${campLabel(language, 'loadoutBudget')}" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${spent}"><span>${campLabel(language, 'loadoutBudget')}</span><div class="loadout-slots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < spent ? 'filled' : ''}"></i>`).join('')}</div><strong>${spent}<small> / 3</small></strong></div>
-  <div class="loadout-layout"><div class="loadout-items">${EQUIPMENT.map((item) => `<button class="loadout-tile ${equipment.includes(item) ? 'is-equipped' : ''}" data-control="equipment-item:${item}" aria-pressed="${item === selected}" aria-controls="loadout-detail"><span class="loadout-cost" aria-label="${message(language, 'loadout.cost', { count: equipmentCost(item) })}">${equipmentCost(item)} ◆</span>${spriteImage(combatSprite(item))}<strong>${equipmentCopy(language, item).name}</strong>${equipment.includes(item) ? '<span class="loadout-check" aria-hidden="true">✓</span>' : ''}</button>`).join('')}</div>
+  <div class="loadout-layout"><div class="loadout-items">${EQUIPMENT.filter(
+    (item) => item !== 'pilot-bell' || camp.storyEquipment?.includes('pilot-bell'),
+  )
+    .map(
+      (item) =>
+        `<button class="loadout-tile ${equipment.includes(item) ? 'is-equipped' : ''}" data-control="equipment-item:${item}" aria-pressed="${item === selected}" aria-controls="loadout-detail"><span class="loadout-cost" aria-label="${message(language, 'loadout.cost', { count: equipmentCost(item) })}">${equipmentCost(item)} ◆</span>${spriteImage(combatSprite(item))}<strong>${equipmentCopy(language, item).name}</strong>${equipment.includes(item) ? '<span class="loadout-check" aria-hidden="true">✓</span>' : ''}</button>`,
+    )
+    .join('')}</div>
   <aside class="loadout-detail" id="loadout-detail" aria-labelledby="loadout-title">${spriteImage(combatSprite(selected))}<h2 id="loadout-title">${equipmentCopy(language, selected).name}</h2><p>${copy.lore}</p><ul>${copy.effects.map((effect) => `<li>${escapeHtml(effect)}</li>`).join('')}</ul><button class="primary-button ${sharedStyles['primary-button']}" data-control="equipment:${selected}" ${disabled ? 'disabled aria-describedby="loadout-reason"' : ''}>${equipped ? message(language, 'loadout.unequip') : message(language, 'loadout.equip')}</button>${disabled ? `<p id="loadout-reason" role="status">${reason}</p>` : ''}</aside></div>`
 }
 

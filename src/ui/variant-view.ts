@@ -1,4 +1,5 @@
 import { renderRiverPassenger } from './pressure-view.js'
+import { renderKeelcrab } from './keelcrab-view.js'
 import { renderFloorCircuits } from './floor-circuit-view.js'
 import { animateExitOpening, exitIsOpen } from './exit-performance.js'
 import { animateRescue } from './rescue-performance.js'
@@ -248,6 +249,7 @@ export class VariantView {
     if (expedition) this.markExpedition(expedition)
 
     if (expedition?.encounter) this.markTactical(expedition)
+    if (expedition) renderKeelcrab(this.content, expedition, this.language)
 
     this.magnetic.render(expedition)
     this.matrix.render(expedition)
@@ -447,6 +449,7 @@ export class VariantView {
   previewRoute(index: number | null): void {
     const run = this.expedition
     if (!run || run.phase !== 'boss') return
+    if (run.encounter?.kind === 'keelcrab') return
 
     const plan =
       index !== null && !this.targetingTool
@@ -831,7 +834,7 @@ export class VariantView {
       return
     }
 
-    if (grid && current) {
+    if (grid && current && !run.convoy) {
       current.classList.add('player-cell')
 
       const profession = professionCopy(this.language, run.departure.profession).name

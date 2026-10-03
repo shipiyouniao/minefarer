@@ -69,6 +69,19 @@ export function battleCopy(language: Language, kind: EncounterKind): TacticalMes
       ],
     }
 
+  if (kind === 'keelcrab')
+    return {
+      ...copy,
+      name: message(language, 'keelcrab.name'),
+      hint: message(language, 'keelcrab.choose'),
+      help: [
+        message(language, 'keelcrab.known'),
+        message(language, 'keelcrab.danger'),
+        message(language, 'keelcrab.charge-guide'),
+        message(language, 'keelcrab.rage-guide'),
+      ],
+    }
+
   if (kind === 'matrix')
     return {
       ...copy,
@@ -111,6 +124,10 @@ export function battleCopy(language: Language, kind: EncounterKind): TacticalMes
 
 /** Summarize the actual remaining objectives and core window, rather than a generic boss phase. */
 export function battleStatus(language: Language, encounter: TacticalEncounter): string {
+  if (encounter.kind === 'keelcrab')
+    return encounter.charged
+      ? message(language, 'keelcrab.ready')
+      : message(language, 'keelcrab.empty')
   if (encounter.kind === 'tide')
     return (
       message(language, 'tide.status', {

@@ -6,6 +6,20 @@ import type { EncounterKind } from '../types/tactical.js'
 
 /** Character dialogue hints at counterplay without prescribing a button sequence. */
 export function bossScript(kind: EncounterKind, language: Language): PrologueScript {
+  if (kind === 'keelcrab')
+    return {
+      kind,
+      title: message(language, 'keelcrab.name'),
+      subtitle: message(language, 'keelcrab.title'),
+      sprite: 'keelcrab',
+      prop: 'river-boat',
+      beats: [
+        { speaker: 'scene', focus: 'boss', line: message(language, 'keelcrab.scene') },
+        { speaker: 'player', focus: 'player', line: message(language, 'keelcrab.entry') },
+        { speaker: 'scene', focus: 'field', line: message(language, 'keelcrab.known') },
+        { speaker: 'scene', focus: 'objective', line: message(language, 'keelcrab.charge-guide') },
+      ],
+    }
   if (kind === 'tide')
     return {
       kind,

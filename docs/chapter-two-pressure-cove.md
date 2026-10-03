@@ -42,4 +42,4 @@ Clearing Pressure Cove still unlocks River navigation. Recollection builds a fre
 
 Automated checks cover public-clue completion of all three charts, real turns and multi-cell voyages, inability to walk through channels, preview privacy, optional treasure settlement, backtracking, per-action replay, old-journal retirement and generated network connectivity. Browser checks cover preview-before-departure, unknown-route gating, the single animated passenger, input locking, returns, narrow viewports and three languages.
 
-These checks establish rule correctness and completion paths. Human acceptance of the redesigned gameplay is still pending.
+The user accepted the redesigned route-planning gameplay after the sounding-area guidance was added. PR #92 merged to develop; the development site deployment completed successfully. Later encounter designs still require their own playtest.

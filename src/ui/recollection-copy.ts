@@ -46,6 +46,8 @@ export function recollectionFloorCopy(
 /** Catalog portraits do not need fabricated tactical state merely to choose a sprite. */
 export function recollectionBossSprite(kind: EncounterKind): DungeonSprite {
   switch (kind) {
+    case 'keelcrab':
+      return 'keelcrab'
     case 'bastion':
       return 'bastion'
     case 'brood':

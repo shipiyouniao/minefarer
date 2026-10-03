@@ -5,6 +5,8 @@ import type { StoryScene } from '../types/story.js'
 /** Scene names are shared by physical doors, quest destinations and atlas nodes. */
 export function worldSceneName(language: Language, id: StoryScene['id']): string {
   switch (id) {
+    case 'driftwood-bank':
+      return message(language, 'convoy.bank')
     case 'awakening':
       return message(language, 'story.awakening')
     case 'trail':

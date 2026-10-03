@@ -1,4 +1,8 @@
 import { riverCellAction } from '../game/pressure.js'
+import { convoyGuide, mountConvoy, mountConvoyLesson, animateConvoy } from './convoy-view.js'
+import { keelcrabGuide, animateKeelcrab } from './keelcrab-view.js'
+import { pendingWreckScene } from '../game/wreck-story.js'
+import { wreckLines } from './wreck-copy.js'
 import {
   pressureGuide,
   animatePressure,
@@ -70,6 +74,10 @@ export class VariantApp implements VariantInputActions {
   private disposeRiverDock: (() => void) | null = null
   private riverSelection: number | null = null
   private riverLessonDismissed = false
+  private convoyPlans: number[] = [0, 0]
+  private convoySelected = 0
+  private convoyLessonDismissed = new Set<number>()
+  private disposeConvoy: (() => void) | null = null
   private readonly root: HTMLElement
   private readonly session: ExpeditionSession | TwinSession
   private readonly repository: VariantRepository
@@ -148,6 +156,15 @@ export class VariantApp implements VariantInputActions {
 
     if (this.session instanceof ExpeditionSession && !flag) {
       const run = this.session.run
+      if (run?.convoy) {
+        const boat = run.convoy.boats.findIndex(
+          (entry) => entry.position === index && !entry.arrived,
+        )
+        if (boat >= 0) this.convoySelected = boat
+        else if (run.convoy.ports.includes(index)) this.convoyPlans[this.convoySelected] = index
+        this.render()
+        return
+      }
       if (run?.pressure) {
         void this.performRiverAction(riverCellAction(run, index))
         return
@@ -472,6 +489,10 @@ export class VariantApp implements VariantInputActions {
     this.turnPerformance = false
     this.walkGeneration++
     this.moving = false
+    for (const animation of this.root.getAnimations({ subtree: true }))
+      if (['convoy-voyage', 'river-voyage', 'keelcrab-fx'].includes(animation.id))
+        animation.cancel()
+    this.root.querySelector('.keelcrab-fx')?.remove()
     this.view.cancelWalk()
     this.input.cancelTools()
     // Animated turns are committed before their animation; help and language changes must see them.
@@ -636,6 +657,23 @@ export class VariantApp implements VariantInputActions {
         return
       case 'help': {
         const t = variantCopy(this.language)
+        if (this.session instanceof ExpeditionSession && this.session.run?.convoy) {
+          this.view.showInformation(
+            message(this.language, 'convoy.help'),
+            convoyGuide(this.language),
+          )
+          return
+        }
+        if (
+          this.session instanceof ExpeditionSession &&
+          this.session.run?.encounter?.kind === 'keelcrab'
+        ) {
+          this.view.showInformation(
+            message(this.language, 'keelcrab.help'),
+            keelcrabGuide(this.language),
+          )
+          return
+        }
         if (this.session instanceof ExpeditionSession && this.session.run?.pressure) {
           this.view.showInformation(
             message(this.language, 'pressure.help'),
@@ -771,12 +809,41 @@ export class VariantApp implements VariantInputActions {
           ?.focus({ preventScroll: true })
         return
       case 'sail':
+      case 'convoy':
+        if (command.type === 'convoy') {
+          void this.performRiverAction({
+            type: 'convoy',
+            orders: [...this.convoyPlans],
+          })
+          return
+        }
         if (this.riverSelection !== null)
           void this.performRiverAction({ type: 'sail', index: this.riverSelection })
         return
       case 'haul':
         void this.performRiverAction({ type: command.type })
         return
+      case 'convoy-pick':
+        if (command.value < this.convoyPlans.length) this.convoySelected = command.value
+        this.render()
+        return
+      case 'convoy-a':
+      case 'convoy-b':
+      case 'convoy-c':
+      case 'convoy-d':
+        this.convoySelected = command.type.charCodeAt(command.type.length - 1) - 97
+        if (this.convoySelected >= this.convoyPlans.length) return
+        this.convoyPlans[this.convoySelected] = command.value
+        this.render()
+        this.root
+          .querySelector<HTMLElement>(`[data-control="${command.type}:${command.value}"]`)
+          ?.focus({ preventScroll: true })
+        return
+      case 'convoy-undo':
+      case 'convoy-reset':
+        this.expedition({ type: command.type })
+        this.convoyPlans.fill(0)
+        break
       case 'end-turn':
         if (
           this.session instanceof ExpeditionSession &&
@@ -910,6 +977,7 @@ export class VariantApp implements VariantInputActions {
     // Cancelling a committed animation can render once more and replace both mounts.
     this.cancelMovement()
     this.disposeRiverDock?.()
+    this.disposeConvoy?.()
     this.disposeCampaignLesson?.()
     this.session.persist()
     this.input.dispose()
@@ -924,6 +992,8 @@ export class VariantApp implements VariantInputActions {
   private render(): void {
     this.disposeRiverDock?.()
     this.disposeRiverDock = null
+    this.disposeConvoy?.()
+    this.disposeConvoy = null
     // Uncover before measuring cell geometry, so a resumed board never starts at zero width.
     this.view.chrome(
       this.repository.available,
@@ -971,11 +1041,30 @@ export class VariantApp implements VariantInputActions {
         run?.encounter?.kind === 'mirror' ? run.encounter.other.game : null,
         run,
       )
+      if (this.turnPerformance && (run?.pressure || run?.convoy)) this.view.closeDialog()
       if (run?.pressure) renderRiverPlan(this.root, run, this.language, this.riverSelection)
-      if (run?.pressure) this.disposeRiverDock = mountRiverDock(this.root)
+      if (run?.convoy) {
+        if (this.convoyPlans.length !== run.convoy.boats.length)
+          this.convoyPlans = run.convoy.boats.map(() => 0)
+        this.convoySelected = Math.min(this.convoySelected, run.convoy.boats.length - 1)
+        this.disposeConvoy = mountConvoy(
+          this.root,
+          run,
+          this.language,
+          this.convoyPlans,
+          this.convoySelected,
+        )
+      }
+      if (run?.pressure || run?.convoy) this.disposeRiverDock = mountRiverDock(this.root)
       this.renderCampaignLesson()
       this.renderSignalScene()
-      if (run?.phase === 'boss' && !this.paused && !this.turnPerformance && !this.view.dialogOpen) {
+      if (
+        run?.phase === 'boss' &&
+        run.encounter?.kind !== 'keelcrab' &&
+        !this.paused &&
+        !this.turnPerformance &&
+        !this.view.dialogOpen
+      ) {
         const session = this.session
         this.disposeCampaignLesson = mountBattleLesson(
           this.root,
@@ -1008,6 +1097,24 @@ export class VariantApp implements VariantInputActions {
     if (!(this.session instanceof ExpeditionSession) || this.paused || this.turnPerformance) return
 
     const session = this.session
+    const wreckScene = pendingWreckScene(session.run, session.stageProgress)
+    if (wreckScene && session.run) {
+      this.view.closeDialog()
+      this.signal.present(
+        this.root,
+        this.language,
+        wreckScene,
+        wreckLines(this.language, wreckScene),
+        session.run.departure.profession,
+        () => {
+          session.completeCampaignScene(wreckScene)
+          this.render()
+          if (session.run?.phase === 'reward' || session.run?.phase === 'won')
+            this.view.showExpeditionDialog()
+        },
+      )
+      return
+    }
     const signalScene = pendingSignalScene(session.run, session.stageProgress)
     const ridgeScene = pendingObservatoryScene(session.run, session.stageProgress)
     const waterwayScene = pendingWaterwayScene(session.run, session.stageProgress)
@@ -1075,6 +1182,14 @@ export class VariantApp implements VariantInputActions {
 
     const session = this.session
     const run = session.run
+    if (run?.convoy) {
+      if (!this.convoyLessonDismissed.has(run.floor))
+        this.disposeCampaignLesson = mountConvoyLesson(this.root, run, this.language, () => {
+          this.convoyLessonDismissed.add(run.floor)
+          this.render()
+        })
+      return
+    }
     if (run?.pressure) {
       if (!this.riverLessonDismissed && !session.riverLessonComplete)
         this.disposeCampaignLesson = mountRiverLesson(this.root, run, this.language, () => {
@@ -1212,7 +1327,7 @@ export class VariantApp implements VariantInputActions {
   private async performRiverAction(action: ExpeditionAction): Promise<void> {
     if (!(this.session instanceof ExpeditionSession)) return
     const before = this.session.run
-    if (!before?.pressure || !this.session.dispatch(action)) {
+    if ((!before?.pressure && !before?.convoy) || !this.session.dispatch(action)) {
       this.sounds.play('blocked')
       const hint = this.root.querySelector('.pressure-hint')
       if (hint && before?.pressure)
@@ -1221,6 +1336,7 @@ export class VariantApp implements VariantInputActions {
     }
     const after = this.session.run
     if (!after) return
+    if (action.type === 'convoy') this.convoyPlans.fill(0)
     if (before.player !== after.player) this.riverSelection = null
     const generation = ++this.walkGeneration
     this.moving = true
@@ -1232,11 +1348,15 @@ export class VariantApp implements VariantInputActions {
     this.render()
     try {
       await animatePressure(this.root, before, after)
+      if (generation === this.walkGeneration) await animateConvoy(this.root, before, after)
+      if (generation === this.walkGeneration) await animateKeelcrab(this.root, before, after)
     } finally {
       if (generation === this.walkGeneration) {
         this.moving = false
         this.turnPerformance = false
         this.render()
+        if (!this.view.dialogOpen && ['reward', 'won', 'lost', 'retreated'].includes(after.phase))
+          this.view.showExpeditionDialog()
       }
     }
   }

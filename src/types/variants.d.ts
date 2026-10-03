@@ -1,4 +1,5 @@
 import type { PressureFloor } from './pressure.js'
+import type { ConvoyFloor } from './convoy.js'
 import type { RecollectionSelection } from './recollection.js'
 import type { FloorRail } from './floor-rail.js'
 import type { BattleLesson } from './battle-lesson.js'
@@ -41,7 +42,8 @@ export type Profession =
   | 'rescuer'
 
 /** Camp equipment consumes a three-point departure budget. */
-export type Equipment = 'probe' | 'scanner' | 'guard' | 'field-radio' | 'sonar' | CombatEquipment
+export type Equipment =
+  'probe' | 'scanner' | 'guard' | 'field-radio' | 'sonar' | 'pilot-bell' | CombatEquipment
 
 /** Relics persist only within the current expedition. */
 export type Relic =
@@ -73,6 +75,7 @@ export interface Camp {
   readonly battleLesson?: BattleLesson
   /** Story rewards are licenses, separate from purchasable upgrades. */
   readonly storyProfessions?: readonly 'rescuer'[]
+  readonly storyEquipment?: readonly 'pilot-bell'[]
   readonly milestones?: MilestoneProgress
   readonly supplies: number
   readonly upgrades: readonly Upgrade[]
@@ -98,6 +101,7 @@ export interface Departure {
 
 /** A complete floor state; reachability is derived from revealed safe cells. */
 export interface Expedition extends Vitality {
+  readonly convoy?: ConvoyFloor
   readonly pressure?: PressureFloor
   readonly current?: FloorTide
   readonly rail?: FloorRail
@@ -145,6 +149,8 @@ export interface Expedition extends Vitality {
 
 /** Explicit run intents; all effects can be replayed without browser state. */
 export type ExpeditionAction =
+  | { readonly type: 'convoy'; readonly orders: readonly number[] }
+  | { readonly type: 'convoy-undo' | 'convoy-reset' }
   | {
       readonly type:
         | 'sail'

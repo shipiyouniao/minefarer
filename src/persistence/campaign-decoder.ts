@@ -1,5 +1,6 @@
 import { EXPEDITION_RULES_REVISION } from './expedition-format.js'
 import { PRESSURE_SCENES } from '../game/pressure-story.js'
+import { WRECK_SCENES } from '../game/wreck-story.js'
 import { FERRY_SCENES } from '../game/ferry-story.js'
 import { RAIL_SCENES } from '../game/rail-story.js'
 import { campaignStage, parseCampaignStage } from '../game/campaign-catalog.js'
@@ -20,21 +21,23 @@ function decodeStage(
   const candidate = decoders.journal(reader.child('journal'))
   const journal = candidate?.departure.campaign === campaignStage(id).revision ? candidate : null
   const scenes = (
-    id === 'pressure-cove'
-      ? PRESSURE_SCENES
-      : id === 'reed-channels'
-        ? FERRY_SCENES
-        : id === 'quarry-rescue'
-          ? RAIL_SCENES
-          : id === 'tower-control'
-            ? CONTROL_SCENES
-            : id === 'northwest-bastion'
-              ? BLOCKADE_SCENES
-              : id === 'old-waterway'
-                ? WATERWAY_SCENES
-                : id === 'ridge-observatory'
-                  ? OBSERVATORY_SCENES
-                  : SIGNAL_SCENES
+    id === 'wreck-harbor'
+      ? WRECK_SCENES
+      : id === 'pressure-cove'
+        ? PRESSURE_SCENES
+        : id === 'reed-channels'
+          ? FERRY_SCENES
+          : id === 'quarry-rescue'
+            ? RAIL_SCENES
+            : id === 'tower-control'
+              ? CONTROL_SCENES
+              : id === 'northwest-bastion'
+                ? BLOCKADE_SCENES
+                : id === 'old-waterway'
+                  ? WATERWAY_SCENES
+                  : id === 'ridge-observatory'
+                    ? OBSERVATORY_SCENES
+                    : SIGNAL_SCENES
   ).filter((scene) => reader.array('scenes')?.includes(scene))
 
   return {
@@ -47,7 +50,7 @@ function decodeStage(
         ? Math.max(0, Math.min(4, Math.trunc(reader.number('lesson') ?? 0)))
         : 0,
     scenes:
-      (id === 'reed-channels' || id === 'pressure-cove') &&
+      (id === 'reed-channels' || id === 'pressure-cove' || id === 'wreck-harbor') &&
       reader.value('journal') != null &&
       !journal &&
       reader.value('cleared') !== true

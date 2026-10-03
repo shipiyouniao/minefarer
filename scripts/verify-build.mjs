@@ -29,6 +29,10 @@ for (const file of [
 ])
   await stat(file)
 for (const sprite of [
+  'keelcrab',
+  'pilot-bell',
+  'river-boat',
+  'river-dock',
   'rescuer',
   'skill-rescuer',
   'exit-closed',

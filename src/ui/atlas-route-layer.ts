@@ -40,7 +40,9 @@ export function atlasRouteLayer(state: StoryViewState): string {
     })
     .join('')
   const current = state.board.scene.id
-  const dots = ATLAS_PLACES.filter((place) => place.scene !== 'old-ferry')
+  const dots = ATLAS_PLACES.filter(
+    (place) => place.scene !== 'old-ferry' && place.scene !== 'driftwood-bank',
+  )
     .map((place) => {
       const open = storyAtlasUnlocked(state.progress, state.run, storyAtlasIndex(place.scene))
       return `<circle class="atlas-waypoint ${open ? 'is-known' : ''} ${current === place.scene ? 'is-current' : ''}" data-atlas-waypoint="${place.scene}" cx="${place.x * 8}" cy="${place.y * 4.6}" r="4"/>`

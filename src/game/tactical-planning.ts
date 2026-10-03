@@ -1,4 +1,5 @@
 import { activeRegion, matrixHealthFloor } from './matrix-logic.js'
+import { keelcrabPlan } from './keelcrab-battle.js'
 import { tideHealthFloor } from './tide-battle.js'
 import { canUseExpeditionSonar, echoCandidates } from './expedition-sonar.js'
 import { approachPath, walkingPath } from './dungeon-path.js'
@@ -99,6 +100,7 @@ export function tacticalPlan(run: Expedition, action: ExpeditionAction): Tactica
   const encounter = run.encounter
   if (!encounter || run.phase !== 'boss')
     return { path: [], cost: 0, allowed: false, reason: 'inactive' }
+  if (encounter.kind === 'keelcrab') return keelcrabPlan(run, action)
 
   let path: readonly number[] = []
   let cost = 1
