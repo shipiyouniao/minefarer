@@ -9,7 +9,7 @@ import {
   validRecollection,
 } from '../game/recollection.js'
 import { recordStoryCampaign } from '../game/story-quests.js'
-import { grantRescuer } from '../game/story-rewards.js'
+import { grantRescuer, grantPilotBell } from '../game/story-rewards.js'
 import { advanceBattleLesson } from '../game/battle-lesson.js'
 import type { BattleLesson } from '../types/battle-lesson.js'
 import { campaignProgress, campaignStage, updateCampaign } from '../game/campaign-catalog.js'
@@ -433,6 +433,16 @@ export class ExpeditionSession {
       },
     }
 
+    if (
+      this.campaignMode &&
+      this.stage.id === 'wreck-harbor' &&
+      run.convoy &&
+      run.floor === 4 &&
+      next.phase === 'reward' &&
+      this.save.story
+    )
+      this.save = { ...this.save, story: recordStoryFacts(this.save.story, ['wreck-convoy-home']) }
+
     if (next.phase === 'lost' || next.phase === 'won' || next.phase === 'retreated') {
       const earned = this.repository.campaignMode
         ? next.phase === 'won' && !this.stageProgress.cleared
@@ -469,7 +479,9 @@ export class ExpeditionSession {
         camp: {
           ...(this.campaignMode && this.stage.id === 'quarry-rescue' && next.phase === 'won'
             ? grantRescuer(this.camp)
-            : this.camp),
+            : this.campaignMode && this.stage.id === 'wreck-harbor' && next.phase === 'won'
+              ? grantPilotBell(this.camp)
+              : this.camp),
           supplies: Math.min(Number.MAX_SAFE_INTEGER, this.camp.supplies + earned),
           completed: this.camp.completed + Number(next.phase === 'won'),
         },

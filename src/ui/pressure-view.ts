@@ -1,4 +1,5 @@
 import { message } from '../i18n.js'
+import { keelcrabRouteHint } from './keelcrab-view.js'
 import { icon } from '../icons.js'
 import { aboardRiverBoat, riverRoutes, riverSoundingCells } from '../game/pressure.js'
 import { pressureFloorName } from './pressure-copy.js'
@@ -8,21 +9,40 @@ import { mountAnchoredLesson } from './anchored-lesson.js'
 import type { Expedition, ExpeditionAction } from '../types/variants.js'
 import type { Language } from '../types/localization.js'
 
-/** Reserve the actual wrapped control height, and restore shared layout on mode disposal. */
+/** Fit naval charts even after settlement removes the dock; release measurements on disposal. */
 export function mountRiverDock(root: HTMLElement): (() => void) | null {
   const dock = root.querySelector<HTMLElement>('.action-dock:has(.river-controls)')
   const app = root.closest<HTMLElement>('#app')
-  if (!dock || !app) return null
+  const chart = root.querySelector<HTMLElement>('.convoy-board, .keelcrab-board')
+  if (!app || (!dock && !chart)) return null
   const previous = app.style.getPropertyValue('--dock-space')
+  const host = root.closest<HTMLElement>('.ruleset-host')
+  if (chart)
+    chart.style.setProperty(
+      '--naval-rows',
+      String(Math.max(1, chart.querySelectorAll('.board-row').length)),
+    )
   /** Font loading, translation and resizing can all change the fixed dock's height. */
   const measure = (): void => {
-    app.style.setProperty('--dock-space', `${Math.ceil(dock.getBoundingClientRect().height)}px`)
+    if (dock)
+      app.style.setProperty('--dock-space', `${Math.ceil(dock.getBoundingClientRect().height)}px`)
+    if (chart) {
+      // Ignore the scroll position so choosing an order cannot make the board grow as it scrolls.
+      const top = chart.getBoundingClientRect().top + (host?.scrollTop ?? 0)
+      chart.style.setProperty(
+        '--naval-height',
+        `${Math.max(240, (dock?.getBoundingClientRect().top ?? host?.getBoundingClientRect().bottom ?? window.innerHeight) - top - 24)}px`,
+      )
+    }
   }
   measure()
   const observer = new ResizeObserver(measure)
-  observer.observe(dock)
+  if (dock) observer.observe(dock)
+  if (host && chart) observer.observe(host)
+  window.addEventListener('resize', measure)
   return () => {
     observer.disconnect()
+    window.removeEventListener('resize', measure)
     if (previous) app.style.setProperty('--dock-space', previous)
     else app.style.removeProperty('--dock-space')
   }
@@ -30,6 +50,7 @@ export function mountRiverDock(root: HTMLElement): (() => void) | null {
 
 /** One contextual instruction follows the real boat state, without duplicating quest prose. */
 export function pressureHint(language: Language, run: Expedition): string {
+  if (run.encounter?.kind === 'keelcrab') return message(language, 'keelcrab.choose')
   const river = run.pressure
   if (!river) return ''
   if (!aboardRiverBoat(run)) return message(language, 'pressure.board')
@@ -59,6 +80,8 @@ function riverSurveyLegend(language: Language): string {
 
 /** Keep stage identity and progress by the board; sailing controls use the shared bottom dock. */
 export function pressureObjective(language: Language, run: Expedition): string {
+  if (run.encounter?.kind === 'keelcrab')
+    return `<section class="pressure-objective"><strong>${message(language, 'keelcrab.title')}</strong><span>${message(language, 'keelcrab.choose')}</span></section>`
   const river = run.pressure
   if (!river) return ''
 
@@ -113,7 +136,10 @@ export function renderPressure(root: HTMLElement, run: Expedition, language: Lan
     if (!cell) continue
     cell.classList.add('pressure-water')
     const hidden = run.game.cells[index]?.visibility === 'hidden'
-    const available = hidden && run.phase === 'exploring' && sounding.has(index)
+    const available =
+      hidden &&
+      (run.phase === 'exploring' || (run.encounter?.kind === 'keelcrab' && run.phase === 'boss')) &&
+      sounding.has(index)
     cell.classList.toggle('river-surveyable', available)
     cell.classList.toggle('river-out-of-range', hidden && !available)
     if (river.currents[index]) {
@@ -292,6 +318,12 @@ export function renderRiverPlan(
             id: String.fromCharCode(65 + river.docks.indexOf(route.destination)),
             count: route.path.length - 1,
           })
+  if (hint && run.encounter?.kind === 'keelcrab')
+    hint.textContent = route?.blocked.length
+      ? message(language, 'keelcrab.net')
+      : route?.unknown.length
+        ? message(language, 'pressure.route-unknown', { count: route.unknown.length })
+        : keelcrabRouteHint(language, run, route?.path ?? [])
   for (const cell of root.querySelectorAll<HTMLElement>('[data-side="a"] [data-cell]')) {
     const index = Number(cell.dataset['cell'])
     cell.classList.toggle('river-planned', !!route?.path.includes(index))

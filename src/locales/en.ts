@@ -2,6 +2,112 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'keelcrab.net':
+    'Leave at most one flag on the route and reveal the other cells. Sailing tows the marked mine.',
+  'pilot-bell.workshop': 'Added to departure equipment. Equip it at camp.',
+  'pilot-bell.reward': 'Equipment acquired · Pilot Bell',
+  'pilot-bell.effects': 'Starting scans +1, capped at 4|Starting shields +1, capped at 2',
+  'pilot-bell.lore':
+    'The ferrymen tied their spare brass bell to your pack. In the fog, its chime means a friend is close.',
+  'pilot-bell.note': 'Start with +1 scan and +1 shield.',
+  'pilot-bell.name': 'Pilot Bell',
+  'convoy.fourth-2':
+    'Let us find each home dock first, then look for places where the boats can pass.',
+  'convoy.fourth-1':
+    'The channel branches everywhere ahead. A wrong turn could take us the long way around.',
+  'convoy.third-2':
+    'I will work out the order. Whoever goes first needs to leave room for the next boat.',
+  'convoy.third-1': 'Another boat has joined us. All three need that berth in the middle.',
+  'convoy.lesson-4':
+    'Guide all four boats through the winding channels to their home docks. Select a boat and a connected berth to preview the entire voyage. Use side bays to make room at narrow passages. Undo or reset whenever needed.',
+  'convoy.lesson-3':
+    'Three boats need the central berth. Select a boat name to change its orders, and plan the other boats too. Green heads west; orange travels slowly.',
+  'convoy.reset': 'Reset fleet',
+  'convoy.undo': 'Undo voyage',
+  'convoy.purple': 'Violet boat D',
+  'convoy.green': 'Green boat C',
+  'convoy.title-4': 'Reach IV · The tangled harbor',
+  'convoy.title-3': 'Reach III · Three-way junction',
+  'convoy.reward': 'Recollection unlocked · Wreckback Crab',
+  'convoy.bank': 'Driftwood Bank',
+  'convoy.title-1': 'Reach I · The passing bay',
+  'convoy.title-2': 'Reach II · Through the narrows',
+  'convoy.help': 'Fleet guide',
+  'convoy.blue': 'Blue boat A',
+  'convoy.orange': 'Orange boat B',
+  'convoy.slow': 'Slow boat · half speed',
+  'convoy.goal': 'Destination: berth {port}',
+  'convoy.hold': 'Wait here',
+  'convoy.sail': 'Launch together',
+  'convoy.delivered': 'Arrived',
+  'convoy.progress': 'Arrived {count} / {total}',
+  'convoy.choose': 'Plan each destination, then launch together.',
+  'convoy.ready': 'These plans do not collide. Ready to launch.',
+  'convoy.collision':
+    'The boats will collide at the red marker. Choose another berth or let one wait.',
+  'convoy.route': 'Choose a berth connected to this boat.',
+  'convoy.lesson':
+    'Select a boat, then its next berth. Both move together; use an empty bay to let the other pass. A red marker means the plan will collide.',
+  'convoy.guide-route':
+    'Each voyage reaches one connected berth. Planning is free; only Launch together moves the boats.',
+  'convoy.guide-collision':
+    'Boats cannot share a cell at the same time or pass head-on. A waiting boat still occupies its berth.',
+  'convoy.guide-bay':
+    'Move one boat into a side bay so the other can pass through the narrows. Boats that reach their destination dock ashore and stop blocking traffic.',
+  'convoy.guide-speed':
+    'The orange boat is slower in the second reach. The forecast checks timing along the whole voyage, not only the final berths.',
+  'convoy.entry-1':
+    'Both boats are stuck here. Do not send them into the middle together; there are empty bays beside the channel.',
+  'convoy.entry-2': 'I will signal them. Let us get both boats across before looking for the bell.',
+  'convoy.second-1':
+    'It narrows ahead, and the loaded boat is slower. Let the faster boat make room first.',
+  'convoy.second-2': 'I see it. I will give the signal once both routes are set.',
+  'convoy.rescued-1':
+    'Everyone is ashore! They heard the bell inside the cove, but something brushed underneath them.',
+  'convoy.rescued-2':
+    'Send the convoy back to the ferry. We will stay and make sure it cannot block the channel again.',
+  'convoy.task-find':
+    'Follow the east-bank path from Old Ferry to Driftwood Bank and find the stranded convoy.',
+  'convoy.task-rescue':
+    'At Driftwood Bank, use passing bays to guide the convoy through four reaches.',
+  'convoy.restored': 'Reopened ferry pier',
+  'convoy.ending': 'The convoy is safely home and the bell hangs at the pier again.',
+  'keelcrab.name': 'Wreckback Crab',
+  'keelcrab.title': 'Sunken Bell Cove',
+  'keelcrab.task': 'A bell on the water',
+  'keelcrab.detail':
+    'The convoy is safely ashore. Enter Sunken Bell Cove, dodge the claw sweeps and strike the Wreckback Crab’s flank. Bring the bell back to Driftwood Bank.',
+  'keelcrab.lead-1': 'Hear that bell? It is coming from the branch by the east bank.',
+  'keelcrab.lead-2': 'Some boats from Driftwood Bank are still missing. Shall we check on them?',
+  'keelcrab.lead-3': 'Sure. The main channel is open now; this can wait until we have time.',
+  'keelcrab.scene': 'The bell on the wreck rises. Two huge claws unfold beneath the hull.',
+  'keelcrab.entry':
+    'So you are carrying the bell! I will sail around you. Keep those claws off our boat.',
+  'keelcrab.known':
+    'Gray cells can be marked; surveying stays within the highlighted area. Use bank clues to find floating mines. One flagged mine can be towed per voyage; every other route cell must be revealed. Surveys and marks do not advance the crab; sailing does.',
+  'keelcrab.danger':
+    'Red water will be swept during this voyage. Check the entire route, not only its destination.',
+  'keelcrab.charge-guide':
+    'An outer, longer voyage loads the boat’s harpoon. Once loaded, the next crossing through gold water fires it automatically; then reload.',
+  'keelcrab.rage-guide':
+    'Below half health, both parallel lanes can be swept and the last voyage leaves a dangerous wake. Check the forecast before returning, too.',
+  'keelcrab.ready': 'Harpoon loaded',
+  'keelcrab.empty': 'Harpoon unloaded',
+  'keelcrab.calm': 'Claw sweep',
+  'keelcrab.rage': 'Raging wake',
+  'keelcrab.round': 'Round {count}',
+  'keelcrab.route-safe': 'This route avoids the current sweep.',
+  'keelcrab.route-hit': 'This route crosses the attack zone: {damage} expected damage.',
+  'keelcrab.route-shot': 'The gold-water crossing will trigger a countershot.',
+  'keelcrab.route-load': 'This longer voyage will load the harpoon.',
+  'keelcrab.route-reposition': 'Use this voyage to reposition.',
+  'keelcrab.choose':
+    'Choose a route, locate its floating mine using the clues, then prepare to sail.',
+  'keelcrab.help': 'Naval battle guide',
+  'keelcrab.weak': 'Countershot water · cross while loaded',
+  'keelcrab.end-1': 'It let go of the bell and slipped into the reeds. The boats can pass again.',
+  'keelcrab.end-2':
+    'Let us carry the bell ashore. The next travelers can ring it to say they arrived safely.',
   'recollection.tidal': 'Tidal sluices',
   'recollection.tidal-note': 'Switch the sluices to hold tidal channels and connect the pumps.',
   'recollection.river': 'River navigation',
@@ -53,7 +159,7 @@ export const enMessages: MessageCatalog = {
     'Green covered cells are within reach; gray hatched cells are not. Use the clues to clear a route, then sail.',
   'pressure.surveyable': 'In reach · covered',
   'pressure.surveyed': 'Revealed',
-  'pressure.distant': 'Out of reach · covered',
+  'pressure.distant': 'Cannot survey yet · can mark',
   'pressure.survey-note': 'Green means you can survey it, not that it is safe.',
   'pressure.survey-title': 'Start with the green covered cells',
   'pressure.survey-lesson':

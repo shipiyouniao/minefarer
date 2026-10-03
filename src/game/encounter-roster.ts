@@ -1,4 +1,5 @@
 import { shuffled } from './variant-board.js'
+import { enterKeelcrab } from './keelcrab-battle.js'
 import { recollectionDraw, RECOLLECTION_BOSSES } from './recollection.js'
 import { enterMatrix } from './matrix-battle.js'
 import { enterTide } from './tide-battle.js'
@@ -23,7 +24,7 @@ export function enterEncounter(run: Expedition): Expedition {
   const selected = run.departure.recollection
   const pool = selected
     ? shuffled(selected.bosses, run.departure.seed ^ 0xb055)
-    : RECOLLECTION_BOSSES
+    : RECOLLECTION_BOSSES.filter((kind) => kind !== 'keelcrab')
   const kind =
     selected?.remainingBosses !== undefined
       ? recollectionDraw(selected, run.departure.seed, checkpoint).boss
@@ -33,6 +34,7 @@ export function enterEncounter(run: Expedition): Expedition {
   // Ordinary-room controls must never survive the replacement by a tactical arena.
   const { circuits, power, rail, current, pressure, ...arenaRun } = run
   run = arenaRun
+  if (kind === 'keelcrab') return enterKeelcrab(run)
   if (slot === 7) return enterTide(run)
 
   if (slot === 6) return enterMatrix(run)

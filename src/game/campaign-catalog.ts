@@ -8,6 +8,19 @@ import type {
 
 export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
   {
+    id: 'wreck-harbor',
+    boss: 'keelcrab',
+    entrance: { scene: 'driftwood-bank', index: 118, fact: 'wreck-rumor' },
+    bounds: { width: 29, height: 23 },
+    revision: 'wreck-harbor-v3',
+    prerequisite: 'pressure-cove',
+    floors: 5,
+    outcome: 'wreck-silenced',
+    reward: 800,
+    entryTask: 'investigate-pressure',
+    lesson: false,
+  },
+  {
     id: 'pressure-cove',
     entrance: { scene: 'old-ferry', index: 85, fact: 'ferry-channel-cleared' },
     bounds: { width: 19, height: 19 },
@@ -118,6 +131,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
 
 /** Reject arbitrary route keys before selecting a save slot. */
 export function parseCampaignStage(value: string | null): CampaignStageId | null {
+  if (value === 'wreck-harbor') return value
   return value === 'quarry-rescue' ||
     value === 'pressure-cove' ||
     value === 'reed-channels' ||

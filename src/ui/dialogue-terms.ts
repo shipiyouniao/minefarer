@@ -10,6 +10,7 @@ export function dialogueTerms(language: Language): readonly DialogueTerm[] {
       message(language, 'signal.lumi'),
       message(language, 'rail.toma'),
       message(language, 'signal.guardian'),
+      message(language, 'keelcrab.name'),
     ].map((text) => ({ text, kind: 'person' as const })),
     ...[
       message(language, 'story.camp'),
@@ -21,6 +22,8 @@ export function dialogueTerms(language: Language): readonly DialogueTerm[] {
       message(language, 'story.quarry-passage'),
       message(language, 'story.quarry-machine'),
       message(language, 'story.atlas-reedbank'),
+      message(language, 'convoy.bank'),
+      message(language, 'keelcrab.title'),
       message(language, 'dialogue.places'),
     ]
       .flatMap((text) => text.split('|'))

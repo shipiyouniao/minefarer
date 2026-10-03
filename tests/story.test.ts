@@ -636,6 +636,6 @@ test('quest priority promotes later main quests without changing saved acceptanc
   for (const task of STORY_TASKS)
     assert.equal(
       storyTaskCategory(task.id),
-      task.id === 'lost-satchel' || task.id === 'rescue-toma' ? 'side' : 'main',
+      ['lost-satchel', 'rescue-toma', 'silence-wreck'].includes(task.id) ? 'side' : 'main',
     )
 })

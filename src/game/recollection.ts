@@ -25,6 +25,7 @@ export const RECOLLECTION_BOSSES: readonly EncounterKind[] = [
   'echo',
   'matrix',
   'tide',
+  'keelcrab',
 ]
 
 /** Existing boss victories remain eligible when a veteran reaches the western camp. */

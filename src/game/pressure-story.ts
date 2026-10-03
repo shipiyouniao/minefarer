@@ -5,6 +5,7 @@ export const PRESSURE_SCENES: readonly CampaignSceneId[] = [
   'pressure-basin',
   'pressure-boat',
   'pressure-end',
+  'wreck-rumor',
 ]
 /** Recovered endings are independent of the retired exploration journal. */
 export function pendingPressureScene(

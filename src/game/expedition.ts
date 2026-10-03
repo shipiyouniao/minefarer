@@ -6,6 +6,9 @@ import {
   aboardRiverBoat,
 } from './pressure.js'
 import { advanceCurrent } from './floor-tide.js'
+import { enterKeelcrab } from './keelcrab-battle.js'
+import { launchConvoy, rewindConvoy } from './convoy.js'
+import { WRECK_BOSS_FLOOR } from './convoy-layout.js'
 import { generateRecollectionFloor, recollectionFloorKind } from './recollection-layout.js'
 import { enterChapterGuardian } from './chapter-guardian.js'
 import { campaignFloor } from './campaign-floors.js'
@@ -81,11 +84,13 @@ export const EQUIPMENT: readonly Equipment[] = [
   ...COMBAT_EQUIPMENT,
   'field-radio',
   'sonar',
+  'pilot-bell',
 ]
 
 /** Reserve two points for shields and heavy combat gear; other equipment costs one. */
 export function equipmentCost(equipment: Equipment): number {
-  return equipment === 'guard' ||
+  return equipment === 'pilot-bell' ||
+    equipment === 'guard' ||
     equipment === 'steel-blade' ||
     equipment === 'plated-vest' ||
     equipment === 'field-boots'
@@ -105,6 +110,7 @@ export function allowedDeparture(
     new Set(equipment).size === equipment.length &&
     (!equipment.includes('sonar') || camp.upgrades.includes('sonar')) &&
     (!equipment.includes('field-radio') || hasFieldRadio(camp)) &&
+    (!equipment.includes('pilot-bell') || !!camp.storyEquipment?.includes('pilot-bell')) &&
     equipment.every(
       (item) => !parseCombatEquipment(item) || camp.upgrades.includes(parseCombatEquipment(item)!),
     ) &&
@@ -186,7 +192,7 @@ export function createExpedition(departure: Departure): Expedition {
   const run = createFloor(departure, 1)
   const resources = professionResources(departure.profession)
 
-  return {
+  const equipped: Expedition = {
     ...run,
     probes: Math.min(
       4,
@@ -198,10 +204,17 @@ export function createExpedition(departure: Departure): Expedition {
       4,
       resources.scans +
         Number(departure.equipment.includes('scanner')) +
+        Number(departure.equipment.includes('pilot-bell')) +
         Number(departure.title === 'depth-pioneer'),
     ),
-    shields: Math.min(2, resources.shields + Number(departure.equipment.includes('guard'))),
+    shields: Math.min(
+      2,
+      resources.shields +
+        Number(departure.equipment.includes('guard')) +
+        Number(departure.equipment.includes('pilot-bell')),
+    ),
   }
+  return equipped
 }
 
 /** Find every revealed safe cell connected to the player by orthogonal steps. */
@@ -366,7 +379,7 @@ function completeFloor(run: Expedition): Expedition {
     health: healExpedition(run, 1).health,
     loot: run.loot + EXIT_SUPPLIES,
     phase: run.floor === expeditionFloors(run.departure) ? 'won' : 'reward',
-    offers: relicOffers(run),
+    offers: run.convoy ? [] : relicOffers(run),
   }
 }
 
@@ -400,7 +413,10 @@ function advanceFloor(run: Expedition, relic?: Relic): Expedition {
 
   if (relics.includes('compass')) result = scoutExit(result)
 
-  const entered = enterChapterGuardian(result)
+  const entered =
+    result.departure.campaign === 'wreck-harbor-v3' && result.floor === WRECK_BOSS_FLOOR
+      ? enterKeelcrab(result)
+      : enterChapterGuardian(result)
 
   return entered === result ? result : applyTitleEntry(entered)
 }
@@ -408,6 +424,17 @@ function advanceFloor(run: Expedition, relic?: Relic): Expedition {
 /** Pure expedition transition, including explicit extraction and inter-floor reward selection. */
 function transitionExpedition(run: Expedition, action: ExpeditionAction): Expedition {
   if (run.phase === 'lost' || run.phase === 'won' || run.phase === 'retreated') return run
+
+  if (run.convoy && run.phase === 'exploring') {
+    if (action.type === 'retreat') return { ...run, phase: 'retreated' }
+    if (action.type === 'convoy-undo' || action.type === 'convoy-reset')
+      return rewindConvoy(run, action.type === 'convoy-reset')
+    if (action.type !== 'convoy') return run
+    const next = launchConvoy(run, action.orders)
+    return next !== run && next.convoy!.boats.every((boat) => boat.arrived)
+      ? completeFloor(next)
+      : next
+  }
 
   if (action.type === 'sail') {
     const sailed = sailRiverBoat(run, action.index)

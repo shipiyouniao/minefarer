@@ -29,6 +29,7 @@ function windup(cell: HTMLElement | null, kind: EncounterKind, reduced: boolean)
   if (!actor) return
 
   const poses = {
+    keelcrab: ['rotate(0)', 'rotate(-14deg) scaleX(1.12)', 'rotate(14deg)', 'none'],
     tide: ['scale(1)', 'translateY(-12%) scale(1.1)', 'translateY(12%)', 'none'],
     bastion: [
       'translateY(0)',
@@ -67,6 +68,8 @@ export function animateBattleFeedback(
     return
 
   const enemy = before.encounter
+  // Naval impacts are sequenced after the complete boat voyage by their own performance.
+  if (enemy.kind === 'keelcrab') return
   const next = after.encounter
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const turn = next.turn > enemy.turn || (after.phase === 'lost' && next.event === 'hit')

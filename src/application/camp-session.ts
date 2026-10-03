@@ -104,6 +104,29 @@ export class CampSession {
     this.saveStory(story)
   }
 
+  /** Accept the optional invitation once, together with its task and physical route. */
+  acceptWreckRumor(): void {
+    const save = this.read()
+    const progress = campaignProgress(save.campaign, 'pressure-cove')
+    if (!progress.cleared || progress.scenes.includes('wreck-rumor')) return
+    const story = save.story ?? EMPTY_STORY
+    this.repository.saveExpedition({
+      ...save,
+      story: recordStoryFacts(
+        {
+          ...story,
+          accepted: [...new Set([...(story.accepted ?? []), 'silence-wreck' as const])],
+          pinned: [...new Set([...(story.pinned ?? []), 'silence-wreck' as const])],
+        },
+        ['wreck-rumor'],
+      ),
+      campaign: updateCampaign(save.campaign, {
+        ...progress,
+        scenes: [...progress.scenes, 'wreck-rumor'],
+      }),
+    })
+  }
+
   /** Finish a recovered stage scene without repeating settlement or changing another stage. */
   completeStageScene(id: CampaignStageId, scene: CampaignSceneId): void {
     const save = this.read()

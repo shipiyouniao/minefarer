@@ -24,6 +24,7 @@
 @import './power.css' layer(components);
 @import './rail.css' layer(components);
 @import './recollection.css' layer(components);
+@import './keelcrab.css' layer(components);
 
 /* Resets stay below component styles and opt-in utilities. */
 @layer base {

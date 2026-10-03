@@ -1,0 +1,383 @@
+.keelcrab-panel {
+  padding: 1rem;
+  border-radius: 1.2rem;
+  background: #f7fbf3;
+  color: #385c53;
+}
+.variant-content:not(.enlarged-boards) .board:is(.convoy-board, .keelcrab-board) {
+  --cell: min(
+    var(--fit-cell),
+    calc(
+      (var(--naval-height, 70vh) - (var(--naval-rows, 17) - 1) * var(--gap)) / var(--naval-rows, 17)
+    )
+  );
+}
+.keelcrab-panel p {
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+.keelcrab-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.keelcrab-heading > img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+.keelcrab-heading h3 {
+  margin: 0 0 0.5rem;
+}
+.keelcrab-heading progress {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  accent-color: #bc7552;
+}
+.keelcrab-charge {
+  display: block;
+  padding: 0.6rem;
+  border-radius: 0.65rem;
+  background: #e4e9dc;
+}
+.keelcrab-charge.is-ready {
+  background: #eee0a5;
+  color: #775519;
+}
+.keelcrab-board .boss-cell {
+  z-index: 5;
+  overflow: visible;
+}
+.board.keelcrab-board .cell.boss-cell > img {
+  position: absolute;
+  width: 440%;
+  height: 440%;
+  max-width: none;
+  top: -170%;
+  left: -170%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.keelcrab-board .cell.wall-cell {
+  opacity: 0.55;
+}
+.keelcrab-board .cell.tactical-danger {
+  background: #edc8ba !important;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 8px,
+    #b9786120 8px 10px
+  ) !important;
+  box-shadow: none !important;
+}
+.keelcrab-board .cell.keelcrab-weak {
+  background-color: #f1e5ad !important;
+}
+.keelcrab-board .cell.keelcrab-weak.tactical-danger {
+  background-color: #edc8ba !important;
+}
+.keelcrab-marker {
+  position: absolute;
+  right: 3px;
+  top: 0;
+  color: #987321;
+  font-size: 1.1em;
+  z-index: 3;
+  pointer-events: none;
+}
+.keelcrab-guide {
+  line-height: 1.7;
+}
+.keelcrab-guide > img {
+  float: right;
+  width: min(34%, 160px);
+}
+.keelcrab-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+.keelcrab-fx svg {
+  width: 100%;
+  height: 100%;
+}
+.keelcrab-fx rect {
+  fill: #e27e5777;
+  stroke: #dcad79;
+  stroke-width: 0.05;
+}
+.keelcrab-fx circle {
+  fill: #f8f0b5;
+  stroke: #a34d39;
+  stroke-width: 0.12;
+}
+.keelcrab-harpoon {
+  stroke: #bfa241;
+  stroke-width: 0.13;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.board.convoy-board {
+  background: #dce7d2;
+  border-radius: 1rem;
+}
+.convoy-board .cell.wall-cell {
+  background: transparent !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+.convoy-board .cell.wall-cell > img {
+  display: none;
+}
+.convoy-board .cell.wall-cell > .convoy-tree {
+  display: block;
+  position: absolute;
+  width: 160%;
+  height: 180%;
+  left: -30%;
+  bottom: 0;
+  object-fit: contain;
+  pointer-events: none;
+}
+.convoy-board .cell.convoy-water {
+  background: #c2dedc;
+  border-color: #a3c5c2;
+}
+.convoy-board .convoy-port {
+  position: relative;
+  overflow: visible;
+}
+.convoy-board .convoy-port > img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+}
+.convoy-boat {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
+.convoy-boat > img {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  left: -20%;
+  top: -20%;
+  object-fit: contain;
+  transform: rotate(22deg);
+}
+.convoy-boat > span {
+  position: absolute;
+  top: -12%;
+  left: -10%;
+  border-radius: 6px;
+  padding: 1px 5px;
+  background: #f8f9ef;
+  font: 800 13px var(--mono);
+  box-shadow: 0 1px 3px #3455;
+}
+.convoy-boat.has-arrived {
+  opacity: 0.4;
+}
+.convoy-color-0 {
+  color: #356cbb;
+}
+.convoy-color-1 {
+  color: #ab602b;
+}
+.convoy-goal {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+  font: 800 11px var(--mono);
+  background: #fafaf1dd;
+  border-radius: 4px;
+  padding: 1px 3px;
+}
+.convoy-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.convoy-paths polyline {
+  fill: none;
+  stroke-width: 0.075;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0.18 0.12;
+}
+.convoy-path-0 {
+  stroke: #3a75bc;
+}
+.convoy-path-1 {
+  stroke: #b6793d;
+}
+.convoy-path-2 {
+  stroke: #3c8061;
+}
+.convoy-path-3 {
+  stroke: #9261a5;
+}
+.convoy-color-2 {
+  color: #316d50;
+}
+.convoy-color-3 {
+  color: #835497;
+}
+.convoy-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.convoy-fleet .convoy-orders {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.convoy-fleet .convoy-order {
+  min-width: 0;
+}
+.convoy-fleet .convoy-order:not(.is-selected) .convoy-options {
+  visibility: hidden;
+}
+.convoy-order-summary {
+  margin-left: auto;
+  font-weight: 800;
+}
+[data-boat-order='2'] .convoy-choose {
+  color: #316d50;
+}
+[data-boat-order='3'] .convoy-choose {
+  color: #835497;
+}
+@media (max-width: 700px) {
+  .convoy-fleet .convoy-orders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .convoy-fleet .convoy-order:not(.is-selected) .convoy-options {
+    display: none;
+  }
+  .convoy-fleet .convoy-order > small {
+    font-size: 0.7rem;
+  }
+  .convoy-fleet .convoy-choose {
+    font-size: 0.8rem;
+  }
+}
+.convoy-collision {
+  fill: #f0c1b7aa;
+  stroke: #b54f43;
+  stroke-width: 0.1;
+}
+.convoy-orders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.convoy-order {
+  padding: 0.45rem;
+  background: #f8faf4;
+  border: 1px solid #c8d7cb;
+  border-radius: 0.8rem;
+}
+.convoy-order > small {
+  display: block;
+  margin: 0.25rem 0;
+  color: #607368;
+}
+.convoy-choose {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font: inherit;
+  padding: 0.2rem;
+  color: #366994;
+}
+[data-boat-order='1'] .convoy-choose {
+  color: #9b6036;
+}
+.convoy-choose img {
+  width: 24px;
+  height: 28px;
+  object-fit: contain;
+}
+.convoy-choose[aria-pressed='true'] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.convoy-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.convoy-options .river-control {
+  min-width: 55px;
+  min-height: 36px;
+}
+.convoy-launch:enabled {
+  color: #fff;
+  background: #315c50;
+}
+.convoy-example {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #d6e7e1;
+}
+.convoy-example span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 800;
+}
+.convoy-example img {
+  width: 48px;
+  height: 56px;
+  object-fit: contain;
+}
+.convoy-guide section {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  line-height: 1.65;
+}
+.convoy-guide section > strong {
+  color: #528278;
+}
+.pressure-objective > span {
+  white-space: normal;
+}
+
+.keelcrab-board .keelcrab-island {
+  background: #dce7d2 !important;
+  border-color: #dce7d2;
+  box-shadow: none;
+  opacity: 1;
+}
+.keelcrab-board .keelcrab-island > img {
+  display: none;
+}
+.keelcrab-board .keelcrab-island.boss-cell > img {
+  display: block;
+}
+.wreck-unlock {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  border-radius: 1rem;
+  background: #e5eddc;
+  margin: 1rem 0;
+  color: #365d50;
+}
+.wreck-unlock > img {
+  width: 72px;
+  height: 72px;
+}

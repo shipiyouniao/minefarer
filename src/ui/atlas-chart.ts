@@ -33,7 +33,9 @@ function placeImage(place: AtlasPlace): string {
 /** Fine detail contains actionable locations, with locked names replaced at the data boundary. */
 function placeMarkers(state: StoryViewState): string {
   const current = state.board.scene.id
-  return ATLAS_PLACES.filter((place) => place.scene !== 'old-ferry')
+  return ATLAS_PLACES.filter(
+    (place) => place.scene !== 'old-ferry' && place.scene !== 'driftwood-bank',
+  )
     .map((place) => {
       const index = storyAtlasIndex(place.scene)
       const open = storyAtlasUnlocked(state.progress, state.run, index)
@@ -55,7 +57,10 @@ function districtMarkers(state: StoryViewState): string {
     .map((district) => {
       const places = ATLAS_PLACES.filter(
         (place) =>
-          place.district === district && place.scene !== 'old-ferry' && place.scene !== 'reed-camp',
+          place.district === district &&
+          place.scene !== 'old-ferry' &&
+          place.scene !== 'driftwood-bank' &&
+          place.scene !== 'reed-camp',
       )
       const known = places.filter((place) =>
         storyAtlasUnlocked(state.progress, state.run, storyAtlasIndex(place.scene)),

@@ -10,6 +10,7 @@ import type { SkillAvailability } from '../types/profession.js'
 
 /** Select a remaining chest or combat mechanism, breaking equal distances by index for replay. */
 function excavationTarget(run: Expedition): number | null {
+  if (run.encounter?.kind === 'keelcrab') return null
   const width = run.game.config.width
   const row = Math.floor(run.player / width)
   const column = run.player % width

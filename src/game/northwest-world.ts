@@ -69,10 +69,47 @@ export const NORTHWEST_SCENES: readonly StoryScene[] = [
     teachingMine: null,
     teachingSafe: null,
   },
+  {
+    id: 'driftwood-bank',
+    rows: [
+      '###############',
+      '#ooo..*#......#',
+      '#o*o...#*...*.#',
+      '#oooooo#...*..#',
+      '#ooo*..#......#',
+      '#oSooooo*.....#',
+      '#oo.*..#oooooo#',
+      '#ooooooooooooE#',
+      '#o*o...#*..o..#',
+      '#oooooo#...o*.#',
+      '###############',
+    ],
+    water: [22, 37, 52, 67, 97, 127, 142],
+    bridge: [82, 112],
+    clue: null,
+    safeClue: null,
+    teachingMine: null,
+    teachingSafe: null,
+  },
 ]
 
 /** The shortcut unlocks by crossing the bridge, never by clicking the atlas. */
 export const NORTHWEST_PORTALS: readonly WorldPortal[] = [
+  {
+    scene: 'old-ferry',
+    index: 76,
+    destination: 'driftwood-bank',
+    arrival: 77,
+    requires: 'wreck-rumor',
+    outcome: 'wreck-crew-found',
+  },
+  {
+    scene: 'driftwood-bank',
+    index: 77,
+    destination: 'old-ferry',
+    arrival: 76,
+    requires: 'wreck-rumor',
+  },
   {
     scene: 'reed-camp',
     index: 50,

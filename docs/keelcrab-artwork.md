@@ -1,0 +1,11 @@
+# Wreckback Crab artwork
+
+`public/assets/dungeon/keelcrab.png` was created with the built-in OpenAI ImageGen tool on October 3, 2026, with a transparent background. The PNG is stored unchanged. The first draft was rejected by the user as too realistic for the game and is not included in the repository.
+
+The revised asset uses the existing explorer, Brood Queen, Bastion Guardian and river skiff as explicit style references. Rounded proportions, ivory and blue-teal painted surfaces, gold trim and broad wooden planks replace the first draft's sharp wreckage, grime and detailed shell textures. The boss appears in the [Sunken Bell Cove side story](sunken-bell-cove.md); this document records the artwork source, not human gameplay acceptance.
+
+## Revision prompt
+
+Use case: style-transfer. Image 1 is the EDIT TARGET, a first draft crab boss that is far too realistic, dirty, sharp and cluttered. Images 2-5 are STRICT STYLE REFERENCES from the actual game, not objects to copy into the output. Redesign image 1 completely in the same adorable chibi 3D board-game figurine language as references 2-5: very round oversized head/body, large simple expressive glossy oval eyes, stubby thick rounded legs, two smooth rounded oversized pincers, clean toy-painted surfaces, broad color areas, ivory underside and restrained blue-teal shell with warm gold details. Keep ONLY the core identity: a crab boss with a tiny broken boat hull as its shell and one small brass bell. Make the boat a simple squat rounded wooden toy hull with 3-4 broad planks, matching reference 5; no tall splintered mast or sharp wreckage. Remove all grime, realistic pores, crustacean wrinkles, jagged teeth, barnacles, dense moss, realistic wood grain and weathered-metal patina. Not an anatomical real crab. The crab should feel like a companion to the chibi explorer and sibling to the round jewel spider and toy castle golem. Soft rounded silhouette, charming but confident boss pose, elevated three-quarter view, all body parts comfortably within central 85% of square canvas, warm soft studio lighting, simple materials legible at 48px. One creature only on genuinely transparent alpha background, no scenery, no floor, no text, no UI, no watermark.
+
+References: `public/assets/dungeon/player.png`, `brood-queen.png`, `bastion.png` and `river-boat.png`.

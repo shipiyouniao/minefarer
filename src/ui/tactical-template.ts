@@ -1,4 +1,5 @@
 import { sharedStyles } from './shared-styles.js'
+import { keelcrabPanel } from './keelcrab-view.js'
 import { gameplayStyles } from './gameplay-styles.js'
 import { combatStats } from '../game/combat-build.js'
 import { message } from '../i18n.js'
@@ -17,6 +18,7 @@ import { bossSprite } from './tactical-sprites.js'
 export function tacticalTemplate(language: Language, run: Expedition): string {
   const encounter = run.encounter
   if (!encounter) return ''
+  if (encounter.kind === 'keelcrab' && run.phase === 'boss') return keelcrabPanel(language, run)
 
   const t = tacticalCopy(language, encounter.kind)
   if (run.phase !== 'boss')
@@ -37,6 +39,7 @@ export function tacticalTemplate(language: Language, run: Expedition): string {
 export function tacticalControlsTemplate(language: Language, run: Expedition): string {
   const encounter = run.encounter
   if (!encounter || run.phase !== 'boss') return ''
+  if (encounter.kind === 'keelcrab') return ''
 
   const strike = tacticalCellAction(run, encounter.boss)
   const strikeLabel =
