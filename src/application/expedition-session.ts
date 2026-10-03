@@ -167,6 +167,23 @@ export class ExpeditionSession {
     return step
   }
 
+  /** Accepted surveys and voyages end the introduction, including after a save is reloaded. */
+  get riverLessonComplete(): boolean {
+    return (
+      this.save.journal?.actions.some(
+        (action) =>
+          action.type === 'sail' ||
+          action.type === 'haul' ||
+          action.type === 'sweep' ||
+          ((action.type === 'reveal' ||
+            action.type === 'chord' ||
+            action.type === 'probe' ||
+            action.type === 'sonar') &&
+            this.current?.pressure?.water.includes(action.index)),
+      ) ?? false
+    )
+  }
+
   /** Start or dismiss the first-floor practice without granting tools or changing the run. */
   setCampaignLesson(step: number): void {
     if (!this.campaignMode || !this.current) return

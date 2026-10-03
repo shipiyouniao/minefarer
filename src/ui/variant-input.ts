@@ -25,6 +25,7 @@ export function parseVariantCommand(value: string): VariantCommand | null {
 
   const [type, id] = parts
   switch (type) {
+    case 'river-plan':
     case 'rail-control':
     case 'matrix-pick':
     case 'mark-crystal':
@@ -62,7 +63,7 @@ export function parseVariantCommand(value: string): VariantCommand | null {
     case 'skill':
     case 'attack':
     case 'brace':
-    case 'moor':
+    case 'sail':
     case 'haul':
     case 'end-turn':
     case 'shift':

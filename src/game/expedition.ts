@@ -1,10 +1,8 @@
 import {
-  driftRiverBoat,
+  sailRiverBoat,
   haulRiverBoat,
-  toggleRiverAnchor,
-  secureRiverMooring,
-  carryRiverBoat,
   riverSurveyPath,
+  riverSoundingCells,
   aboardRiverBoat,
 } from './pressure.js'
 import { advanceCurrent } from './floor-tide.js'
@@ -55,7 +53,7 @@ import { applyDiscoveryRelics, applyDamageRelics, applyTreasureRelics } from './
 import { applyToolRelics, recordTravel } from './exploration-relics.js'
 import { generateDungeon } from './dungeon-generator.js'
 import { probeDungeon, scanDungeon, scoutExit } from './dungeon-discovery.js'
-import { act, neighbors } from './engine.js'
+import { act } from './engine.js'
 import { revealDungeon } from './dungeon-reveal.js'
 import { chordExpedition } from './dungeon-chord.js'
 import { adjacentSteps, shuffled } from './variant-board.js'
@@ -233,14 +231,12 @@ export function reachableCells(run: Expedition): Set<number> {
   return found
 }
 
-/** Only covered cells bordering the connected explored area can extend the route. */
+/** Expose reachable ground frontiers or water within the current berth's sounding area. */
 export function frontierCells(run: Expedition): Set<number> {
   const frontier = new Set<number>()
-  if (run.pressure && aboardRiverBoat(run) && run.pressure.anchored) {
-    for (const index of neighbors(run.game.config, run.player)) {
-      if (run.pressure.water.includes(index) && run.game.cells[index]?.visibility === 'hidden')
-        frontier.add(index)
-    }
+  if (run.pressure) {
+    for (const index of riverSoundingCells(run))
+      if (run.game.cells[index]?.visibility === 'hidden') frontier.add(index)
   }
 
   for (const index of reachableCells(run)) {
@@ -302,11 +298,7 @@ function revealFrontier(run: Expedition, index: number): Expedition {
   const cell = run.game.cells[index]
   if (!cell) return run
 
-  const approached = carryRiverBoat(
-    run,
-    collectTreasures({ ...run, player: path.at(-1) ?? run.player }, path),
-    path,
-  )
+  const approached = collectTreasures({ ...run, player: path.at(-1) ?? run.player }, path)
 
   if (cell.mine) {
     const vitality = damageExpedition(approached, 5)
@@ -352,11 +344,7 @@ function movePlayer(run: Expedition, index: number): Expedition {
   const path = walkingPath(run, index)
   if (!path || (path.length === 1 && index !== run.exit)) return run
 
-  return carryRiverBoat(
-    run,
-    collectTreasures({ ...run, player: index, steps: run.steps + 1 }, path),
-    path,
-  )
+  return collectTreasures({ ...run, player: index, steps: run.steps + 1 }, path)
 }
 
 /** Commit an exit reward only for a living explorer that actually reached the stairs. */
@@ -421,14 +409,14 @@ function advanceFloor(run: Expedition, relic?: Relic): Expedition {
 function transitionExpedition(run: Expedition, action: ExpeditionAction): Expedition {
   if (run.phase === 'lost' || run.phase === 'won' || run.phase === 'retreated') return run
 
-  if (action.type === 'end-turn' && run.pressure) {
-    const drifted = driftRiverBoat(run)
-
-    return drifted === run ? run : collectTreasures(drifted, [drifted.player])
+  if (action.type === 'sail') {
+    const sailed = sailRiverBoat(run, action.index)
+    return sailed === run ? run : finishAtExit(collectTreasures(sailed, sailed.pressure!.voyage))
   }
-  if (action.type === 'haul') return haulRiverBoat(run)
-  if (action.type === 'moor') return toggleRiverAnchor(run)
-  if (action.type === 'interact' && run.pressure) return secureRiverMooring(run, action.index)
+  if (action.type === 'haul') {
+    const returned = haulRiverBoat(run)
+    return returned === run ? run : collectTreasures(returned, returned.pressure!.voyage)
+  }
 
   if (action.type === 'retreat') return { ...run, phase: 'retreated' }
 

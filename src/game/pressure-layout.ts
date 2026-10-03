@@ -1,129 +1,109 @@
-import { placedBoard } from './variant-board.js'
-import type { RiverFloorContent, RiverDirection } from '../types/pressure.js'
+import { buildRiverChart } from './river-chart.js'
+import type { RiverChart } from '../types/pressure.js'
 import type { DungeonLayout } from '../types/dungeon-generation.js'
 
-export const PRESSURE_FLOORS: readonly RiverFloorContent[] = [
+export const PRESSURE_CHARTS: readonly RiverChart[] = [
   {
-    rows: [
-      '###############',
-      '#~*~~~~~~~~~DE#',
-      '#*o~*~*o~~~~o.#',
-      '#~*~~~~~*~~~T~#',
-      '#~~*~~T~~~~*~~#',
-      '#~~~~~~~~~~~~~#',
-      '#**~~*###~~~~*#',
-      '#~o*~oA##~~~o~#',
-      '#~~~~*###**~~~#',
-      '#~**~~~~**~T~~#',
-      '#~~~~~~~~~*~~~#',
-      '#~~~~~~~*~~~~~#',
-      '#.oo~*~o~~*~*~#',
-      '#SBo~~~~~~~~*~#',
-      '###############',
+    width: 15,
+    height: 15,
+    mines: 26,
+    columns: [2, 7, 12],
+    rows: [2, 7, 12],
+    start: 6,
+    finish: 2,
+    treasures: [0, 7, 8],
+    seed: 105,
+    edges: [
+      [6, 3],
+      [6, 7],
+      [3, 0],
+      [3, 4],
+      [4, 1],
+      [1, 2],
+      [4, 5],
+      [5, 2],
+      [4, 7],
+      [7, 8],
+      [8, 5],
+      [1, 0],
     ],
+    hazardous: [1, 2],
   },
   {
-    rows: [
-      '#################',
-      '#~~~~~~**~~~*~DE#',
-      '#~o~~~*~o~~~~~o.#',
-      '#~*~~~~~*~~~*~~~#',
-      '#~~~###~~*~~~~~*#',
-      '#~*oA##*~*~~~~~~#',
-      '#~~~###~~~~~~*~~#',
-      '#~~~~~*~~~~*~**~#',
-      '#*o~~~~*~~~~~~o*#',
-      '#~~~~~T**~~*T*~*#',
-      '#~~~~T~~~~###~**#',
-      '#~~***~**oA##**~#',
-      '#~~~**~~~~###~~~#',
-      '#~~~~~~~~~~~*~~~#',
-      '#.oo~~~~o~~~~~~~#',
-      '#SBo~~~~*~~~~~~~#',
-      '#################',
+    rotation: 1,
+    width: 17,
+    height: 17,
+    mines: 38,
+    columns: [2, 6, 10, 14],
+    rows: [2, 8, 14],
+    start: 8,
+    finish: 3,
+    treasures: [0, 11, 7],
+    seed: 3,
+    edges: [
+      [8, 4],
+      [4, 5],
+      [5, 9],
+      [9, 10],
+      [10, 6],
+      [6, 2],
+      [2, 3],
+      [4, 0],
+      [5, 1],
+      [1, 0],
+      [1, 2],
+      [8, 9],
+      [5, 6],
+      [10, 11],
+      [11, 7],
+      [7, 3],
+      [6, 7],
     ],
+    hazardous: [7, 10, 11, 12],
   },
   {
-    rows: [
-      '###################',
-      '#~~T**~~~~~~~~~~DE#',
-      '#~o~~~~~*o~~~~T~o.#',
-      '#~~~*~~~~~~~~~~~~~#',
-      '#~~**~*~~~~###~*~~#',
-      '#~*~*~~~~*oA##~*~~#',
-      '#~~~*~~~o~~###~~**#',
-      '#~~~~~~~~*~~~~~*~*#',
-      '#*~*~~~~~~**~~*~~~#',
-      '#~o~~###~***~~~~o~#',
-      '#~~~oA##~*~~~~~*~~#',
-      '#*~~~###~~*~~~~~*~#',
-      '#*~*~**~~o~~~~~~~*#',
-      '#~~~~~~**~*~###*~*#',
-      '#~~~o~~~~~~oA##~~*#',
-      '#~~~~~~~*T~~###~~~#',
-      '#.oo~~~~~o*~***~*~#',
-      '#SBo~~*~~~~~~*~*~~#',
-      '###################',
+    rotation: 2,
+    width: 19,
+    height: 19,
+    mines: 51,
+    columns: [2, 7, 11, 16],
+    rows: [2, 7, 11, 16],
+    start: 12,
+    finish: 3,
+    treasures: [0, 13, 15],
+    seed: 4,
+    edges: [
+      [12, 8],
+      [8, 9],
+      [9, 5],
+      [5, 6],
+      [6, 10],
+      [10, 11],
+      [11, 7],
+      [7, 3],
+      [12, 13],
+      [8, 4],
+      [9, 10],
+      [5, 1],
+      [1, 0],
+      [6, 2],
+      [1, 2],
+      [2, 3],
+      [9, 13],
+      [13, 14],
+      [14, 10],
+      [14, 15],
+      [15, 11],
+      [0, 4],
+      [4, 5],
     ],
+    hazardous: [8, 9, 10, 13],
   },
 ]
 
-/** The chart shows a clockwise circulation; sideways paddling selects inner or outer channels. */
-function riverDirection(index: number, width: number, height: number): RiverDirection {
-  const x = (index % width) - (width - 1) / 2
-  const y = Math.floor(index / width) - (height - 1) / 2
-
-  return Math.abs(y) >= Math.abs(x) ? (y < 0 ? 'east' : 'west') : x > 0 ? 'south' : 'north'
-}
-
-/** Build fixed water minefields and honest eight-neighbor clues from authored content. */
-export function authoredRiverLayout(content: RiverFloorContent): DungeonLayout {
-  const width = content.rows[0]!.length
-  const height = content.rows.length
-  if (content.rows.some((row) => row.length !== width)) throw new RangeError('Ragged river chart')
-  const symbols = [...content.rows.join('')]
-  const entrance = symbols.indexOf('S')
-  const boat = symbols.indexOf('B')
-  const exit = symbols.indexOf('E')
-  if (entrance < 0 || boat < 0 || exit < 0)
-    throw new RangeError('River chart needs a departure, boat and exit')
-  const water = symbols.flatMap((symbol, index) => ('~*oBDT'.includes(symbol) ? [index] : []))
-  const mines = new Set(symbols.flatMap((symbol, index) => (symbol === '*' ? [index] : [])))
-  const game = placedBoard({ width, height, mines: mines.size }, mines, 0, entrance)
-
-  return {
-    entrance,
-    exit,
-    walls: symbols.flatMap((symbol, index) => ('#A'.includes(symbol) ? [index] : [])),
-    treasures: symbols.flatMap((symbol, index) => (symbol === 'T' ? [index] : [])),
-    game: {
-      ...game,
-      cells: game.cells.map((cell, index) => ({
-        ...cell,
-        visibility: 'oBDSEA.'.includes(symbols[index]!) ? 'revealed' : 'hidden',
-      })),
-    },
-    pressure: {
-      water,
-      currents: symbols.map((_, index) => riverDirection(index, width, height)),
-      docks: symbols.flatMap((symbol, index) => ('BD'.includes(symbol) ? [index] : [])),
-      boat,
-      anchored: true,
-      waits: 0,
-      moorings: symbols.flatMap((symbol, index) =>
-        symbol === 'A' ? [{ index, secured: false }] : [],
-      ),
-      voyage: [],
-      line: [boat],
-      ties: [boat],
-    },
-  }
-}
-
-/** Each authored crossing owns its coastline; old raft journals retire instead of replaying new rules. */
+/** Three networks progress from a blocked shortcut to optional circuits around several islands. */
 export function pressureLayout(floor: number): DungeonLayout {
-  const content = PRESSURE_FLOORS[floor - 1]
-  if (!content) throw new RangeError('Unknown river crossing')
-
-  return authoredRiverLayout(content)
+  const chart = PRESSURE_CHARTS[floor - 1]
+  if (!chart) throw new RangeError('Unknown river crossing')
+  return buildRiverChart(chart)
 }

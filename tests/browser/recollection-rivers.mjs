@@ -2,11 +2,11 @@ import { writeFileSync } from 'node:fs'
 import { currentArrow } from '../../.native/tests/src/ui/current-view.js'
 import { feedPowered } from '../../.native/tests/src/game/floor-power.js'
 import { solveRiver } from '../../.native/tests/tests/pressure-helpers.js'
-import { actExpedition } from '../../.native/tests/src/game/expedition.js'
+import { actExpedition, createExpedition } from '../../.native/tests/src/game/expedition.js'
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { readyChapterTwo } from '../../.native/tests/tests/recollection-helpers.js'
-import { MemoryStorage, FakeRuntime } from '../../.native/tests/tests/helpers.js'
+import { MemoryStorage, FakeRuntime, CURRENT_DEPARTURE } from '../../.native/tests/tests/helpers.js'
 import { VariantRepository } from '../../.native/tests/src/persistence/variant-repository.js'
 import { StorySession } from '../../.native/tests/src/application/story-session.js'
 import { ExpeditionSession } from '../../.native/tests/src/application/expedition-session.js'
@@ -36,27 +36,31 @@ for (const id of ['reed-channels', 'pressure-cove'])
   }
 repository.saveExpedition(save)
 const value = storage.getItem(key)
-// A generated pontoon must remain selectable after it has been secured.
+// A generated route is selected separately from its committed, continuous voyage.
 const runtime = new FakeRuntime()
-runtime.seed = 7
+runtime.seed = Array.from({ length: 48 }, (_, seed) => seed).find((seed) =>
+  solveRiver(
+    createExpedition({
+      ...CURRENT_DEPARTURE,
+      seed,
+      recollection: { floors: ['river'], bosses: ['bastion'] },
+    }),
+  ),
+)
+assert.notEqual(runtime.seed, undefined)
 const crossing = new ExpeditionSession(repository, runtime)
 assert.ok(crossing.start('explorer', [], 'relaxed', { floors: ['river'], bosses: ['bastion'] }))
-let pontoonSave, destination, expected
+let voyageSave, launch, expected
 for (const action of solveRiver(crossing.run).actions) {
-  const mooring = crossing.run.pressure.moorings.find(
-    (entry) =>
-      entry.secured &&
-      actExpedition(crossing.run, { type: 'move', index: entry.index }) !== crossing.run,
-  )
-  if (mooring) {
-    destination = mooring.index
-    pontoonSave = storage.getItem(key)
-    expected = actExpedition(crossing.run, { type: 'move', index: destination })
+  if (action.type === 'sail') {
+    launch = action.index
+    voyageSave = storage.getItem(key)
+    expected = actExpedition(crossing.run, action)
     break
   }
   assert.ok(crossing.dispatch(action))
 }
-assert.ok(pontoonSave)
+assert.ok(voyageSave)
 const browser = await chromium.launch({ channel: 'msedge' })
 try {
   for (const language of ['zh', 'en', 'ja'])
@@ -139,24 +143,24 @@ try {
     })
     await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
       key,
-      value: pontoonSave,
+      value: voyageSave,
     })
     await page.goto(base + '?ruleset=expedition&lang=zh')
-    const tile = page.locator(`[data-side="a"] [data-cell="${destination}"]`)
-    assert.equal(await tile.getAttribute('aria-disabled'), 'false')
-    if (width === 390) await tile.tap()
-    else await tile.click()
+    const option = page.locator(`[data-control="river-plan:${launch}"]`)
+    if (width === 390) await option.tap()
+    else await option.click()
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), key), voyageSave)
+    if (width === 390) await page.locator('[data-control="sail"]').tap()
+    else await page.locator('[data-control="sail"]').click()
     await page.waitForFunction(
       (index) => document.querySelector(`[data-cell="${index}"].player-cell`),
-      destination,
+      expected.player,
     )
     const actual = new MemoryStorage()
     actual.setItem(key, await page.evaluate((key) => localStorage.getItem(key), key))
     assert.deepEqual(new ExpeditionSession(new VariantRepository(actual), runtime).run, expected)
     await page.close()
-    console.log(
-      `Secured pontoon remains navigable through ${width === 390 ? 'touch' : 'mouse'} input`,
-    )
+    console.log(`Whole generated voyage commits through ${width === 390 ? 'touch' : 'mouse'} input`)
   }
 } finally {
   await browser.close()

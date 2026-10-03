@@ -2,10 +2,10 @@ import { currentArrow } from '../src/ui/current-view.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { generateRecollectionFloor } from '../src/game/recollection-layout.js'
-import { createExpedition, actExpedition } from '../src/game/expedition.js'
+import { createExpedition } from '../src/game/expedition.js'
 import { expeditionConfig } from '../src/game/variant-difficulty.js'
 import { adjacentSteps } from '../src/game/variant-board.js'
-import { riverNeighbors, riverCellAction } from '../src/game/pressure.js'
+import { riverRoutes } from '../src/game/pressure.js'
 import { advanceCurrent, currentPermutation } from '../src/game/floor-tide.js'
 import { enterEncounter } from '../src/game/encounter-roster.js'
 import { recollectionUnlocks } from '../src/game/recollection.js'
@@ -22,9 +22,12 @@ function connected(run: Expedition): Set<number> {
   const found = new Set([run.entrance]),
     queue = [run.entrance]
   for (const index of queue) {
-    for (const other of run.pressure
-      ? riverNeighbors(run, index)
-      : adjacentSteps(run.game, index)) {
+    const next = run.pressure
+      ? riverRoutes({ ...run, player: index, pressure: { ...run.pressure, boat: index } })
+          .filter((route) => route.path.every((cell) => !run.game.cells[cell]!.mine))
+          .map((route) => route.destination)
+      : adjacentSteps(run.game, index)
+    for (const other of next) {
       if (found.has(other) || run.walls.includes(other) || run.game.cells[other]!.mine) continue
       found.add(other)
       queue.push(other)
@@ -48,20 +51,22 @@ test('random rivers and tidal lanes preserve mine budgets, accessibility and ind
           player: layout.entrance,
         }
         if (run.pressure) {
-          run = { ...run, pressure: { ...run.pressure, anchored: false } }
-          rivers.add(JSON.stringify([run.pressure!.currents, run.pressure!.moorings, run.walls]))
-          const found = connected(run)
-          assert.ok(
-            run.pressure!.moorings.every((entry) =>
-              adjacentSteps(run.game, entry.index).some((index) => found.has(index)),
-            ),
+          const found = connected({
+            ...run,
+            player: run.pressure.boat,
+            entrance: run.pressure.boat,
+          })
+          rivers.add(
+            JSON.stringify([
+              run.pressure.currents,
+              run.pressure.docks,
+              run.game.cells.map((cell) => cell.mine),
+            ]),
           )
-          assert.ok(found.has(run.exit))
-          assert.ok(
-            run.game.cells.every(
-              (cell, index) => cell.mine || run.walls.includes(index) || found.has(index),
-            ),
-          )
+          assert.ok(run.pressure.docks.every((index) => found.has(index)))
+          assert.ok(run.treasures.every((index) => found.has(index)))
+          assert.ok(adjacentSteps(run.game, run.exit).some((index) => found.has(index)))
+          assert.equal(run.game.cells.filter((cell) => cell.mine).length, config.mines)
         } else {
           assert.ok(run.current && run.power)
           tides.add(JSON.stringify([run.current.lanes, run.power.junctions]))
@@ -215,28 +220,4 @@ test('generated tidal and river floors complete through accepted actions and rep
     assert.equal(!!session.run!.current, kind === 'tidal')
     assert.deepEqual(new ExpeditionSession(repository, runtime).run, session.run)
   }
-})
-
-test('generated pontoons remain clickable sailing destinations after their mooring is secured', () => {
-  let run = createExpedition({
-    ...CURRENT_DEPARTURE,
-    difficulty: 'relaxed',
-    seed: 7,
-    recollection: { floors: ['river'], bosses: ['bastion'] },
-  })
-  const plan = solveRiver(run)
-  assert.ok(plan)
-  let checked = false
-  for (const action of plan.actions) {
-    for (const mooring of run.pressure!.moorings) {
-      if (!mooring.secured) continue
-      const moved = actExpedition(run, { type: 'move', index: mooring.index })
-      if (moved === run) continue
-      assert.deepEqual(riverCellAction(run, mooring.index), { type: 'move', index: mooring.index })
-      assert.deepEqual(actExpedition(run, riverCellAction(run, mooring.index)), moved)
-      checked = true
-    }
-    run = actExpedition(run, action)
-  }
-  assert.ok(checked, 'the regression crosses a real secured water mooring')
 })
