@@ -15,6 +15,7 @@ export const RECOLLECTION_FLOORS: readonly RecollectionFloor[] = [
   'routing',
   'tidal',
   'river',
+  'causeway',
 ]
 export const RECOLLECTION_BOSSES: readonly EncounterKind[] = [
   'bastion',
@@ -37,13 +38,15 @@ export function recollectionUnlocks(save: ExpeditionSave): RecollectionSelection
         kind === 'ordinary' ||
         campaignProgress(
           save.campaign,
-          kind === 'relay'
-            ? 'tower-relay'
-            : kind === 'routing'
-              ? 'ridge-observatory'
-              : kind === 'tidal'
-                ? 'reed-channels'
-                : 'pressure-cove',
+          kind === 'causeway'
+            ? 'broken-causeway'
+            : kind === 'relay'
+              ? 'tower-relay'
+              : kind === 'routing'
+                ? 'ridge-observatory'
+                : kind === 'tidal'
+                  ? 'reed-channels'
+                  : 'pressure-cove',
         ).cleared,
     ),
     bosses: RECOLLECTION_BOSSES.filter(

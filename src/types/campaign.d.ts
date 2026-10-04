@@ -12,6 +12,7 @@ import type { JsonValue } from './json.js'
 
 /** Stable selection keys are separate from replay-sensitive content revisions. */
 export type CampaignStageId =
+  | 'broken-causeway'
   | 'wreck-harbor'
   | 'pressure-cove'
   | 'reed-channels'
@@ -23,6 +24,7 @@ export type CampaignStageId =
   | 'quarry-rescue'
   | 'northwest-bastion'
 export type CampaignRevision =
+  | 'broken-causeway-v1'
   | 'wreck-harbor-v3'
   | 'pressure-cove-v4'
   | 'reed-channels-v3'
@@ -34,6 +36,10 @@ export type CampaignRevision =
   | 'quarry-rescue-v1'
   | 'northwest-bastion-v1'
 export type CampaignSceneId =
+  | 'causeway-entry'
+  | 'causeway-lengths'
+  | 'causeway-crossing'
+  | 'causeway-end'
   | 'wreck-rumor'
   | 'wreck-entry'
   | 'wreck-narrows'

@@ -18,6 +18,7 @@ export function storyTaskName(language: Language, id: StoryTask): string {
 
 /** Translated task titles contain only the name; category labels come from the task catalog. */
 function storyTaskTitle(language: Language, id: StoryTask): string {
+  if (id === 'cross-causeway') return message(language, 'causeway.task')
   if (id === 'silence-wreck') return message(language, 'keelcrab.task')
   if (id === 'investigate-pressure') return message(language, 'pressure.task')
   if (id === 'investigate-ferry') return message(language, 'ferry.task')
@@ -57,45 +58,47 @@ function quest(state: StoryViewState, id: StoryTask, expanded = false): string {
   const done = state.progress.completed.includes(id)
   const pinned = state.progress.pinned?.includes(id)
   const description =
-    id === 'silence-wreck'
-      ? done
-        ? message(lang, 'convoy.ending')
-        : state.progress.facts?.includes('wreck-convoy-home')
-          ? message(lang, 'keelcrab.detail')
-          : state.progress.facts?.includes('wreck-crew-found')
-            ? message(lang, 'convoy.task-rescue')
-            : message(lang, 'convoy.task-find')
-      : id === 'investigate-pressure'
-        ? message(lang, 'pressure.detail')
-        : id === 'investigate-ferry'
-          ? message(lang, 'ferry.detail')
-          : id === 'settle-reed-camp'
-            ? state.progress.facts?.includes('reed-camp-settled')
-              ? message(lang, 'recollection.task-lantern')
-              : message(lang, 'recollection.task-camp')
-            : id === 'rescue-toma'
-              ? message(lang, 'rail.task-detail')
-              : id === 'restore-west-line'
-                ? message(lang, 'finale.control-detail')
-                : id === 'open-blockade'
-                  ? message(lang, 'finale.pass-detail')
-                  : id === 'find-beacon'
-                    ? message(lang, 'waterway.task-detail')
-                    : id === 'survey-ridge'
-                      ? message(lang, 'ridge.task-detail')
-                      : id === 'repair-lift'
-                        ? state.progress.facts?.includes('spindle-secured')
-                          ? message(lang, 'story.repair-return')
-                          : message(lang, 'story.repair-detail')
-                        : id === 'reach-tower'
-                          ? message(lang, 'story.climb-detail')
-                          : id === 'survey-road'
-                            ? message(lang, 'story.road-detail')
-                            : id === 'reach-camp'
-                              ? message(lang, 'story.quest-main-detail')
-                              : id === 'lost-satchel'
-                                ? message(lang, 'story.quest-side-detail')
-                                : message(lang, 'story.quest-guide-detail')
+    id === 'cross-causeway'
+      ? message(lang, 'causeway.detail')
+      : id === 'silence-wreck'
+        ? done
+          ? message(lang, 'convoy.ending')
+          : state.progress.facts?.includes('wreck-convoy-home')
+            ? message(lang, 'keelcrab.detail')
+            : state.progress.facts?.includes('wreck-crew-found')
+              ? message(lang, 'convoy.task-rescue')
+              : message(lang, 'convoy.task-find')
+        : id === 'investigate-pressure'
+          ? message(lang, 'pressure.detail')
+          : id === 'investigate-ferry'
+            ? message(lang, 'ferry.detail')
+            : id === 'settle-reed-camp'
+              ? state.progress.facts?.includes('reed-camp-settled')
+                ? message(lang, 'recollection.task-lantern')
+                : message(lang, 'recollection.task-camp')
+              : id === 'rescue-toma'
+                ? message(lang, 'rail.task-detail')
+                : id === 'restore-west-line'
+                  ? message(lang, 'finale.control-detail')
+                  : id === 'open-blockade'
+                    ? message(lang, 'finale.pass-detail')
+                    : id === 'find-beacon'
+                      ? message(lang, 'waterway.task-detail')
+                      : id === 'survey-ridge'
+                        ? message(lang, 'ridge.task-detail')
+                        : id === 'repair-lift'
+                          ? state.progress.facts?.includes('spindle-secured')
+                            ? message(lang, 'story.repair-return')
+                            : message(lang, 'story.repair-detail')
+                          : id === 'reach-tower'
+                            ? message(lang, 'story.climb-detail')
+                            : id === 'survey-road'
+                              ? message(lang, 'story.road-detail')
+                              : id === 'reach-camp'
+                                ? message(lang, 'story.quest-main-detail')
+                                : id === 'lost-satchel'
+                                  ? message(lang, 'story.quest-side-detail')
+                                  : message(lang, 'story.quest-guide-detail')
   const place = worldSceneName(lang, storyTaskLocation(state.progress, id))
   const mechanism =
     id === 'repair-lift' && !done && state.run ? storyMechanismObjective(state.run, lang) : ''

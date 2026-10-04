@@ -1,4 +1,13 @@
 import { riverCellAction } from '../game/pressure.js'
+import { causewaySpans, causewayPickupPath } from '../game/causeway.js'
+import { pendingCausewayScene } from '../game/causeway-story.js'
+import {
+  causewayGuide,
+  causewayLines,
+  renderCausewayPlan,
+  mountCausewayLesson,
+} from './causeway-view.js'
+import type { CausewaySpan } from '../types/causeway.js'
 import { convoyGuide, mountConvoy, mountConvoyLesson, animateConvoy } from './convoy-view.js'
 import { keelcrabGuide, animateKeelcrab } from './keelcrab-view.js'
 import { pendingWreckScene } from '../game/wreck-story.js'
@@ -76,6 +85,9 @@ export class VariantApp implements VariantInputActions {
   private riverLessonDismissed = false
   private convoyPlans: number[] = [0, 0]
   private convoySelected = 0
+  private bridgeChoosing = false
+  private bridgeSelection: CausewaySpan | null = null
+  private bridgeLessonDismissed = new Set<number>()
   private convoyLessonDismissed = new Set<number>()
   private disposeConvoy: (() => void) | null = null
   private readonly root: HTMLElement
@@ -156,6 +168,12 @@ export class VariantApp implements VariantInputActions {
 
     if (this.session instanceof ExpeditionSession && !flag) {
       const run = this.session.run
+      if (run?.causeway && this.bridgeChoosing) {
+        this.bridgeSelection = causewaySpans(run).find((span) => span.to === index) ?? null
+        if (!this.bridgeSelection) this.sounds.play('blocked')
+        this.render()
+        return
+      }
       if (run?.convoy) {
         const boat = run.convoy.boats.findIndex(
           (entry) => entry.position === index && !entry.arrived,
@@ -541,6 +559,9 @@ export class VariantApp implements VariantInputActions {
     const resultAction = this.view.resultOpen && command.type === 'camp'
     if (
       this.view.dialogOpen &&
+      !(
+        command.type === 'bridge-reset' && this.root.querySelector('dialog[open] .causeway-help')
+      ) &&
       !rewardAction &&
       !resultAction &&
       !(
@@ -656,6 +677,13 @@ export class VariantApp implements VariantInputActions {
         this.play('a', command.value, false)
         return
       case 'help': {
+        if (this.session instanceof ExpeditionSession && this.session.run?.causeway) {
+          this.view.showInformation(
+            message(this.language, 'causeway.help'),
+            causewayGuide(this.language),
+          )
+          return
+        }
         const t = variantCopy(this.language)
         if (this.session instanceof ExpeditionSession && this.session.run?.convoy) {
           this.view.showInformation(
@@ -801,6 +829,29 @@ export class VariantApp implements VariantInputActions {
         this.input.cancelTools()
         this.expedition({ type: command.type })
         break
+      case 'bridge-plan':
+        this.bridgeChoosing = !this.bridgeChoosing
+        this.bridgeSelection = null
+        this.render()
+        return
+      case 'bridge-reset':
+        this.view.closeDialog()
+        this.expedition({ type: 'bridge-reset' })
+        this.bridgeSelection = null
+        this.bridgeChoosing = false
+        this.render()
+        return
+      case 'bridge-build':
+        if (this.bridgeSelection)
+          void this.performBridgeAction({
+            type: 'bridge',
+            from: this.bridgeSelection.from,
+            to: this.bridgeSelection.to,
+          })
+        return
+      case 'bridge-pick':
+        void this.performBridgeAction({ type: 'bridge-pick', board: command.value })
+        return
       case 'river-plan':
         this.riverSelection = command.value
         this.render()
@@ -1055,7 +1106,20 @@ export class VariantApp implements VariantInputActions {
           this.convoySelected,
         )
       }
-      if (run?.pressure || run?.convoy) this.disposeRiverDock = mountRiverDock(this.root)
+      if (run?.causeway) {
+        const selected = this.bridgeSelection
+        this.bridgeSelection = selected
+          ? (causewaySpans(run).find(
+              (span) => span.from === selected.from && span.to === selected.to,
+            ) ?? null)
+          : null
+        renderCausewayPlan(this.root, run, this.language, this.bridgeChoosing, this.bridgeSelection)
+      } else {
+        this.bridgeSelection = null
+        this.bridgeChoosing = false
+      }
+      if (run?.pressure || run?.convoy || run?.causeway)
+        this.disposeRiverDock = mountRiverDock(this.root)
       this.renderCampaignLesson()
       this.renderSignalScene()
       if (
@@ -1120,9 +1184,11 @@ export class VariantApp implements VariantInputActions {
     const waterwayScene = pendingWaterwayScene(session.run, session.stageProgress)
     const finaleScene = pendingFinaleScene(session.run, session.stageProgress)
     const railScene = pendingRailScene(session.run, session.stageProgress)
+    const causewayScene = pendingCausewayScene(session.run, session.stageProgress)
     const pressureScene = pendingPressureScene(session.run, session.stageProgress)
     const ferryScene = pendingFerryScene(session.run, session.stageProgress)
     const scene =
+      causewayScene ??
       pressureScene ??
       ferryScene ??
       railScene ??
@@ -1137,27 +1203,30 @@ export class VariantApp implements VariantInputActions {
       this.root,
       this.language,
       scene,
-      pressureScene
-        ? pressureLines(this.language, pressureScene)
-        : ferryScene
-          ? ferryLines(this.language, ferryScene)
-          : railScene
-            ? railLines(this.language, railScene)
-            : signalScene
-              ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
-              : ridgeScene
-                ? observatoryLines(this.language, ridgeScene)
-                : waterwayScene
-                  ? waterwayLines(this.language, waterwayScene)
-                  : finaleScene
-                    ? finaleLines(this.language, finaleScene)
-                    : [],
+      causewayScene
+        ? causewayLines(this.language, causewayScene)
+        : pressureScene
+          ? pressureLines(this.language, pressureScene)
+          : ferryScene
+            ? ferryLines(this.language, ferryScene)
+            : railScene
+              ? railLines(this.language, railScene)
+              : signalScene
+                ? signalLines(this.language, signalScene, !!session.run?.signalRecord)
+                : ridgeScene
+                  ? observatoryLines(this.language, ridgeScene)
+                  : waterwayScene
+                    ? waterwayLines(this.language, waterwayScene)
+                    : finaleScene
+                      ? finaleLines(this.language, finaleScene)
+                      : [],
       session.run?.departure.profession ?? 'explorer',
       () => {
         session.completeCampaignScene(scene)
         this.render()
         if (
           session.run?.phase === 'won' &&
+          !pendingCausewayScene(session.run, session.stageProgress) &&
           !pendingFerryScene(session.run, session.stageProgress) &&
           !pendingSignalScene(session.run, session.stageProgress) &&
           !pendingObservatoryScene(session.run, session.stageProgress) &&
@@ -1182,6 +1251,14 @@ export class VariantApp implements VariantInputActions {
 
     const session = this.session
     const run = session.run
+    if (run?.causeway) {
+      if (!this.bridgeLessonDismissed.has(run.floor))
+        this.disposeCampaignLesson = mountCausewayLesson(this.root, run, this.language, () => {
+          this.bridgeLessonDismissed.add(run.floor)
+          this.render()
+        })
+      return
+    }
     if (run?.convoy) {
       if (!this.convoyLessonDismissed.has(run.floor))
         this.disposeCampaignLesson = mountConvoyLesson(this.root, run, this.language, () => {
@@ -1321,6 +1398,40 @@ export class VariantApp implements VariantInputActions {
           ? 'win'
           : (cue ?? (action.type === 'anchor' ? 'tide-anchor' : 'confirm')),
     )
+  }
+
+  /** Use the exact current position for bridge approaches; interrupted walks commit nothing. */
+  private async performBridgeAction(action: ExpeditionAction): Promise<void> {
+    if (!(this.session instanceof ExpeditionSession)) return
+    const run = this.session.run
+    if (!run?.causeway) return
+    const path =
+      action.type === 'bridge'
+        ? causewaySpans(run).find((span) => span.from === action.from && span.to === action.to)
+            ?.approach
+        : action.type === 'bridge-pick'
+          ? causewayPickupPath(run, action.board)
+          : null
+    if (!path) {
+      this.sounds.play('blocked')
+      return
+    }
+    const generation = ++this.walkGeneration
+    this.moving = true
+    this.input.cancelTools()
+    try {
+      const finished = await this.view.walk(path)
+      if (finished && generation === this.walkGeneration && this.session.run === run) {
+        this.expedition(action)
+        this.bridgeChoosing = false
+        this.bridgeSelection = null
+      }
+    } finally {
+      if (generation === this.walkGeneration) {
+        this.moving = false
+        this.render()
+      }
+    }
   }
 
   /** Commit a river action, then animate the boat and passenger along that exact voyage. */

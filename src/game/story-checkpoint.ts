@@ -21,6 +21,8 @@ export const STORY_SCENE_IDS: readonly StorySceneId[] = [
   'blockade-pass',
   'old-ferry',
   'driftwood-bank',
+  'split-bank',
+  'upstream-steps',
 ]
 
 /** Scene-local revisions let a changed shoreline migrate without retiring the world. */

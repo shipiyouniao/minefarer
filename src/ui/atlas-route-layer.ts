@@ -20,7 +20,11 @@ function routePath(points: readonly AtlasPoint[]): string {
 /** Roads and their location dots stay visible at both detail levels, beneath clickable landmarks. */
 export function atlasRouteLayer(state: StoryViewState): string {
   const routes = ATLAS_ROUTES.filter(
-    (route) => route.from !== 'old-ferry' && route.to !== 'old-ferry',
+    (route) =>
+      route.from !== 'old-ferry' &&
+      route.to !== 'old-ferry' &&
+      route.from !== 'split-bank' &&
+      route.to !== 'split-bank',
   )
     .map((route) => {
       const from = ATLAS_PLACES.find((place) => place.scene === route.from)!
@@ -41,7 +45,11 @@ export function atlasRouteLayer(state: StoryViewState): string {
     .join('')
   const current = state.board.scene.id
   const dots = ATLAS_PLACES.filter(
-    (place) => place.scene !== 'old-ferry' && place.scene !== 'driftwood-bank',
+    (place) =>
+      place.scene !== 'old-ferry' &&
+      place.scene !== 'driftwood-bank' &&
+      place.scene !== 'split-bank' &&
+      place.scene !== 'upstream-steps',
   )
     .map((place) => {
       const open = storyAtlasUnlocked(state.progress, state.run, storyAtlasIndex(place.scene))

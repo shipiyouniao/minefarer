@@ -79,6 +79,7 @@ export type StorySceneMemory = Omit<StoryRun, 'visited'>
 
 /** Permanent story objectives are separate from ordinary expedition milestones. */
 export type StoryTask =
+  | 'cross-causeway'
   | 'silence-wreck'
   | 'investigate-pressure'
   | 'investigate-ferry'
@@ -230,6 +231,7 @@ export interface StoryHold {
 
 /** Durable outcomes describe the fiction, independent of board coordinates or wording. */
 export type StoryFact =
+  | 'causeway-cleared'
   | 'wreck-crew-found'
   | 'wreck-convoy-home'
   | 'wreck-rumor'
@@ -270,6 +272,7 @@ export interface StoryTaskDefinition {
   readonly id: StoryTask
   readonly category: 'main' | 'side'
   readonly introducedBy:
+    | 'pressure-cove-cleared'
     | 'wreck-rumor'
     | 'ferry-channel-cleared'
     | StoryDialogueId
@@ -286,6 +289,8 @@ export interface StoryTaskDefinition {
 }
 
 export type StorySceneId =
+  | 'split-bank'
+  | 'upstream-steps'
   | 'driftwood-bank'
   | 'awakening'
   | 'trail'

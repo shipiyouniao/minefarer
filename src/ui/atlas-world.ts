@@ -60,6 +60,12 @@ export function atlasWorld(state: StoryViewState): string {
 /** The new river region shows its real camp and return pass, leaving future chapter sites unnamed. */
 export function atlasReedbank(state: StoryViewState): string {
   const destinations = [
+    ...(state.progress.facts?.includes('pressure-cove-cleared')
+      ? [{ scene: 'split-bank' as const, x: 24, y: 68 }]
+      : []),
+    ...(state.progress.facts?.includes('causeway-cleared')
+      ? [{ scene: 'upstream-steps' as const, x: 12, y: 86 }]
+      : []),
     ...(state.progress.facts?.includes('wreck-rumor')
       ? [{ scene: 'driftwood-bank' as const, x: 64, y: 23 }]
       : []),
@@ -82,10 +88,17 @@ export function atlasReedbank(state: StoryViewState): string {
     })
     .join('')
 
+  const mainRoute = state.progress.facts?.includes('pressure-cove-cleared')
+    ? '<svg class="atlas-terrain" viewBox="0 0 800 460" preserveAspectRatio="none" aria-hidden="true"><g class="atlas-route is-open" data-atlas-route="old-ferry:split-bank"><path class="atlas-route-bed" d="M240 184Q155 240 192 312.8"/><path class="atlas-route-line" d="M240 184Q155 240 192 312.8"/></g>' +
+      (state.progress.facts?.includes('causeway-cleared')
+        ? '<g class="atlas-route is-open" data-atlas-route="split-bank:upstream-steps"><path class="atlas-route-bed" d="M192 312.8Q162 371 96 395.6"/><path class="atlas-route-line" d="M192 312.8Q162 371 96 395.6"/></g>'
+        : '') +
+      '</svg>'
+    : ''
   const branch = state.progress.facts?.includes('wreck-rumor')
     ? '<svg class="atlas-terrain" viewBox="0 0 800 460" preserveAspectRatio="none" aria-hidden="true"><g class="atlas-route is-open" data-atlas-route="old-ferry:driftwood-bank" data-route-state="open"><path class="atlas-route-bed" d="M240 184Q375 130 512 106"/><path class="atlas-route-line" d="M240 184Q375 130 512 106"/></g></svg>'
     : ''
-  return `<div class="atlas-chart atlas-river-region">${riverTerrain(!!state.progress.facts?.includes('ferry-channel-cleared'))}${branch}<span class="atlas-unknown-label">${message(state.language, 'story.atlas-unsurveyed')}</span><div class="atlas-marker-layer">${markers}</div><span class="atlas-compass" aria-hidden="true">N<br>✧</span></div>`
+  return `<div class="atlas-chart atlas-river-region">${riverTerrain(!!state.progress.facts?.includes('ferry-channel-cleared'))}${branch}${mainRoute}<span class="atlas-unknown-label">${message(state.language, 'story.atlas-unsurveyed')}</span><div class="atlas-marker-layer">${markers}</div><span class="atlas-compass" aria-hidden="true">N<br>✧</span></div>`
 }
 
 /** Reuse the same river geography in the world overview and its detailed regional chart. */

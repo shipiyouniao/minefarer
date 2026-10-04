@@ -1,3 +1,5 @@
+import { pendingCausewayScene } from '../game/causeway-story.js'
+import { causewayLines } from './causeway-view.js'
 import { pendingPressureScene } from '../game/pressure-story.js'
 import { wreckLines } from './wreck-copy.js'
 import { pressureLines } from './pressure-copy.js'
@@ -301,6 +303,24 @@ export class StoryApp implements MountedGame {
           this.render()
         },
       )
+    }
+    const causewayScene = pendingCausewayScene(
+      null,
+      this.session.camp.stageProgress('broken-causeway'),
+    )
+    if (causewayScene && !this.root.querySelector('dialog[open]')) {
+      this.signal.present(
+        this.root,
+        this.language,
+        causewayScene,
+        causewayLines(this.language, causewayScene),
+        state.loadout.profession,
+        () => {
+          this.session.camp.completeStageScene('broken-causeway', causewayScene)
+          this.render()
+        },
+      )
+      return
     }
     const pressureScene = pendingPressureScene(
       null,

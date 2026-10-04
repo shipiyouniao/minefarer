@@ -3,7 +3,7 @@ import type { Game } from '../types/game.js'
 import type { Expedition } from '../types/variants.js'
 
 /** Reveal blank regions without ever revealing wall terrain or changing mine clues. */
-export function revealDungeon(run: Expedition, index: number): Game {
+export function revealDungeon(run: Pick<Expedition, 'game' | 'walls'>, index: number): Game {
   const cells = [...run.game.cells]
   const queue = [index]
 

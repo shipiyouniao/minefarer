@@ -53,6 +53,10 @@ function cellTemplate(state: StoryViewState, index: number): string {
   const portal = northwestPortals(board.scene.id, state.progress).find(
     (entry) => entry.index === index,
   )
+  const causewayGate =
+    board.scene.id === 'split-bank' &&
+    index === 45 &&
+    !state.progress.facts?.includes('causeway-cleared')
   const pressureGate =
     board.scene.id === 'old-ferry' &&
     index === 85 &&
@@ -134,6 +138,9 @@ function cellTemplate(state: StoryViewState, index: number): string {
     const restored = state.progress.facts?.includes('wreck-silenced')
     label = restored ? message(language, 'convoy.restored') : campaignName(language, 'wreck-harbor')
     content = restored ? spriteImage('river-dock') : raftImage()
+  } else if (causewayGate) {
+    label = campaignName(language, 'broken-causeway')
+    content = spriteImage('river-dock')
   } else if (pressureGate) {
     label = campaignName(language, 'pressure-cove')
     content = raftImage()
@@ -222,6 +229,7 @@ function cellTemplate(state: StoryViewState, index: number): string {
       ridgeGate ||
       waterwayGate ||
       portal ||
+      causewayGate ||
       pressureGate ||
       wreckGate ||
       ferryGate ||
@@ -235,7 +243,7 @@ function cellTemplate(state: StoryViewState, index: number): string {
 
   const name = `${Math.floor(index / board.game.config.width) + 1}, ${(index % board.game.config.width) + 1}: ${label}`
 
-  return `<button class="story-cell ${board.scene.bridge?.includes(index) ? 'story-bridge-plank' : ''} ${covered ? 'is-covered' : 'is-open'} ${flagged ? 'is-flagged' : ''} ${triggered ? 'is-triggered' : ''} ${lit ? 'is-teaching' : ''} ${scoped ? 'is-scope' : ''} ${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || pressureGate || wreckGate || ferryGate || bastionGate ? 'is-site' : ''}" ${control ? `data-story-mechanism="${index}" data-operated="${!!run?.operated.includes(index)}"` : ''} data-number="${number}" data-cell="${index}" data-story-cell="${index}" ${site ? `data-story-facility="${site.destination}"` : ''} tabindex="${index === state.player ? 0 : -1}" aria-label="${escapeHtml(name)}" ${run?.phase === 'fallen' ? 'disabled' : ''}>${content}${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || pressureGate || wreckGate || ferryGate || bastionGate ? `<span class="story-site-label">${label}</span>` : ''}</button>`
+  return `<button class="story-cell ${board.scene.bridge?.includes(index) ? 'story-bridge-plank' : ''} ${covered ? 'is-covered' : 'is-open'} ${flagged ? 'is-flagged' : ''} ${triggered ? 'is-triggered' : ''} ${lit ? 'is-teaching' : ''} ${scoped ? 'is-scope' : ''} ${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || causewayGate || pressureGate || wreckGate || ferryGate || bastionGate ? 'is-site' : ''}" ${control ? `data-story-mechanism="${index}" data-operated="${!!run?.operated.includes(index)}"` : ''} data-number="${number}" data-cell="${index}" data-story-cell="${index}" ${site ? `data-story-facility="${site.destination}"` : ''} tabindex="${index === state.player ? 0 : -1}" aria-label="${escapeHtml(name)}" ${run?.phase === 'fallen' ? 'disabled' : ''}>${content}${site || exit || entrance || quarryGate || ridgeGate || waterwayGate || portal || causewayGate || pressureGate || wreckGate || ferryGate || bastionGate ? `<span class="story-site-label">${label}</span>` : ''}</button>`
 }
 
 /** A single movable overlay keeps the chibi traveler above cell edges and clues. */

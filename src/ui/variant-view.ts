@@ -1,4 +1,5 @@
 import { renderRiverPassenger } from './pressure-view.js'
+import { renderCauseway } from './causeway-view.js'
 import { renderKeelcrab } from './keelcrab-view.js'
 import { renderFloorCircuits } from './floor-circuit-view.js'
 import { animateExitOpening, exitIsOpen } from './exit-performance.js'
@@ -791,6 +792,7 @@ export class VariantView {
     if (side === 'a') renderFloorRail(this.content, run, this.language)
 
     if (side === 'a') renderFloorPower(this.content, run, this.language)
+    if (side === 'a') renderCauseway(this.content, run, this.language)
 
     if (side === 'a') {
       /** Decorate a public mobility landmark while preserving existing title and accessibility text. */

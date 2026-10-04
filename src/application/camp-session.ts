@@ -78,6 +78,10 @@ export class CampSession {
   acceptDiscoveredRoutes(): void {
     let story = this.story
     const tasks: readonly StoryTask[] = [
+      ...(story.facts?.includes('pressure-cove-cleared') &&
+      this.stageProgress('pressure-cove').scenes.includes('pressure-end')
+        ? ['cross-causeway' as const]
+        : []),
       ...(story.facts?.includes('ferry-channel-cleared') &&
       this.stageProgress('reed-channels').scenes.includes('ferry-end')
         ? ['investigate-pressure' as const]

@@ -4,7 +4,7 @@
   background: #f7fbf3;
   color: #385c53;
 }
-.variant-content:not(.enlarged-boards) .board:is(.convoy-board, .keelcrab-board) {
+.variant-content:not(.enlarged-boards) .board:is(.convoy-board, .keelcrab-board, .causeway-board) {
   --cell: min(
     var(--fit-cell),
     calc(

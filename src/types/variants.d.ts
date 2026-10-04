@@ -1,4 +1,5 @@
 import type { PressureFloor } from './pressure.js'
+import type { CausewayFloor } from './causeway.js'
 import type { ConvoyFloor } from './convoy.js'
 import type { RecollectionSelection } from './recollection.js'
 import type { FloorRail } from './floor-rail.js'
@@ -101,6 +102,7 @@ export interface Departure {
 
 /** A complete floor state; reachability is derived from revealed safe cells. */
 export interface Expedition extends Vitality {
+  readonly causeway?: CausewayFloor
   readonly convoy?: ConvoyFloor
   readonly pressure?: PressureFloor
   readonly current?: FloorTide
@@ -149,6 +151,9 @@ export interface Expedition extends Vitality {
 
 /** Explicit run intents; all effects can be replayed without browser state. */
 export type ExpeditionAction =
+  | { readonly type: 'bridge-reset' }
+  | { readonly type: 'bridge'; readonly from: number; readonly to: number }
+  | { readonly type: 'bridge-pick'; readonly board: number }
   | { readonly type: 'convoy'; readonly orders: readonly number[] }
   | { readonly type: 'convoy-undo' | 'convoy-reset' }
   | {

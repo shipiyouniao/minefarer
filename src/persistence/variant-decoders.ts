@@ -282,6 +282,7 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   const campaign = originalCampaign === 'tower-road-v3' ? 'tower-road-v4' : originalCampaign
   if (
     reader.value('campaign') !== undefined &&
+    campaign !== 'broken-causeway-v1' &&
     campaign !== 'pressure-cove-v4' &&
     campaign !== 'wreck-harbor-v3' &&
     campaign !== 'reed-channels-v3' &&
@@ -371,7 +372,8 @@ function decodeDeparture(reader: JsonObjectReader | null): Departure | null {
   }
 
   return {
-    ...(campaign === 'wreck-harbor-v3' ||
+    ...(campaign === 'broken-causeway-v1' ||
+    campaign === 'wreck-harbor-v3' ||
     campaign === 'pressure-cove-v4' ||
     campaign === 'reed-channels-v3' ||
     campaign === 'tower-road-v4' ||
@@ -406,6 +408,18 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
   const type = reader.string('type')
 
   switch (type) {
+    case 'bridge': {
+      const from = reader.number('from'),
+        to = reader.number('to')
+      return integer(from, config.width * config.height - 1) &&
+        integer(to, config.width * config.height - 1)
+        ? { type, from, to }
+        : null
+    }
+    case 'bridge-pick': {
+      const board = reader.number('board')
+      return integer(board, 1) ? { type, board } : null
+    }
     case 'convoy': {
       const orders = reader.array('orders')
       return orders &&
@@ -418,6 +432,7 @@ function decodeExpeditionAction(value: JsonValue, config: Config): ExpeditionAct
         : null
     }
     case 'convoy-undo':
+    case 'bridge-reset':
     case 'convoy-reset':
       return { type }
     case 'sail':
