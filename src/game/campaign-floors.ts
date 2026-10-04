@@ -1,4 +1,5 @@
 import { pressureLayout } from './pressure-layout.js'
+import { causewayLayout } from './causeway-layout.js'
 import { keelcrabLayout } from './keelcrab-battle.js'
 import { convoyLayout, WRECK_BOSS_FLOOR } from './convoy-layout.js'
 import { ferryLayout } from './ferry-layout.js'
@@ -14,6 +15,8 @@ import type { DungeonLayout } from '../types/dungeon-generation.js'
 /** Resolve authored providers before the shared expedition engine creates an attempt. */
 export function campaignFloor(revision: CampaignRevision, floor: number): DungeonLayout {
   switch (revision) {
+    case 'broken-causeway-v1':
+      return causewayLayout(floor)
     case 'wreck-harbor-v3':
       return floor < WRECK_BOSS_FLOOR ? convoyLayout(floor) : keelcrabLayout()
     case 'pressure-cove-v4':

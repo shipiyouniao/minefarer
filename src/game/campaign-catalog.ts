@@ -8,6 +8,18 @@ import type {
 
 export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
   {
+    id: 'broken-causeway',
+    entrance: { scene: 'split-bank', index: 45, fact: 'pressure-cove-cleared' },
+    bounds: { width: 23, height: 23 },
+    revision: 'broken-causeway-v1',
+    prerequisite: 'pressure-cove',
+    floors: 3,
+    outcome: 'causeway-cleared',
+    reward: 220,
+    entryTask: 'investigate-pressure',
+    lesson: false,
+  },
+  {
     id: 'wreck-harbor',
     boss: 'keelcrab',
     entrance: { scene: 'driftwood-bank', index: 118, fact: 'wreck-rumor' },
@@ -131,6 +143,7 @@ export const CAMPAIGN_STAGES: readonly CampaignStage[] = [
 
 /** Reject arbitrary route keys before selecting a save slot. */
 export function parseCampaignStage(value: string | null): CampaignStageId | null {
+  if (value === 'broken-causeway') return value
   if (value === 'wreck-harbor') return value
   return value === 'quarry-rescue' ||
     value === 'pressure-cove' ||

@@ -1,4 +1,5 @@
 import { generateRecollectionRiver } from './recollection-river.js'
+import { generateRecollectionCauseway } from './recollection-causeway.js'
 import { recollectionCurrent } from './recollection-current.js'
 import { generateDungeon } from './dungeon-generator.js'
 import { adjacentSteps, shuffled } from './variant-board.js'
@@ -116,6 +117,7 @@ export function generateRecollectionFloor(
   seed: number,
   config: Config,
 ): RecollectionLayout {
+  if (kind === 'causeway') return generateRecollectionCauseway(seed, config)
   if (kind === 'river') return generateRecollectionRiver(seed, config)
   if (kind === 'tidal') {
     for (let attempt = 0; attempt < 64; attempt++) {

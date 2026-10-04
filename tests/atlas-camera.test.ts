@@ -92,6 +92,8 @@ test('every world location connects through a real doorway and the haul track st
       'west-shortcut',
       'chapter-one-cleared',
       'ferry-channel-cleared',
+      'pressure-cove-cleared',
+      'causeway-cleared',
       'wreck-rumor',
     ],
   }

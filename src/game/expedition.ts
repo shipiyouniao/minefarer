@@ -6,6 +6,13 @@ import {
   aboardRiverBoat,
 } from './pressure.js'
 import { advanceCurrent } from './floor-tide.js'
+import {
+  layCausewayPlank,
+  pickCausewayPlank,
+  causewayPickupPath,
+  causewaySpans,
+  resetCausewayPlanks,
+} from './causeway.js'
 import { enterKeelcrab } from './keelcrab-battle.js'
 import { launchConvoy, rewindConvoy } from './convoy.js'
 import { WRECK_BOSS_FLOOR } from './convoy-layout.js'
@@ -453,6 +460,19 @@ function transitionExpedition(run: Expedition, action: ExpeditionAction): Expedi
   if (action.type === 'relic') return takeRelic(run, action.relic)
 
   if (run.phase !== 'exploring') return run
+
+  if (action.type === 'bridge-reset') return resetCausewayPlanks(run)
+
+  if (action.type === 'bridge') {
+    const path = causewaySpans(run).find(
+      (span) => span.from === action.from && span.to === action.to,
+    )?.approach
+    return path ? layCausewayPlank(collectTreasures(run, path), action.from, action.to) : run
+  }
+  if (action.type === 'bridge-pick') {
+    const path = causewayPickupPath(run, action.board)
+    return path ? pickCausewayPlank(collectTreasures(run, path), action.board) : run
+  }
 
   if (action.type === 'interact')
     return railControl(run, action.index)

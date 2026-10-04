@@ -9,6 +9,7 @@ export const ATLAS_REGIONS: readonly AtlasRegion[] = [
 
 /** Chapter Two begins beyond the northwest pass; all earlier scenes belong to the woodlands. */
 export function atlasRegionForScene(scene: StoryScene['id']): AtlasRegionId {
+  if (scene === 'split-bank' || scene === 'upstream-steps') return 'reedbank'
   return scene === 'reed-camp' || scene === 'old-ferry' || scene === 'driftwood-bank'
     ? 'reedbank'
     : 'woodland'

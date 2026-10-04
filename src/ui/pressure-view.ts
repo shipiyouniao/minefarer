@@ -13,9 +13,12 @@ import type { Language } from '../types/localization.js'
 export function mountRiverDock(root: HTMLElement): (() => void) | null {
   const dock = root.querySelector<HTMLElement>('.action-dock:has(.river-controls)')
   const app = root.closest<HTMLElement>('#app')
-  const chart = root.querySelector<HTMLElement>('.convoy-board, .keelcrab-board')
+  const chart = root.querySelector<HTMLElement>('.convoy-board, .keelcrab-board, .causeway-board')
   if (!app || (!dock && !chart)) return null
   const previous = app.style.getPropertyValue('--dock-space')
+  // The measured dock reserves host space; it must not use that result as its own minimum.
+  const minimum = dock?.style.minHeight ?? ''
+  if (dock) dock.style.minHeight = '0px'
   const host = root.closest<HTMLElement>('.ruleset-host')
   if (chart)
     chart.style.setProperty(
@@ -43,6 +46,7 @@ export function mountRiverDock(root: HTMLElement): (() => void) | null {
   return () => {
     observer.disconnect()
     window.removeEventListener('resize', measure)
+    if (dock) dock.style.minHeight = minimum
     if (previous) app.style.setProperty('--dock-space', previous)
     else app.style.removeProperty('--dock-space')
   }

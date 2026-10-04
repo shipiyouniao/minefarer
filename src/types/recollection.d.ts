@@ -5,7 +5,7 @@ import type { FloorCircuits } from './floor-circuits.js'
 import type { FloorPower } from './floor-power.js'
 
 /** New families extend the same generated-room contract used by an expedition. */
-export type RecollectionFloor = 'ordinary' | 'relay' | 'routing' | 'tidal' | 'river'
+export type RecollectionFloor = 'ordinary' | 'relay' | 'routing' | 'tidal' | 'river' | 'causeway'
 
 /** A departure takes its own copy; changing camp choices cannot alter a running memory. */
 export interface RecollectionSelection {

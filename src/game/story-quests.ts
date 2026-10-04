@@ -35,6 +35,7 @@ export function recordStoryCampaign(
 }
 
 export const STORY_FACTS: readonly StoryFact[] = [
+  'causeway-cleared',
   'wreck-crew-found',
   'wreck-convoy-home',
   'wreck-rumor',
@@ -64,6 +65,14 @@ export const STORY_FACTS: readonly StoryFact[] = [
 ]
 
 export const STORY_TASKS: readonly StoryTaskDefinition[] = [
+  {
+    id: 'cross-causeway',
+    category: 'main',
+    supplies: 0,
+    introducedBy: 'pressure-cove-cleared',
+    prerequisite: { kind: 'fact', id: 'pressure-cove-cleared' },
+    objective: { kind: 'fact', id: 'causeway-cleared' },
+  },
   {
     id: 'silence-wreck',
     category: 'side',

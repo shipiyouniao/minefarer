@@ -23,6 +23,9 @@ export function dialogueTerms(language: Language): readonly DialogueTerm[] {
       message(language, 'story.quarry-machine'),
       message(language, 'story.atlas-reedbank'),
       message(language, 'convoy.bank'),
+      message(language, 'causeway.bank'),
+      message(language, 'causeway.title'),
+      message(language, 'causeway.upstream'),
       message(language, 'keelcrab.title'),
       message(language, 'dialogue.places'),
     ]

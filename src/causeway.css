@@ -1,0 +1,189 @@
+.causeway-controls {
+  gap: 8px;
+  min-width: min(430px, 100%);
+}
+.causeway-inventory {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.causeway-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid #bacac0;
+  border-radius: 12px;
+  background: #f8faf3;
+  flex: 1 1 175px;
+}
+.causeway-card.is-held {
+  border-color: #4e806e;
+  background: #e3efe5;
+}
+.causeway-card strong,
+.causeway-card small {
+  display: block;
+}
+.causeway-card small {
+  color: #52675d;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.causeway-card button {
+  margin-left: auto;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+.causeway-plank-picture {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 36px;
+  color: #fdf4df;
+  font-weight: 800;
+  text-shadow: 0 1px 2px #604525;
+  border-radius: 5px;
+  border: 2px solid #987748;
+  box-shadow:
+    inset 0 0 0 2px #e0c287,
+    1px 3px 4px #344f3a25;
+  background: repeating-linear-gradient(90deg, #b08b54 0 7px, #c6a86f 8px 11px, #90764e 12px 13px);
+}
+.causeway-placement {
+  display: flex;
+  gap: 8px;
+}
+.causeway-placement button {
+  flex: 1;
+  min-height: 34px;
+}
+.causeway-hint {
+  margin: 0;
+  color: #52675d;
+  font-size: 12px;
+  min-height: 1.5em;
+}
+/* Recovered bridge cells retain revealed knowledge, but their terrain is still water. */
+.causeway-board .cell.causeway-water {
+  background: #b7d2d2;
+  border: 1px solid #a5c7c8;
+  border-radius: 4px;
+  box-shadow: inset 0 -5px 12px #719da61c;
+}
+.causeway-board .causeway-water::after {
+  display: none;
+}
+.causeway-board .causeway-bridge {
+  position: relative;
+  overflow: visible;
+}
+.causeway-deck {
+  position: absolute;
+  inset: 17% -4%;
+  border: 2px solid #947a51;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, #c4a571 0 17%, #ddc28e 18% 21%, #aa8a57 22% 24%);
+  box-shadow: 0 2px 3px #314b4730;
+  pointer-events: none;
+}
+[data-bridge-axis='vertical'] .causeway-deck {
+  inset: -4% 17%;
+  background: repeating-linear-gradient(0deg, #c4a571 0 17%, #ddc28e 18% 21%, #aa8a57 22% 24%);
+}
+.causeway-board .causeway-loose {
+  position: absolute;
+  left: 12%;
+  top: 7%;
+  width: 62%;
+  height: 62%;
+  max-width: 40px;
+  max-height: 42px;
+  font-size: clamp(10px, 0.4em, 18px);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+.causeway-board .causeway-landing {
+  background-color: #dfebbf;
+  box-shadow: inset 0 0 0 2px #88a56b;
+}
+.causeway-board .causeway-landing.hidden {
+  background-color: #b7cfa3;
+}
+.causeway-board .cell.causeway-preview {
+  background: repeating-linear-gradient(90deg, #d4b878c0 0 23%, #ad915fc0 24% 26%);
+}
+.causeway-board .causeway-selected {
+  box-shadow: inset 0 0 0 3px #d7a043;
+}
+.causeway-diagram {
+  display: flex;
+  gap: 14px;
+  padding: 25px 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #dce6ca 0 24%, #b7d2d2 25% 75%, #dce6ca 76%);
+}
+.causeway-diagram .causeway-plank-picture {
+  transform: rotate(90deg);
+  width: 25px;
+  height: 68px;
+}
+@media (max-width: 700px) {
+  .causeway-objective {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 8px;
+  }
+  .causeway-objective > button {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    padding: 6px 9px;
+  }
+  .causeway-objective > span {
+    font-size: 12px;
+  }
+  .causeway-controls {
+    width: 100%;
+    min-width: 0;
+  }
+  .causeway-card {
+    flex-basis: 130px;
+    padding: 5px 7px;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    position: relative;
+    gap: 4px 7px;
+  }
+  .causeway-card > button {
+    grid-column: 1 / -1;
+    margin: 0;
+    width: 100%;
+    min-height: 28px;
+    padding: 3px 6px;
+  }
+  .causeway-card.is-held > span:last-child {
+    position: absolute;
+    right: 7px;
+    top: 4px;
+  }
+  .causeway-card strong {
+    font-size: 12px;
+  }
+  .causeway-card .causeway-plank-picture {
+    width: 22px;
+    height: 30px;
+  }
+  .causeway-card small {
+    font-size: 10px;
+  }
+  .causeway-placement button {
+    min-height: 34px;
+    font-size: 12px;
+  }
+  .causeway-hint {
+    font-size: 11px;
+  }
+}

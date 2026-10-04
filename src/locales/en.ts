@@ -2,6 +2,74 @@ import type { MessageCatalog } from '../types/message-catalog.js'
 
 /** en interface messages. Keep keys aligned across locales. */
 export const enMessages: MessageCatalog = {
+  'causeway.reward': 'Recollection unlocked · Island bridges',
+  'causeway.reset': 'Reset plank positions',
+  'causeway.reset-note':
+    'Return yourself and the planks to this floor’s start. Discoveries, collected chests and notes stay; health and tools are not restored.',
+  'causeway.title': 'Broken Causeway',
+  'causeway.bank': 'Forked Bank',
+  'causeway.upstream': 'Intake Steps',
+  'causeway.task': 'Reach the Far Bank',
+  'causeway.detail':
+    'Follow the Old Ferry pier to Forked Bank. Cross the Broken Causeway and follow the backflow upstream. Reuse the planks; collecting every chest is optional.',
+  'causeway.floor-1': 'Reach 1 · The Broken Walkway',
+  'causeway.floor-2': 'Reach 2 · The Wide Channel',
+  'causeway.floor-3': 'Reach 3 · Between the Islets',
+  'causeway.objective': 'Connect the islets and reach the exit.',
+  'causeway.short': 'Short plank',
+  'causeway.long': 'Long plank',
+  'causeway.length': 'Spans {count} water cells',
+  'causeway.held': 'Carrying',
+  'causeway.shore': 'On shore',
+  'causeway.laid': 'In place',
+  'causeway.choose': 'Choose a crossing',
+  'causeway.build': 'Lay plank',
+  'causeway.cancel': 'Cancel preview',
+  'causeway.pick': 'Pick up',
+  'causeway.recover': 'Recover plank',
+  'causeway.swap': 'Swap planks',
+  'causeway.ready': 'Choose a landing to preview the crossing.',
+  'causeway.empty': 'Pick up a plank from shore, or recover a bridge you have crossed.',
+  'causeway.noSpan': 'No crossing fits from reachable shores. Explore the bank or switch planks.',
+  'causeway.preview':
+    'The plank covers only water. Check the landing for mines before stepping ashore.',
+  'causeway.safeLanding': 'This landing is revealed. You can bridge across.',
+  'causeway.water': 'Deep water · bridge required',
+  'causeway.bridge': 'Plank bridge · walkable',
+  'causeway.target': 'Possible landing, not a safety guarantee',
+  'causeway.help': 'How to bridge',
+  'causeway.help-place-title': 'Check the span',
+  'causeway.help-place':
+    'Short planks cross two water cells; long planks cross four. Preview a landing, then lay the plank. Previewing costs nothing.',
+  'causeway.help-mine-title': 'Read the landing',
+  'causeway.help-mine':
+    'Water is mine-free. Shore numbers still count all eight neighbors. Once bridged, use normal reveals, flags and quick-open. Building does not reveal the landing.',
+  'causeway.help-carry-title': 'Bring the planks along',
+  'causeway.help-carry':
+    'Carry one plank at a time. Leave the other ashore or lay it as a bridge while carrying this one across. Swapping leaves your old plank at the pickup shore.',
+  'causeway.help-return-title': 'Recover and try again',
+  'causeway.help-return':
+    'Recover a bridge from either dry end. Swap back if needed; there is no use or move limit. Discoveries and marks stay recorded.',
+  'causeway.lesson-place':
+    'Choose a crossing, then tap a highlighted landing across the water. Check the preview before laying the plank.',
+  'causeway.lesson-cross':
+    'The bridge is ready. Check the landing, cross, then recover the plank from the other end.',
+  'causeway.entry-1':
+    'The flood broke the walkway. The boat cannot get through either, but these planks are sound.',
+  'causeway.entry-2': 'We can bridge to that islet, then take the plank with us.',
+  'causeway.second-1':
+    'This channel is too wide for the short plank. We need the long one back at the start.',
+  'causeway.second-2': 'We can walk across one while carrying the other.',
+  'causeway.third-1':
+    'Those old piles have shifted. The straight route no longer reaches the far bank.',
+  'causeway.third-2': 'Let us try the islets on either side and piece together another route.',
+  'causeway.end-1':
+    'Hear that? The water has turned again. The sound is coming from above the Intake Steps.',
+  'causeway.end-2':
+    'The planks are tied down. Let us go up; everyone behind us can use this crossing now.',
+  'causeway.recollection': 'Island bridges',
+  'causeway.randomNote':
+    'Carry reusable planks across generated islets, deduce safe landings and connect a route to the exit.',
   'keelcrab.net':
     'Leave at most one flag on the route and reveal the other cells. Sailing tows the marked mine.',
   'pilot-bell.workshop': 'Added to departure equipment. Equip it at camp.',
@@ -149,7 +217,7 @@ export const enMessages: MessageCatalog = {
     'These bends connect. Follow the arrows toward the exit; we can retrace water we have already sailed.',
   'pressure.boat-2': 'One stretch at a time, then.',
   'pressure.end-1': 'Made it. Mark our route so the next boat does not have to start from scratch.',
-  'pressure.end-2': 'Done. Let us tell the others.',
+  'pressure.end-2': 'Done. That walkway on the far bank leads upstream. Let us keep going.',
   'pressure.title': 'Pressure Cove',
   'pressure.task': 'Chart the crossing',
   'pressure.haul': 'Previous berth',

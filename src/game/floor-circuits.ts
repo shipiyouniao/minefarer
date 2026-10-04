@@ -60,6 +60,7 @@ export function collectSignalRecord(run: Expedition, path: readonly number[]): E
 
 /** Exit rules use mechanism outcomes instead of requiring every optional collectible. */
 export function floorObjectiveComplete(run: Expedition): boolean {
+  if (run.causeway) return true
   if (run.pressure) return true
   if (run.rail) return railObjectiveComplete(run.rail)
 

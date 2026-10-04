@@ -15,6 +15,11 @@ export function recollectionFloorCopy(
   kind: RecollectionFloor,
 ): RecollectionFloorCopy {
   switch (kind) {
+    case 'causeway':
+      return {
+        name: message(language, 'causeway.recollection'),
+        note: message(language, 'causeway.randomNote'),
+      }
     case 'tidal':
       return {
         name: message(language, 'recollection.tidal'),

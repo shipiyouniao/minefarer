@@ -29,6 +29,9 @@ export type VariantCommand =
         | 'attack'
         | 'brace'
         | 'sail'
+        | 'bridge-plan'
+        | 'bridge-build'
+        | 'bridge-reset'
         | 'convoy'
         | 'convoy-undo'
         | 'convoy-reset'
@@ -55,6 +58,7 @@ export type VariantCommand =
   | {
       readonly type:
         | 'river-plan'
+        | 'bridge-pick'
         | 'convoy-a'
         | 'convoy-b'
         | 'convoy-c'

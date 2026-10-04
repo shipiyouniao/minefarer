@@ -34,7 +34,11 @@ function placeImage(place: AtlasPlace): string {
 function placeMarkers(state: StoryViewState): string {
   const current = state.board.scene.id
   return ATLAS_PLACES.filter(
-    (place) => place.scene !== 'old-ferry' && place.scene !== 'driftwood-bank',
+    (place) =>
+      place.scene !== 'old-ferry' &&
+      place.scene !== 'driftwood-bank' &&
+      place.scene !== 'split-bank' &&
+      place.scene !== 'upstream-steps',
   )
     .map((place) => {
       const index = storyAtlasIndex(place.scene)
@@ -60,6 +64,8 @@ function districtMarkers(state: StoryViewState): string {
           place.district === district &&
           place.scene !== 'old-ferry' &&
           place.scene !== 'driftwood-bank' &&
+          place.scene !== 'split-bank' &&
+          place.scene !== 'upstream-steps' &&
           place.scene !== 'reed-camp',
       )
       const known = places.filter((place) =>
